@@ -1,0 +1,12 @@
+
+First call YOUR emsdk_env.bat
+
+C:\\Users\\thiago\\Source\\Repos\\emsdk\\emsdk_env.bat
+
+Then at the root dir execute
+
+call emcc "cprime_lib.c" -o "Web\cprime.js" -s WASM=0 -s EXPORTED_FUNCTIONS="['_CompileText']" -s EXTRA_EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap']"
+
+
+
+This will generate Web\cprime.js
