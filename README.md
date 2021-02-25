@@ -36,3 +36,13 @@ See it online http://thradams.com/web2/cprime.html
 The file cprime.c is the command line program for the compiler.
 
 This repository can be used to send sugestions for the cprime extensions.
+
+## Road Map
+
+ - Create samples about how to use the API.
+ - Suport with zero config microsoft C extensions and include headers when compiling inside Visual Studio Command prompt.
+   
+   Today include dir needs to be set inside config.txt and some microsoft extensions are suported using macros.
+ 
+ 
+ 
