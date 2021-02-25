@@ -1,6 +1,6 @@
 # cprime
 
-C front end compiler (with preprocessor) written in C with no external dependencies.
+C' (C Prime) is a front end compiler with preprocessor written in C with no external dependencies.
 
 I am using it for:
  - Create a transpiler, extending the C language with new features and generating C code.
