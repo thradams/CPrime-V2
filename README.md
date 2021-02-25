@@ -12,8 +12,9 @@ It also can be used for:
 - Refactoring tool
 - Other language parsing (doc generation etc)
 - Formatter
+- Add a backend? (webassembly for instance?)
 
-## Using the frontend
+## Using the fron tend
 I am working the make it simple to use (a good and documented API). 
 
 You only need two files to use the library. cprime_lib.c and cprime_lib.h
