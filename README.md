@@ -16,14 +16,15 @@ It also can be used for:
 - Reflection
 - 
 ## Using the front end
-I am working the make it simple to use (a good and documented API). 
 
-You only need two files to use the library. cprime_lib.c and cprime_lib.h
+I am working the make it simple to use but there is no documentation yet.
+Basically I need to write the documentation and samples to use the syntax abstract tree. 
+
+To use the library you only need two files: cprime_lib.c and cprime_lib.h
 
 CPrime can keep all tokens and compiler phases and this make possible
 to rebuild a source code completely.
 
-I will create some simple and useful samples in the future.
 
 ## cprime extensions
 
