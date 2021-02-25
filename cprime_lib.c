@@ -1032,22 +1032,6 @@ struct SymbolMapItem* SymbolMap_GetAssocAt(struct SymbolMap* pMap,
         unsigned int* HashValue);
 
 
-static unsigned int SymbolMap_String2_HashKey(const char* Key)
-{
-    // hash key to unsigned int value by pseudorandomizing transform
-    // (algorithm copied from STL char hash in xfunctional)
-    unsigned int uHashVal = 2166136261U;
-    unsigned int uFirst = 0;
-    unsigned int uLast = (unsigned int)strlen(Key);
-    unsigned int uStride = 1 + uLast / 10;
-    for (; uFirst < uLast; uFirst += uStride)
-    {
-        uHashVal = 16777619U * uHashVal ^ (unsigned int)Key[uFirst];
-    }
-    return (uHashVal);
-}
-
-
 void SymbolMap_RemoveAll(struct SymbolMap* pMap)
 {
     if (pMap->pHashTable != NULL)
@@ -1082,7 +1066,7 @@ struct SymbolMapItem* SymbolMap_FindBucket(struct SymbolMap* pMap, const char* K
     {
         return NULL;
     }
-    unsigned int HashValue = SymbolMap_String2_HashKey(Key);
+    unsigned int HashValue = String2_HashKey(Key);
     unsigned int nHashBucket = HashValue % pMap->nHashTableSize;
     struct SymbolMapItem* pKeyValue =
             pMap->pHashTable[nHashBucket];
