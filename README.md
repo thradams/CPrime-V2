@@ -37,6 +37,33 @@ The file cprime.c is the command line program for the compiler.
 
 This repository can be used to send sugestions for the cprime extensions.
 
+See help on the command line app.
+
+```
+
+Syntax: cprime [options] [file ...]
+
+Examples: cprime hello.c
+          cprime -config config.h hello.c
+          cprime -config config.h hello.c -o hello.c
+          cprime -config config.h -P hello.c
+          cprime -E hello.c
+          cprime -P hello.c
+          cprime -A hello.c
+
+struct PrintCodeOptions:
+-config FILE                          Configuration file.
+-outDir                               Set the directory for output.
+-help                                 Print this message.
+-o FILE                               Sets ouput file name.
+-E                                    Preprocess to console.
+-P                                    Preprocess to file.
+-cx                                   Generate C'.
+-ca                                   Generated C annotated
+-removeComments                       Remove comments from output
+                                      -outDir can define build output
+```
+
 ## Road Map
 
  - Create samples about how to use the API.
