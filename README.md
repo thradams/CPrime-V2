@@ -37,7 +37,7 @@ The file cprime.c is the command line program for the compiler.
 
 This repository can be used to send sugestions for the cprime extensions.
 
-See help on the command line app.
+See use the command line compiler.
 
 ```
 
