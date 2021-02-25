@@ -13,7 +13,8 @@ It also can be used for:
 - Other language parsing (doc generation etc)
 - Formatter
 - Add a backend? (webassembly for instance?)
-
+- Reflection
+- 
 ## Using the fron tend
 I am working the make it simple to use (a good and documented API). 
 
@@ -21,6 +22,8 @@ You only need two files to use the library. cprime_lib.c and cprime_lib.h
 
 CPrime can keep all tokens and compiler phases and this make possible
 to rebuild a source code completely.
+
+I will create some simple and useful samples in the future.
 
 ## cprime extensions
 
