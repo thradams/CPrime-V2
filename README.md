@@ -15,13 +15,12 @@ It also can be used for:
 ## Using the frontend
 I am working the make it simple to use (a good and documented API). 
 
-The files cprime_lib.c and cprime_lib.h are all you need.
-
+You only need two files to use the library. cprime_lib.c and cprime_lib.h
 
 ## cprime extensions
 
 See http://thradams.com/clang.htm
+
 See it online http://thradams.com/web2/cprime.html
 
-
-
+The file cprime.c is the command line program for the compiler.
