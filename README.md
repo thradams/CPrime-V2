@@ -15,7 +15,7 @@ It also can be used for:
 - Add a backend? (webassembly for instance?)
 - Reflection
 - 
-## Using the fron tend
+## Using the front end
 I am working the make it simple to use (a good and documented API). 
 
 You only need two files to use the library. cprime_lib.c and cprime_lib.h
