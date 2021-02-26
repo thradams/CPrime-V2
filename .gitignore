@@ -7,3 +7,5 @@
 /VC/Debug
 /VC/Release
 /VC/x64/Debug
+*.orig
+/VC/printenum

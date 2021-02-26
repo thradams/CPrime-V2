@@ -1,3 +1,6 @@
+#if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include <wchar.h>
 #include <stdlib.h>
@@ -16,6 +19,7 @@
 #if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
 #include <direct.h>
 #define strdup _strdup
+#define _CRT_SECURE_NO_WARNINGS
 #else
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -24,7 +28,7 @@
 #include "cprime_lib.h"
 
 #ifndef NEW
-#define NEW(...) mallocinit(sizeof(__VA_ARGS__), & __VA_ARGS__);
+#define NEW(C) mallocinit(sizeof(C), & C);
 #endif
 
 
@@ -232,7 +236,7 @@ bool IsFullPath(const char* path)
     if (path != NULL)
     {
         if ((path[0] >= 'a' && path[0] <= 'z') ||
-            (path[0] >= 'A' && path[0] <= 'Z'))
+                (path[0] >= 'A' && path[0] <= 'Z'))
         {
             if (path[1] == ':')
             {
@@ -243,7 +247,7 @@ bool IsFullPath(const char* path)
                     while (*p)
                     {
                         if ((*p == '.' && *(p - 1) == '\\') ||
-                            (*p == '.' && *(p - 1) == '/'))
+                                (*p == '.' && *(p - 1) == '/'))
                         {
                             return false;
                         }
@@ -1102,8 +1106,7 @@ struct SymbolMapItem* SymbolMap_GetAssocAt(
     return pResult;
 }
 
-struct TypePointer* SymbolMap_Find(struct SymbolMap* pMap,
-                                   const char* Key)
+struct TypePointer* SymbolMap_Find(struct SymbolMap* pMap, const char* Key)
 {
     struct TypePointer* pTypePointer = NULL;
     unsigned int nHashBucket, HashValue;
@@ -1964,80 +1967,79 @@ const char* TokenToNameString(enum TokenType tk)
     case TK_BACKSLASHBREAKLINE:
         return "TK_BACKSLASHBREAKLINE";
     case CHAR1:
-        return "CHAR1"; // '/' : return "";
+        return "CHAR1";
     case CHARACTER_TABULATION:
-        return "CHARACTER_TABULATION";// = '\t';
+        return "CHARACTER_TABULATION";
     case TK_PREPROCESSOR:
         return "TK_PREPROCESSOR";
     case TK_ERROR:
-        return "TK_ERROR"; //reservado para erro
-    //
+        return "TK_ERROR";
     case TK_EXCLAMATION_MARK:
-        return "TK_EXCLAMATION_MARK";// = '!';
+        return "TK_EXCLAMATION_MARK";
     case TK_QUOTATION_MARK:
-        return "TK_QUOTATION_MARK";// = '\"';
+        return "TK_QUOTATION_MARK";
     case TK_NUMBER_SIGN:
-        return "TK_NUMBER_SIGN";// = '#';
+        return "TK_NUMBER_SIGN";
     case TK_DOLLAR_SIGN:
-        return "TK_DOLLAR_SIGN";// = '$';
+        return "TK_DOLLAR_SIGN";
     case TK_PERCENT_SIGN:
-        return "TK_PERCENT_SIGN";// = '%';
+        return "TK_PERCENT_SIGN";
     case TK_AMPERSAND:
-        return "TK_AMPERSAND";// = '&';
+        return "TK_AMPERSAND";
     case TK_APOSTROPHE:
-        return "TK_APOSTROPHE";// = '\'';
+        return "TK_APOSTROPHE";
     case TK_LEFT_PARENTHESIS:
-        return "TK_LEFT_PARENTHESIS";// = '(';
+        return "TK_LEFT_PARENTHESIS";
     case TK_RIGHT_PARENTHESIS:
-        return "TK_RIGHT_PARENTHESIS";// = ')';
+        return "TK_RIGHT_PARENTHESIS";
     case TK_ASTERISK:
-        return "TK_ASTERISK";// = '*';
+        return "TK_ASTERISK";
     case TK_PLUS_SIGN:
-        return "TK_PLUS_SIGN";// = '+';
+        return "TK_PLUS_SIGN";
     case TK_COMMA:
-        return "TK_COMMA";// = ': return "";';
+        return "TK_COMMA";
     case TK_HYPHEN_MINUS:
-        return "TK_HYPHEN_MINUS";// = '-';
+        return "TK_HYPHEN_MINUS";
     case TK_HYPHEN_MINUS_NEG:
-        return "TK_HYPHEN_MINUS_NEG";// = '-'; //nao retorna no basic char mas eh usado para saber se eh - unario
+        return "TK_HYPHEN_MINUS_NEG";
     case TK_FULL_STOP:
-        return "TK_FULL_STOP";// = '.';
+        return "TK_FULL_STOP";
     case TK_SOLIDUS:
-        return "TK_SOLIDUS";// = '/';
+        return "TK_SOLIDUS";
     case TK_COLON:
-        return "TK_COLON";// = ':';
+        return "TK_COLON";
     case TK_SEMICOLON:
-        return "TK_SEMICOLON";// = ';';
+        return "TK_SEMICOLON";
     case TK_LESS_THAN_SIGN:
-        return "TK_LESS_THAN_SIGN";// = '<';
+        return "TK_LESS_THAN_SIGN";
     case TK_EQUALS_SIGN:
-        return "TK_EQUALS_SIGN";// = '=';
+        return "TK_EQUALS_SIGN";
     case TK_GREATER_THAN_SIGN:
-        return "TK_GREATER_THAN_SIGN";// = '>';
+        return "TK_GREATER_THAN_SIGN";
     case TK_QUESTION_MARK:
-        return "TK_QUESTION_MARK";// = '\?';
+        return "TK_QUESTION_MARK";
     case TK_COMMERCIAL_AT:
-        return "TK_COMMERCIAL_AT";// = '@';
+        return "TK_COMMERCIAL_AT";
     case TK_LEFT_SQUARE_BRACKET:
-        return "TK_LEFT_SQUARE_BRACKET";// = '[';
+        return "TK_LEFT_SQUARE_BRACKET";
     case REVERSE_SOLIDUS:
-        return "REVERSE_SOLIDUS";// = '\\';
+        return "REVERSE_SOLIDUS";
     case TK_RIGHT_SQUARE_BRACKET:
-        return "TK_RIGHT_SQUARE_BRACKET";// = ']';
+        return "TK_RIGHT_SQUARE_BRACKET";
     case TK_CIRCUMFLEX_ACCENT:
-        return "TK_CIRCUMFLEX_ACCENT";// = '^';
+        return "TK_CIRCUMFLEX_ACCENT";
     case TK_LOW_LINE:
-        return "TK_LOW_LINE";// = '_';
+        return "TK_LOW_LINE";
     case TK_GRAVE_ACCENT:
-        return "TK_GRAVE_ACCENT";// = '`';
+        return "TK_GRAVE_ACCENT";
     case TK_LEFT_CURLY_BRACKET:
-        return "TK_LEFT_CURLY_BRACKET";// = '{';
+        return "TK_LEFT_CURLY_BRACKET";
     case TK_VERTICAL_LINE:
-        return "TK_VERTICAL_LINE";// = '|';
+        return "TK_VERTICAL_LINE";
     case TK_RIGHT_CURLY_BRACKET:
-        return "TK_RIGHT_CURLY_BRACKET";// = '}';
+        return "TK_RIGHT_CURLY_BRACKET";
     case TK_TILDE:
-        return "TK_TILDE"; // ~
+        return "TK_TILDE";
     case TK_ARROW:
         return "TK_ARROW";
     case TK_PLUSPLUS:
@@ -2134,8 +2136,6 @@ const char* TokenToNameString(enum TokenType tk)
         return "TK_INT";
     case TK_LONG:
         return "TK_LONG";
-    ////////////////
-    //Microsoft - specific
     case TK__INT8:
         return "TK__INT8";
     case TK__INT16:
@@ -2146,7 +2146,8 @@ const char* TokenToNameString(enum TokenType tk)
         return "TK__INT64";
     case TK__WCHAR_T:
         return "TK__WCHAR_T";
-    ////////////////
+    case TK___DECLSPEC:
+        return "TK___DECLSPEC";
     case TK_REGISTER:
         return "TK_REGISTER";
     case TK_RETURN:
@@ -2190,9 +2191,9 @@ const char* TokenToNameString(enum TokenType tk)
     case TK_INLINE:
         return "TK_INLINE";
     case TK__INLINE:
-        return "TK__INLINE";//ms
+        return "TK__INLINE";
     case TK__FORCEINLINE:
-        return "TK__FORCEINLINE"; //ms
+        return "TK__FORCEINLINE";
     case TK__NORETURN:
         return "TK__NORETURN";
     case TK__ALIGNAS:
@@ -2203,10 +2204,12 @@ const char* TokenToNameString(enum TokenType tk)
         return "TK__IMAGINARY";
     case TK__ALINGOF:
         return "TK__ALINGOF";
-    ///
     case TK__ASM:
-        return "TK__ASM"; //visual c++
-    //enum Tokens para linhas do pre processador
+        return "TK__ASM";
+    case TK__PRAGMA:
+        return "TK__PRAGMA";
+    case TK__C99PRAGMA:
+        return "TK__C99PRAGMA";
     case TK_PRE_INCLUDE:
         return "TK_PRE_INCLUDE";
     case TK_PRE_PRAGMA:
@@ -2231,14 +2234,12 @@ const char* TokenToNameString(enum TokenType tk)
         return "TK_PRE_UNDEF";
     case TK_PRE_DEFINE:
         return "TK_PRE_DEFINE";
-    //fim tokens preprocessador
     case TK_MACRO_CALL:
         return "TK_MACRO_CALL";
     case TK_MACRO_EOF:
         return "TK_MACRO_EOF";
     case TK_FILE_EOF:
         return "TK_FILE_EOF";
-    /*novas*/
     case TK_NEW:
         return "TK_NEW";
     default:
@@ -2731,7 +2732,7 @@ void Macro_Delete(struct Macro* p)
 
 static bool FillIn(struct PPTokenArray* ts, bool get_more, struct PPTokenArray* removed);
 
-static void Glue(const struct PPTokenArray* lsI,  const struct PPTokenArray* rsI, struct PPTokenArray* out);
+static void Glue(const struct PPTokenArray* lsI, const struct PPTokenArray* rsI, struct PPTokenArray* out);
 
 // Return a new token sequence with hs added to the hide set of every element of ts
 static void HidenSetAdd(const struct PPTokenSet* hs, const struct PPTokenArray* ts, struct PPTokenArray* pOut)
@@ -2752,12 +2753,12 @@ static void HidenSetAdd(const struct PPTokenSet* hs, const struct PPTokenArray* 
 }
 
 static void ExpandMacro(const struct PPTokenArray* pTokenSequence,
-                 const struct MacroMap* macros,
-                 bool get_more,
-                 bool skip_defined,
-                 bool evalmode,
-                 struct Macro* caller,
-                 struct PPTokenArray* pOutputSequence);
+                        const struct MacroMap* macros,
+                        bool get_more,
+                        bool skip_defined,
+                        bool evalmode,
+                        struct Macro* caller,
+                        struct PPTokenArray* pOutputSequence);
 
 /*
 Retorna o indice do primeiro token que não for espaço
@@ -2780,7 +2781,7 @@ static int FindNoSpaceIndex(const struct PPTokenArray* pArray, int start)
 
 // Return s with all \ and " characters \ escaped
 static void AppendEscaped(struct StrBuilder* strBuilder,
-                   const char* source)
+                          const char* source)
 {
     while (*source)
     {
@@ -2858,13 +2859,13 @@ static void AppendStringize(struct StrBuilder* strBuilder, const struct PPTokenA
 * hide set added to it, before getting returned.
 */
 static void SubstituteArgs(const struct MacroMap* macros,
-                    const struct PPTokenArray* isOriginal,   //macro
-                    const struct TokenArrayMap* args,
-                    struct PPTokenSet* hs,
-                    bool skip_defined,
-                    bool evalmode,
-                    struct Macro* pCaller,
-                    struct PPTokenArray* pOutputSequence)
+                           const struct PPTokenArray* isOriginal,   //macro
+                           const struct TokenArrayMap* args,
+                           struct PPTokenSet* hs,
+                           bool skip_defined,
+                           bool evalmode,
+                           struct Macro* pCaller,
+                           struct PPTokenArray* pOutputSequence)
 {
     PPTokenArray_Clear(pOutputSequence);
     //Trabalha com uma copia
@@ -3058,9 +3059,9 @@ static void SubstituteArgs(const struct MacroMap* macros,
 * If want_space is true return spaces, otherwise discard them
 */
 static void ArgToken(struct PPTokenArray* tokens,
-              bool get_more,
-              bool want_space,
-              struct PPToken* token)
+                     bool get_more,
+                     bool want_space,
+                     struct PPToken* token)
 {
     struct PPToken* pToken = PPTokenArray_PopFront(tokens);
     PPToken_Swap(pToken, token);
@@ -3138,11 +3139,11 @@ from pdtoken.getnext_noexpand.
 * Return true if ok, false on error.
 */
 static bool GatherArgs(struct PPTokenArray* tokens,
-                const struct PPTokenArray* formal_args,
-                struct TokenArrayMap* args,
-                bool get_more,
-                bool is_vararg,
-                struct PPToken* close)
+                       const struct PPTokenArray* formal_args,
+                       struct TokenArrayMap* args,
+                       bool get_more,
+                       bool is_vararg,
+                       struct PPToken* close)
 {
     struct PPToken t = PPTOKEN_INIT;
     for (int i = 0; i < formal_args->Size; i++)
@@ -3244,8 +3245,8 @@ static bool GatherArgs(struct PPTokenArray* tokens,
 * This is the rule when processing #if #elif expressions
 */
 static void GatherDefinedOperator(struct PPTokenArray* tokens,
-                           const struct MacroMap* macros,
-                           struct PPTokenArray* result)
+                                  const struct MacroMap* macros,
+                                  struct PPTokenArray* result)
 {
     //struct PPTokenArray tokens = PPTOKENARRAY_INIT;
     //PPTokenArray_AppendCopy(&tokens, tokensIn);
@@ -3325,12 +3326,12 @@ static void GatherDefinedOperator(struct PPTokenArray* tokens,
 
 
 static void ExpandMacro(const struct PPTokenArray* tsOriginal,
-                 const struct MacroMap* macros,
-                 bool get_more,
-                 bool skip_defined,
-                 bool evalmode,
-                 struct Macro* caller,
-                 struct PPTokenArray* pOutputSequence2)
+                        const struct MacroMap* macros,
+                        bool get_more,
+                        bool skip_defined,
+                        bool evalmode,
+                        struct Macro* caller,
+                        struct PPTokenArray* pOutputSequence2)
 {
     PPTokenArray_Clear(pOutputSequence2);
     struct PPTokenArray r = PPTOKENARRAY_INIT;
@@ -3534,8 +3535,8 @@ static bool FillIn(struct PPTokenArray* ts, bool get_more, struct PPTokenArray* 
 // Paste last of left side with first of right side
 
 static void Glue(const struct PPTokenArray* lsI,
-          const struct PPTokenArray* rsI,
-          struct PPTokenArray* out)
+                 const struct PPTokenArray* rsI,
+                 struct PPTokenArray* out)
 {
     struct PPTokenArray ls = PPTOKENARRAY_INIT;
     PPTokenArray_AppendCopy(&ls, lsI);
@@ -3600,12 +3601,12 @@ static void Glue(const struct PPTokenArray* lsI,
 }
 
 static void ExpandMacroToText(const struct PPTokenArray* pTokenSequence,
-                       const struct MacroMap* macros,
-                       bool get_more,
-                       bool skip_defined,
-                       bool evalmode,
-                       struct Macro* caller,
-                       struct StrBuilder* strBuilder)
+                              const struct MacroMap* macros,
+                              bool get_more,
+                              bool skip_defined,
+                              bool evalmode,
+                              struct Macro* caller,
+                              struct StrBuilder* strBuilder)
 {
     StrBuilder_Clear(strBuilder);
     struct PPTokenArray tks = PPTOKENARRAY_INIT;
@@ -3780,7 +3781,7 @@ struct PPStateStack
         PPState_I0,
         PPState_E0,
         PPState_E1, // inclui
-    }* pItems;
+    }*pItems;
 
     int Size;
     int Capacity;
@@ -3966,6 +3967,7 @@ enum PPTokenType TokenToPPToken(enum TokenType token)
     case TK__INT16:
     case TK__INT32:
     case TK__INT64:
+    case TK___DECLSPEC:
     case TK__WCHAR_T:
     ////////////////
     case TK_REGISTER:
@@ -4258,6 +4260,13 @@ static bool Scanner_InitCore(struct Scanner* pScanner)
     //__FILE__ __LINE__ __DATE__ __STDC__  __STD_HOSTED__  __TIME__
     //__STD_VERSION__
     //
+    //https://docs.microsoft.com/pt-br/cpp/preprocessor/predefined-macros?view=msvc-160
+    AddStandardMacro(pScanner, "__ptr64", " "); /*removing microsoft especific*/
+    AddStandardMacro(pScanner, "__alignof", " "); /*removing microsoft especific*/
+    AddStandardMacro(pScanner, "_M_IX86", "400"); /*platform*/
+    AddStandardMacro(pScanner, "WIN32", "1");
+    AddStandardMacro(pScanner, "_CONSOLE", "1");
+    AddStandardMacro(pScanner, "_WIN32", "1");
     AddStandardMacro(pScanner, "__CPRIME__", "0");
     AddStandardMacro(pScanner, "__LINE__", "0");
     AddStandardMacro(pScanner, "__FILE__", "\"__FILE__\"");
@@ -5722,6 +5731,23 @@ void Scanner_BuyTokens(struct Scanner* pScanner)
         }
         // break;
     } //#
+    else if (token == TK__PRAGMA || token == TK__C99PRAGMA)
+    {
+        BasicScanner_Match(pBasicScanner); //skip __pragma or _Pragma
+        int count = 0;
+        for (;;)
+        {
+            if (pBasicScanner->token == TK_LEFT_PARENTHESIS)
+                count++;
+            else if (pBasicScanner->token == TK_RIGHT_PARENTHESIS)
+                count--;
+            BasicScanner_Match(pBasicScanner);
+            if (count == 0 || pBasicScanner->token == TK_EOF)
+                break;
+        }
+        //TODO (tem que mudar lah no gerador)
+        Scanner_PushToken(pScanner, TK_PRE_PRAGMA, "", false, line, fileIndex);
+    }
     else if (token == TK_IDENTIFIER)
     {
         // codigo complicado tetris
@@ -8352,7 +8378,7 @@ static void TInitializerList_CodePrint(struct SyntaxTree* pSyntaxTree,
 {
     if (List_HasOneItem(p) &&
             List_Back(p)->pInitializer == NULL/* &&
-                  pSpecifierQualifierList != NULL*/)
+          pSpecifierQualifierList != NULL*/)
     {
         //a partir de {} e um tipo consegue gerar o final
         struct StrBuilder sb = STRBUILDER_INIT;
@@ -8932,7 +8958,7 @@ const char* FindValue(const char* name, int namesize, struct TemplateVar* args, 
 {
     for (int i = 0; i < argssize; i++)
     {
-        if (namesize == (int) strlen(args[i].Name) &&
+        if (namesize == (int)strlen(args[i].Name) &&
                 strncmp(name, args[i].Name, namesize) == 0)
         {
             return args[i].Value;
@@ -9067,11 +9093,11 @@ static int FindRuntimeID(struct SyntaxTree* pSyntaxTree,
         return 0;
     }
     int typeInt = 0;
-    if (pStructUnionSpecifier->UnionSet.pHead != NULL)
+    if (pStructUnionSpecifier != NULL && pStructUnionSpecifier->UnionSet.pHead != NULL)
     {
         pStructUnionSpecifier =
             SymbolMap_FindCompleteStructUnionSpecifier(&pSyntaxTree->GlobalScope, pStructUnionSpecifier->UnionSet.pHead->Name);
-        if (pStructUnionSpecifier->StructDeclarationList.Size > 0)
+        if (pStructUnionSpecifier != NULL && pStructUnionSpecifier->StructDeclarationList.Size > 0)
         {
             struct StructDeclaration* pStructDeclaration =
                 AnyStructDeclaration_As_StructDeclaration(pStructUnionSpecifier->StructDeclarationList.pItems[0]);
@@ -9091,7 +9117,7 @@ static int FindRuntimeID(struct SyntaxTree* pSyntaxTree,
                 }
             }
         }
-        else if (pStructUnionSpecifier->UnionSet.pHead)
+        else if (pStructUnionSpecifier != NULL && pStructUnionSpecifier->UnionSet.pHead)
         {
             return FindRuntimeID(pSyntaxTree,
                                  pStructUnionSpecifier,
@@ -9191,7 +9217,7 @@ void FindUnionSetOf(struct SyntaxTree* pSyntaxTree,
 {
     if (pStructUnionSpecifier == NULL)
     {
-        assert(false);
+        //assert(false);
         return;
     }
     if (pStructUnionSpecifier->Tag)
@@ -9279,7 +9305,7 @@ static void TDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree,
         void Items_Delete(Items* p,int i) {...}
         */
         StrBuilder_Clear(&options->returnType);
-        bool bold= options->Options.bCannonical;
+        bool bold = options->Options.bCannonical;
         options->Options.bCannonical = true;
         //TODO storagte nao vai
         TDeclarationSpecifiers_CodePrint(pSyntaxTree, options, &p->Specifiers, &options->returnType);
@@ -10824,6 +10850,7 @@ static struct TkPair keywords[] =
     {"__int32", TK__INT32},
     {"__int64", TK__INT64},
     {"__wchar_t", TK__WCHAR_T},
+    {"__declspec", TK___DECLSPEC},
     //
     {"register", TK_REGISTER},
     {"restrict", TK_RESTRICT},
@@ -10854,6 +10881,9 @@ static struct TkPair keywords[] =
     {"_Thread_local", TK__THREAD_LOCAL},
     //
     {"__asm", TK__ASM}, //visual studio
+    {"__pragma", TK__PRAGMA}, //visual studio
+    {"_Pragma", TK__C99PRAGMA}, //visual studio
+
     {"new", TK_NEW}
 };
 void BasicScanner_Next(struct BasicScanner* scanner);
@@ -11998,7 +12028,7 @@ void PrimaryExpressionLiteral_Delete(struct PrimaryExpressionLiteral* p)
     }
 }
 
-struct TypeName *Expression_GetTypeName(struct Expression* p)
+struct TypeName* Expression_GetTypeName(struct Expression* p)
 {
     switch (p->Type)
     {
@@ -12502,7 +12532,7 @@ void ParameterTypeList_Destroy(struct ParameterTypeList* p)
 void ParameterTypeList_CopyTo(struct ParameterTypeList* from, struct ParameterTypeList* to)
 {
     to->bVariadicArgs = from->bVariadicArgs;
-    to->bIsVoid= from->bIsVoid;
+    to->bIsVoid = from->bIsVoid;
     for (struct Parameter* pParameter = from->ParameterList.pHead; pParameter; pParameter = pParameter->pNext)
     {
         struct Parameter* pParameterNew = Parameter_Clone(pParameter);
@@ -13728,7 +13758,7 @@ struct SpecifierQualifier* SpecifierQualifier_Clone(struct SpecifierQualifier* p
     switch (pItem->Type)
     {
     case TypeQualifier_ID:
-        return (struct SpecifierQualifier*) TTypeQualifier_Clone((struct TypeQualifier*)pItem);
+        return (struct SpecifierQualifier*)TTypeQualifier_Clone((struct TypeQualifier*)pItem);
     case StructUnionSpecifier_ID:
         return (struct SpecifierQualifier*)StructUnionSpecifier_Clone((struct StructUnionSpecifier*)pItem);
     case AtomicTypeSpecifier_ID:
@@ -15106,7 +15136,7 @@ bool Parser_InitFile(struct Parser* parser, const char* fileName)
     */
     unsigned long __stdcall GetEnvironmentVariableA(char* lpName, char* lpBuffer, unsigned long nSize);
 #if 0
-    const char* env = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.27.29110\\ATLMFC\\include;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.27.29110\\include;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
+    const char* env = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29333\\ATLMFC\\include;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29333\\include;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
 #else
     char env[2000];
     int n = GetEnvironmentVariableA("INCLUDE", env, sizeof(env));
@@ -15488,7 +15518,7 @@ void PrimaryExpression(struct Parser* ctx, struct Expression** ppPrimaryExpressi
       ( expression )
       generic-selection
     */
-    * ppPrimaryExpression = NULL; //out
+    *ppPrimaryExpression = NULL; //out
     enum TokenType token = Parser_CurrentTokenType(ctx);
     const char* lexeme = Lexeme(ctx);
     //PreprocessorTokenIndex(ctx);
@@ -15973,6 +16003,7 @@ int IsTypeName(struct Parser* ctx, enum TokenType token, const char* lexeme)
     case TK__INT16:
     case TK__INT32:
     case TK__INT64:
+    case TK___DECLSPEC:
     case TK__WCHAR_T:
     //
     case TK_FLOAT:
@@ -17382,6 +17413,7 @@ bool Statement(struct Parser* ctx, struct Statement** ppStatement)
     case TK__INT16:
     case TK__INT32:
     case TK__INT64:
+    case TK___DECLSPEC:
     case TK__WCHAR_T:
     /////////
     case TK_FLOAT:
@@ -17636,13 +17668,13 @@ void Struct_Declarator_List(struct Parser* ctx,
         {
             //Tem mais
             Parser_Match(ctx, &pTDeclarator2->ClueList0);
-            //ANNOTATED AQUI TEM O COMENTARIO /*@= 1*/
+            //ANNOTATED AQUI TEM O COMENTARIO /*= 1*/
             Struct_Declarator_List(ctx, pStructDeclarationList);
         }
         else if (token == TK_SEMICOLON)
         {
             //em ctx cluelist
-            //ANNOTATED AQUI TEM O COMENTARIO /*@= 1*/
+            //ANNOTATED AQUI TEM O COMENTARIO /*= 1*/
             break;
         }
         else
@@ -17681,7 +17713,7 @@ void Struct_Declaration(struct Parser* ctx,
             Struct_Declarator_List(ctx,
                                    &pStructDeclarationBase->DeclaratorList);
             Parser_MatchToken(ctx, TK_SEMICOLON, &pStructDeclarationBase->ClueList1);
-            //TODO AQUI TEM O COMENTARIO /*@= 1*/
+            //TODO AQUI TEM O COMENTARIO /*= 1*/
         }
         else
         {
@@ -17905,32 +17937,25 @@ void Enum_Specifier(struct Parser* ctx, struct EnumSpecifier* pEnumSpecifier2)
     */
     Parser_MatchToken(ctx, TK_ENUM, &pEnumSpecifier2->ClueList0);
     enum TokenType token = Parser_CurrentTokenType(ctx);
-    if (token == TK_IDENTIFIER)
+    if (token == TK_IDENTIFIER) /*identificador optional*/
     {
         const char* lexeme = Lexeme(ctx);
         assert(pEnumSpecifier2->Tag == 0);
         pEnumSpecifier2->Tag = strdup(lexeme);
-        Parser_Match(ctx, &pEnumSpecifier2->ClueList1);
+        token = Parser_Match(ctx, &pEnumSpecifier2->ClueList1);
         SymbolMap_SetAt(ctx->pCurrentScope, pEnumSpecifier2->Tag, (struct TypePointer*)pEnumSpecifier2);
-    }
-    if (token == TK_IDENTIFIER)
-    {
-        //Ja fez Match do identifier
-        token = Parser_CurrentTokenType(ctx);
         if (token == TK_LEFT_CURLY_BRACKET)
         {
-            Parser_Match(ctx, &pEnumSpecifier2->ClueList2);
+            Parser_Match(ctx, &pEnumSpecifier2->ClueList1);
             Enumerator_List(ctx, &pEnumSpecifier2->EnumeratorList);
-            Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET,
-                              &pEnumSpecifier2->ClueList3);
+            Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET, &pEnumSpecifier2->ClueList3);
         }
     }
     else if (token == TK_LEFT_CURLY_BRACKET)
     {
-        //ja foi feito o Match do {
+        token = Parser_Match(ctx, &pEnumSpecifier2->ClueList1);
         Enumerator_List(ctx, &pEnumSpecifier2->EnumeratorList);
-        Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET,
-                          &pEnumSpecifier2->ClueList3);
+        Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET, &pEnumSpecifier2->ClueList3);
     }
     else
     {
@@ -17997,6 +18022,7 @@ bool TStorageSpecifier_IsFirst(enum TokenType token)
     */
     switch (token)
     {
+    case TK___DECLSPEC: //microsoft
     case TK_TYPEDEF:
     case TK_EXTERN:
     case TK_STATIC:
@@ -18029,22 +18055,34 @@ void Storage_Class_Specifier(struct Parser* ctx,
     */
     /*
      VISUAL C++
-
-    __declspec****( extended-decl-modifier-seq ) 1
-
-     extended-decl-modifier-seq1:
-         extended-decl-modifieropt
-         extended-decl-modifier-seq extended-decl-modifier
-
-     extended-decl-modifier1:
-           thread
-           naked
-           dllimport
-           dllexport
+    __declspec****( extended-decl-modifier-seq )
     */
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
+    //https://docs.microsoft.com/en-us/cpp/cpp/declspec?view=msvc-160
+    //Microsoft extension
+    case TK___DECLSPEC:
+        pStorageSpecifier->Token = token;
+        Parser_Match(ctx, NULL);
+        int count = 0;
+        for (;;)
+        {
+            token = Parser_CurrentTokenType(ctx);
+            switch (token)
+            {
+            case TK_RIGHT_PARENTHESIS:
+                count--;
+                break;
+            case TK_LEFT_PARENTHESIS:
+                count++;
+                break;
+            }
+            Parser_Match(ctx, NULL);
+            if (count == 0 || Parser_HasError(ctx))
+                break; //last parentesis closed
+        }
+        break;
     case TK_TYPEDEF:
     case TK_EXTERN:
     case TK_STATIC:
@@ -18141,6 +18179,12 @@ void Parameter_Type_List(struct Parser* ctx,
 void Direct_Declarator(struct Parser* ctx, bool bAbstract, struct DirectDeclarator** ppDeclarator2)
 {
     *ppDeclarator2 = NULL; //out
+    /////////////////////////////////////////////////////////////////////////
+    //ignoring fastcall etc...
+    //This is not the correct position...
+    //https://docs.microsoft.com/pt-br/cpp/c-language/summary-of-declarations?view=msvc-160
+    enum TokenType token = Parser_CurrentTokenType(ctx);
+    //////////////////////////////////////////////////////////////////////////////
     /*
     direct-declarator:
     identifier
@@ -18155,7 +18199,6 @@ void Direct_Declarator(struct Parser* ctx, bool bAbstract, struct DirectDeclarat
     struct DirectDeclarator* pDirectDeclarator = NULL;
     if (ErrorOrEof(ctx))
         return;
-    enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
     case TK_LEFT_PARENTHESIS:
@@ -18426,6 +18469,39 @@ void Pointer(struct Parser* ctx, struct PointerList* pPointerList)
     }
 }
 
+static bool IsVCAtributte(const char* lexeme)
+{
+    //https://docs.microsoft.com/pt-br/cpp/c-language/summary-of-declarations?view=msvc-160
+    if (strcmp(lexeme, "__asm") == 0 ||
+            strcmp(lexeme, "__based") == 0 ||
+            strcmp(lexeme, "__cdecl") == 0 ||
+            strcmp(lexeme, "__clrcall") == 0 ||
+            strcmp(lexeme, "__fastcall") == 0 ||
+            strcmp(lexeme, "__inline") == 0 ||
+            strcmp(lexeme, "__stdcall") == 0 ||
+            strcmp(lexeme, "__thiscall") == 0 ||
+            strcmp(lexeme, "__vectorcall") == 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+static void AtributtesOptions(struct Parser* ctx)
+{
+    /////////////////////////////////////////////////////////////////////////
+    //ignoring fastcall etc...
+    //This is not the correct position...
+    //https://docs.microsoft.com/pt-br/cpp/c-language/summary-of-declarations?view=msvc-160
+    enum TokenType token = Parser_CurrentTokenType(ctx);
+    const char* lexeme = Lexeme(ctx);
+    while (token == TK_IDENTIFIER && IsVCAtributte(lexeme))
+    {
+        token = Parser_Match(ctx, NULL);
+        lexeme = Lexeme(ctx);
+    }
+    //////////////////////////////////////////////////////////////////////////////
+}
 
 void Declarator(struct Parser* ctx, bool bAbstract, struct Declarator** ppTDeclarator2)
 {
@@ -18434,12 +18510,14 @@ void Declarator(struct Parser* ctx, bool bAbstract, struct Declarator** ppTDecla
       pointer_opt direct-declarator
     */
     *ppTDeclarator2 = NULL; //out
+    AtributtesOptions(ctx);
     struct Declarator* pDeclarator = NEW((struct Declarator)TDECLARATOR_INIT);
     enum TokenType token = Parser_CurrentTokenType(ctx);
     if (token == TK_ASTERISK)
     {
         Pointer(ctx, &pDeclarator->PointerList);
     }
+    AtributtesOptions(ctx);
     Direct_Declarator(ctx, bAbstract, &pDeclarator->pDirectDeclarator);
     *ppTDeclarator2 = pDeclarator;
 }
@@ -18585,6 +18663,7 @@ void Type_Specifier(struct Parser* ctx, struct TypeSpecifier** ppTypeSpecifier)
     case TK__INT16:
     case TK__INT32:
     case TK__INT64:
+    //case TK___DECLSPEC:
     case TK__WCHAR_T:
     /////////
     case TK_FLOAT:
@@ -18907,9 +18986,12 @@ void Init_Declarator(struct Parser* ctx,
     }
 }
 
+
+
 void Init_Declarator_List(struct Parser* ctx,
                           struct InitDeclaratorList* pInitDeclaratorList)
 {
+    enum TokenType token = Parser_CurrentTokenType(ctx);
     /*
     init-declarator-list:
       init-declarator
@@ -18919,7 +19001,7 @@ void Init_Declarator_List(struct Parser* ctx,
     Init_Declarator(ctx, &pInitDeclarator);
     List_Add(pInitDeclaratorList, pInitDeclarator);
     //Tem mais?
-    enum TokenType token = Parser_CurrentTokenType(ctx);
+    token = Parser_CurrentTokenType(ctx);
     if (token == TK_COMMA)
     {
         Parser_Match(ctx, &pInitDeclarator->ClueList0);
@@ -18952,6 +19034,7 @@ bool HasCommentedKeyword(struct TokenList* clueList, const char* keyword)
     }
     return bResult;
 }
+
 
 bool  Declaration(struct Parser* ctx,
                   struct AnyDeclaration** ppDeclaration)
@@ -18987,15 +19070,6 @@ bool  Declaration(struct Parser* ctx,
                 Declaration_Specifiers(ctx, &pFuncVarDeclaration->Specifiers);
                 bHasDeclaration = true;
             }
-            /*
-            * TODO
-            attribute-seq1:
-                          attribute1 attribute-seq aceitar1
-
-            attribute1, 2: uma das
-                          __asm __based __cdecl __clrcall __fastcall __inline __stdcall __thiscall __vectorcall
-            */
-            //https://docs.microsoft.com/pt-br/cpp/c-language/summary-of-declarations?view=msvc-160
         }
         if (bHasDeclaration)
         {
@@ -19345,7 +19419,10 @@ char* CompileText(int type, int bNoImplicitTag, const char* input)
 {
     struct EmulatedFile* files[] =
     {
-        &(struct EmulatedFile) {"c:/stdio.h", STDIOH},
+        &(struct EmulatedFile)
+        {
+            "c:/stdio.h", STDIOH
+        },
         &(struct EmulatedFile) {"c:/stdlib.h", STDLIB},
         &(struct EmulatedFile) {"c:/string.h", STRING},
         &(struct EmulatedFile) {"c:/stdbool.h", STDBOOL},

@@ -51,9 +51,9 @@ void SymbolMap_Print(struct SymbolMap* pMap);
 bool SymbolMap_IsTypeName(struct SymbolMap* pMap, const char* identifierName);
 
 struct SymbolMapItem* SymbolMap_GetAssocAt(struct SymbolMap* pMap,
-    const char* Key,
-                                           unsigned int* nHashBucket,
-                                           unsigned int* HashValue);
+        const char* Key,
+        unsigned int* nHashBucket,
+        unsigned int* HashValue);
 
 struct StructUnionSpecifier* SymbolMap_FindCompleteStructUnionSpecifier(struct SymbolMap* pMap, const char* structTagName);
 
@@ -103,9 +103,6 @@ void LocalStrBuilder_Append(struct LocalStrBuilder* p, const char* source);
 void LocalStrBuilder_AppendChar(struct LocalStrBuilder* p, char ch);
 
 void LocalStrBuilder_Set(struct LocalStrBuilder* p, const char* source);
-
-// #END_EXPORT
-
 
 
 enum TokenType
@@ -223,13 +220,14 @@ enum TokenType
     TK_INT,
     TK_LONG,
     ////////////////
-//Microsoft - specific
+    //Microsoft - specific
     TK__INT8,
     TK__INT16,
     TK__INT32,
     TK__INT64,
     TK__WCHAR_T,
-////////////////
+    TK___DECLSPEC,
+    ////////////////
     TK_REGISTER,
     TK_RETURN,
     TK_SHORT,
@@ -259,10 +257,12 @@ enum TokenType
     TK__IMAGINARY,
     TK__ALINGOF,
 
-///
+    ///
     TK__ASM, //visual c++
+    TK__PRAGMA, //visual c++
+    TK__C99PRAGMA, 
 
-//enum Tokens para linhas do pre processador
+    //enum Tokens para linhas do pre processador
     TK_PRE_INCLUDE,
     TK_PRE_PRAGMA,
     TK_PRE_IF,
@@ -275,7 +275,7 @@ enum TokenType
     TK_PRE_LINE,
     TK_PRE_UNDEF,
     TK_PRE_DEFINE,
-//fim tokens preprocessador
+    //fim tokens preprocessador
     TK_MACRO_CALL,
     TK_MACRO_EOF,
     TK_FILE_EOF,
@@ -293,9 +293,9 @@ struct Token
 {
     struct LocalStrBuilder lexeme;
     enum TokenType token;
-    int Line /*@= -1*/;
-    int FileIndex /*@= -1*/; /*indice do arquivo incluido*/
-    bool bActive /*@= 1*/;  /*ativo quando nao esta dentro de #if 0 etc*/
+    int Line /*= -1*/;
+    int FileIndex /*= -1*/; /*indice do arquivo incluido*/
+    bool bActive /*= 1*/;  /*ativo quando nao esta dentro de #if 0 etc*/
     struct Token* pNext;
 };
 #define TOKEN_INIT {LOCALSTRBUILDER_INIT, TK_NONE,-1,-1,1,0}
@@ -738,16 +738,15 @@ void EofDeclaration_Delete(struct EofDeclaration* p);
 struct AnyDeclaration
 {
     /*
-      TStaticAssertDeclaration
-      TDeclaration
-      TGroupDeclaration
-      TEofDeclaration
+      StaticAssertDeclaration
+      Declaration
+      GroupDeclaration
+      EofDeclaration
     */
     enum Type Type;
 };
 
 void AnyDeclaration_Delete(struct AnyDeclaration* p);
-
 
 struct BlockItemList
 {
@@ -1007,7 +1006,7 @@ struct Statement
 };
 void Statement_Delete(struct Statement* p);
 
-struct /*@<TDeclaration | TStatement>*/ BlockItem
+struct /*<TDeclaration | TStatement>*/ BlockItem
 {
     /*block-item:
        declaration
@@ -1243,7 +1242,7 @@ specifier-qualifier-list:
 type-specifier specifier-qualifier-listopt
 type-qualifier specifier-qualifier-listopt
 */
-struct /*@<TTypeSpecifier | TTypeQualifier>*/ SpecifierQualifier
+struct /*<TTypeSpecifier | TTypeQualifier>*/ SpecifierQualifier
 {
     enum Type Type;
 };
@@ -1472,7 +1471,7 @@ struct InitializerListType
 void InitializerListType_Delete(struct InitializerListType* p);
 
 
-struct /*@<TInitializerListType | TExpression>*/ Initializer
+struct /*<TInitializerListType | TExpression>*/ Initializer
 {
     /*
     initializer:
@@ -1635,7 +1634,7 @@ struct-declaration:
 specifier-qualifier-list struct-declarator-listopt ;
 static_assert-declaration
 */
-struct /*@<TStructDeclaration | TStaticAssertDeclaration>*/ AnyStructDeclaration
+struct /*<TStructDeclaration | TStaticAssertDeclaration>*/ AnyStructDeclaration
 {
     enum Type Type;
 };
@@ -1724,7 +1723,7 @@ void StructUnionSpecifier_Delete(struct StructUnionSpecifier* p);
 void GetOrGenerateStructTagName(struct StructUnionSpecifier* p, char* out, int size);
 
 
-struct /*@<TSingleTypeSpecifier |
+struct /*<TSingleTypeSpecifier |
   TAtomicTypeSpecifier |
   TEnumSpecifier |
   TStructUnionSpecifier>*/ TypeSpecifier
@@ -2126,7 +2125,7 @@ enum CompilerTarget
 struct OutputOptions
 {
     bool bExpandMacros;
-    bool bIncludeComments /*@=1*/;
+    bool bIncludeComments /*=1*/;
 
     enum CompilerTarget Target;
 
@@ -2151,3 +2150,6 @@ void PrintPreprocessedToFile(const char* fileIn, const char* configFileName);
 void PrintPreprocessedToConsole(const char* fileIn, const char* configFileName);
 
 
+bool BuildSyntaxTreeFromFile(const char* filename,
+                             const char* configFileName,
+                             struct SyntaxTree* pSyntaxTree);
