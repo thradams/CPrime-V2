@@ -1085,7 +1085,7 @@ struct SymbolMapItem* SymbolMap_GetAssocAt(
         *nHashBucket = 0;
         return NULL;
     }
-    *HashValue = SymbolMap_String2_HashKey(Key);
+    *HashValue = String2_HashKey(Key);
     *nHashBucket = *HashValue % pMap->nHashTableSize;
     struct SymbolMapItem* pResult = NULL;
     struct SymbolMapItem* pKeyValue =
@@ -1149,7 +1149,7 @@ bool SymbolMap_RemoveKey(struct SymbolMap* pMap,
     if (pMap->pHashTable != NULL)
     {
         unsigned int HashValue =
-            SymbolMap_String2_HashKey(Key);
+            String2_HashKey(Key);
         struct SymbolMapItem** ppKeyValuePrev =
                 &pMap->pHashTable[HashValue % pMap->nHashTableSize];
         struct SymbolMapItem* pKeyValue = *ppKeyValuePrev;
