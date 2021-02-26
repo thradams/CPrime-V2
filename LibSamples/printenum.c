@@ -31,6 +31,10 @@ void print_enum(const char* fileName, const char* enumName)
     SyntaxTree_Destroy(&ast);
 }
 
+/*
+  Given a filename and enum name, this program generates
+  a function to convert the enum value to string.
+*/
 int main(int argc, char* argv[])
 {
     const char* fileName = argv[1];

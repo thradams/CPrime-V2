@@ -31,7 +31,11 @@ void print_test(const char* fileName)
     SyntaxTree_Destroy(&ast);
 }
 
-
+/*
+  Given the source file this program create a function that calls
+  all other functions that have Test in their name. This could
+  be useful to create unit tests.
+*/
 int main(int argc, char* argv[])
 {
     const char* fileName = argv[1];
