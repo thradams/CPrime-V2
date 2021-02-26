@@ -13,6 +13,9 @@ __asm __based __cdecl __clrcall __fastcall __inline __stdcall __thiscall __vecto
 
 * Two samples added. One prints an enum and another prints all function that have Test inside the name.
 
+* cprime can compile its own cprime_lib.c (variadic macros removed)
+* 
+*
 
 
 
