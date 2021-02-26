@@ -66,10 +66,8 @@ struct PrintCodeOptions:
 
 ## Road Map
 
- - Create samples about how to use the API.
- - Suport with zero config microsoft C extensions and include headers when compiling inside Visual Studio Command prompt.
-   
-   Today include dir needs to be set inside config.txt and some microsoft extensions are suported using macros.
+ - Improve samples and they can be used as documentation.
+ 
  
  
  
