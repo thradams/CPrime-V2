@@ -18,14 +18,12 @@ It also can be used for:
 
 ## Using the front end
 
-I am working the make it simple to use but there is no documentation yet.
-Basically I need to write the documentation and samples to use the syntax abstract tree. 
+See LibSamples.
+  *  printenum.c - This program searches for an enum by name and generates a function to convert from enum to string.
+  *  printtest.c - This program searches for function names that have Test in their name and generates a function that calls. This could be useful to create unit test.
 
-To use the library you only need two files: cprime_lib.c and cprime_lib.h
-
-CPrime can keep all tokens and compiler phases and this make possible
-to rebuild a source code completely.
-
+The AST of prime is not so abstract. This is because I keep each space, comment and original formating and information and this requires a syntax tree less abstract that
+represents almost directly each part of the grammar.
 
 ## cprime extensions
 
