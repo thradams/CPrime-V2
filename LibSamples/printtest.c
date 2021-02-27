@@ -39,6 +39,6 @@ void print_test(const char* fileName)
 int main(int argc, char* argv[])
 {
     const char* fileName = argv[1];
-    print_test(fileName, enumName);
+    print_test(fileName);
 }
 
