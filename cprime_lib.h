@@ -8,7 +8,6 @@
 
 
 
-
 struct SymbolMapItem
 {
     struct SymbolMapItem* pNext;
@@ -35,13 +34,11 @@ int SymbolMap_SetAt(struct SymbolMap* pMap,
 
 struct TypePointer* SymbolMap_Find(struct SymbolMap* pMap, const char* Key);
 
-bool SymbolMap_RemoveKey(struct SymbolMap* pMap,
-                         const char* Key,
-                         struct TypePointer** ppValue);
+bool SymbolMap_RemoveKey(struct SymbolMap* pMap, const char* Key, struct TypePointer** ppValue);
 
 void SymbolMap_Init(struct SymbolMap* p);
-void SymbolMap_Destroy(struct SymbolMap* p);
 
+void SymbolMap_Destroy(struct SymbolMap* p);
 
 struct SymbolMapItem* SymbolMap_FindBucket(struct SymbolMap* pMap, const char* Key);
 
@@ -321,7 +318,6 @@ void TokenList_Clear(struct TokenList* p);
 void TokenList_PopFront(struct TokenList* p);
 
 
-
 struct FileInfo
 {
     char* FullPath;
@@ -581,16 +577,11 @@ struct MacroMap
 
 #define MACROMAP_INIT { NULL, 0, 0 }
 
-int MacroMap_SetAt(struct MacroMap* pMap,
-                   const char* Key,
-                   struct Macro* newValue);
+int MacroMap_SetAt(struct MacroMap* pMap, const char* Key, struct Macro* newValue);
 
-bool MacroMap_Lookup(const struct MacroMap* pMap,
-                     const char* Key,
-                     struct Macro** rValue);
+bool MacroMap_Lookup(const struct MacroMap* pMap, const char* Key, struct Macro** rValue);
 
-bool MacroMap_RemoveKey(struct MacroMap* pMap,
-                        const char* Key);
+bool MacroMap_RemoveKey(struct MacroMap* pMap, const char* Key);
 
 void MacroMap_Init(struct MacroMap* p);
 
@@ -600,21 +591,6 @@ void MacroMap_Swap(struct MacroMap* pA, struct MacroMap* pB);
 
 struct Macro* MacroMap_Find(const struct MacroMap* pMap, const char* Key);
 
-void ExpandMacro(const struct PPTokenArray* tsOriginal,
-                 const struct MacroMap* macros,
-                 bool get_more,
-                 bool skip_defined,
-                 bool evalmode,
-                 struct Macro* caller,
-                 struct PPTokenArray* pOutputSequence);
-
-void ExpandMacroToText(const struct PPTokenArray* pTokenSequence,
-                       const struct MacroMap* macros,
-                       bool get_more,
-                       bool skip_defined,
-                       bool evalmode,
-                       struct Macro* caller,
-                       struct StrBuilder* strBuilder);
 
 
 #define CAST(FROM, TO) \
@@ -703,7 +679,7 @@ struct StaticAssertDeclaration
 {
     /*
     static_assert-declaration:
-    _Static_assert ( constant-expression , char-literal ) ;
+      _Static_assert ( constant-expression , char-literal ) ;
     */
     enum Type Type;
 
@@ -783,22 +759,21 @@ struct TypeQualifier
 {
     /*
     type-qualifier:
-     const
-     restrict
-     volatile
-     _Atomic
+      const
+      restrict
+      volatile
+      _Atomic
     */
 
     /*
-    auto
+      auto
     */
 
     enum Type Type;
-
     enum TokenType Token;
     struct TokenList ClueList0;
-
 };
+
 #define TYPEQUALIFIER_INIT {TypeQualifier_ID}
 
 struct TypeQualifier* TTypeQualifier_Clone(struct TypeQualifier* p);
@@ -1006,7 +981,7 @@ struct Statement
 };
 void Statement_Delete(struct Statement* p);
 
-struct /*<TDeclaration | TStatement>*/ BlockItem
+struct /*<Declaration | Statement>*/ BlockItem
 {
     /*block-item:
        declaration
@@ -1039,8 +1014,8 @@ struct PointerList
 {
     /*
     pointer:
-    * type-qualifier-listopt
-    * type-qualifier-listopt pointer
+      * type-qualifier-listopt
+      * type-qualifier-listopt pointer
     */
     struct Pointer* pHead, * pTail;
 };
@@ -1087,12 +1062,12 @@ struct StorageSpecifier
 {
     /*
     storage-class-specifier:
-     typedef
-     extern
-     static
-     _Thread_local
-     auto
-     register
+      typedef
+      extern
+      static
+      _Thread_local
+      auto
+      register
     */
     enum Type Type;
     enum TokenType Token;
@@ -1108,8 +1083,8 @@ struct AlignmentSpecifier
 {
     /*
     alignment-specifier:
-    _Alignas ( type-name )
-    _Alignas ( constant-expression )
+      _Alignas ( type-name )
+      _Alignas ( constant-expression )
     */
     enum Type Type;
     char* TypeName;
@@ -1220,11 +1195,11 @@ alignment-specifier declaration-specifiersopt
 struct DeclarationSpecifier
 {
     /*
-     TStorageSpecifier
-     TTypeSpecifier
-     TTypeQualifier
-     TFunctionSpecifier
-     TAlignmentSpecifier
+     StorageSpecifier
+     TypeSpecifier
+     TypeQualifier
+     FunctionSpecifier
+     AlignmentSpecifier
     */
     enum Type Type;
 };
@@ -1242,8 +1217,12 @@ specifier-qualifier-list:
 type-specifier specifier-qualifier-listopt
 type-qualifier specifier-qualifier-listopt
 */
-struct /*<TTypeSpecifier | TTypeQualifier>*/ SpecifierQualifier
+struct SpecifierQualifier
 {
+    /* 
+     TypeSpecifier 
+     TypeQualifier
+    */
     enum Type Type;
 };
 
@@ -1298,11 +1277,11 @@ struct DeclarationSpecifiers
 {
     /*
     declaration-specifiers:
-    storage-class-specifier declaration-specifiersopt
-    type-specifier declaration-specifiersopt
-    type-qualifier declaration-specifiersopt
-    function-specifier declaration-specifiersopt
-    alignment-specifier declaration-specifiersopt
+      storage-class-specifier declaration-specifiersopt
+      type-specifier declaration-specifiersopt
+      type-qualifier declaration-specifiersopt
+      function-specifier declaration-specifiersopt
+      alignment-specifier declaration-specifiersopt
     */
     struct DeclarationSpecifier** pData;
     int Size;
@@ -1310,23 +1289,24 @@ struct DeclarationSpecifiers
 };
 
 #define DECLARATIONSPECIFIERS_INIT {0}
-void DeclarationSpecifiers_CopyTo(struct DeclarationSpecifiers* from,
-                                  struct DeclarationSpecifiers* to);
-void DeclarationSpecifiers_CopyTo_SpecifierQualifierList(struct DeclarationSpecifiers* from,
-        struct SpecifierQualifierList* to);
+
+void DeclarationSpecifiers_CopyTo(struct DeclarationSpecifiers* from, struct DeclarationSpecifiers* to);
+
+void DeclarationSpecifiers_CopyTo_SpecifierQualifierList(struct DeclarationSpecifiers* from, struct SpecifierQualifierList* to);
 
 void DeclarationSpecifiers_Destroy(struct DeclarationSpecifiers* pDeclarationSpecifiers);
+
 void DeclarationSpecifiers_PushBack(struct DeclarationSpecifiers* p, struct DeclarationSpecifier* pItem);
+
 struct DeclarationSpecifier* DeclarationSpecifiers_GetMainSpecifier(struct DeclarationSpecifiers* p, enum Type type);
 
-
 const char* DeclarationSpecifiers_GetTypedefName(struct DeclarationSpecifiers* pDeclarationSpecifiers);
+
 bool DeclarationSpecifiers_CanAddSpeficier(struct DeclarationSpecifiers* pDeclarationSpecifiers, enum TokenType token, const char* lexeme);
 
 struct StructUnionSpecifier;
 
-struct StructUnionSpecifier* TDeclarationSpecifiers_GetCompleteStructUnionSpecifier(struct SymbolMap* pSymbolMap,
-        struct DeclarationSpecifiers* pDeclarationSpecifiers);
+struct StructUnionSpecifier* TDeclarationSpecifiers_GetCompleteStructUnionSpecifier(struct SymbolMap* pSymbolMap, struct DeclarationSpecifiers* pDeclarationSpecifiers);
 
 
 struct ParameterList
@@ -1403,19 +1383,6 @@ struct DesignatorList
 
 void DesignatorList_Destroy(struct DesignatorList* p);
 void DesignatorList_PushBack(struct DesignatorList* p, struct Designator* pItem);
-
-struct Designation
-{
-    /*
-    designation:
-      designator-list =
-    */
-    struct DesignatorList DesignatorList;
-    struct TokenList ClueList0;
-};
-#define DESIGNATION_INIT {0}
-
-void Designation_Delete(struct Designation* p);
 
 struct Initializer;
 
@@ -1723,11 +1690,14 @@ void StructUnionSpecifier_Delete(struct StructUnionSpecifier* p);
 void GetOrGenerateStructTagName(struct StructUnionSpecifier* p, char* out, int size);
 
 
-struct /*<TSingleTypeSpecifier |
-  TAtomicTypeSpecifier |
-  TEnumSpecifier |
-  TStructUnionSpecifier>*/ TypeSpecifier
+struct TypeSpecifier
 {
+    /* 
+      SingleTypeSpecifier 
+      AtomicTypeSpecifier 
+      EnumSpecifier 
+      StructUnionSpecifier
+    */
     enum Type Type;
 };
 
@@ -2051,14 +2021,14 @@ void UnaryExpressionOperator_Delete(struct UnaryExpressionOperator* p);
 struct Expression
 {
     /*
-    TPrimaryExpressionLiteral |
-    TPrimaryExpressionValue |
-    TBinaryExpression |
-    TUnaryExpressionOperator |
-    TPostfixExpression |
-    TCastExpressionType |
-    TTernaryExpression |
-    TPrimaryExpressionLambda
+      PrimaryExpressionLiteral 
+      PrimaryExpressionValue 
+      BinaryExpression 
+      UnaryExpressionOperator 
+      PostfixExpression 
+      CastExpressionType 
+      TernaryExpression 
+      PrimaryExpressionLambda
     */
 
     enum Type Type;

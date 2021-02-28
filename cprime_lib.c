@@ -14221,12 +14221,6 @@ void AnyDeclaration_Delete(struct AnyDeclaration* pDeclaration)
     }
 }
 
-void TDesignation_Destroy(struct Designation* pDesignation)
-{
-    DesignatorList_Destroy(&pDesignation->DesignatorList);
-    TokenList_Destroy(&pDesignation->ClueList0);
-}
-
 void TDesignator_Destroy(struct Designator* p)
 {
     free((void*)p->Name);
