@@ -1,4 +1,5 @@
-#include "..\cprime_lib.h"
+
+#include "..\cprime_lib.c"
 #include <string.h>
 #include <stdio.h>
 
@@ -11,7 +12,7 @@ void print_enum(const char* fileName, const char* enumName)
         struct EnumSpecifier* pEnumSpecifier = SymbolMap_FindCompleteEnumSpecifier(&ast.GlobalScope, enumName);
         if (pEnumSpecifier)
         {
-            printf("const char* tostring(enum %s e)\n", argv[2]);
+            printf("const char* tostring(enum %s e)\n", enumName);
             printf("{\n");
             printf("  switch (e)\n");
             printf("  {\n");
@@ -39,5 +40,5 @@ int main(int argc, char* argv[])
 {
     const char* fileName = argv[1];
     const char* enumName = argv[2];
-    void print_enum(fileName, enumName);
+    print_enum(fileName, enumName);
 }
