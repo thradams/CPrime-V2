@@ -2559,17 +2559,19 @@ void TokenList_Destroy(struct TokenList* p)
     }
 }
 
+void TokenList_Init(struct TokenList* p)
+{
+    p->pHead = NULL;
+    p->pTail = NULL;
+}
+
 void TokenList_Clear(struct TokenList* p)
 {
     TokenList_Destroy(p);
     TokenList_Init(p);
 }
 
-void TokenList_Init(struct TokenList* p)
-{
-    p->pHead = NULL;
-    p->pTail = NULL;
-}
+
 
 
 void TokenList_Swap(struct TokenList* a, struct TokenList* b)

@@ -297,12 +297,6 @@ struct Token
 };
 #define TOKEN_INIT {LOCALSTRBUILDER_INIT, TK_NONE,-1,-1,1,0}
 
-void Token_Reset(struct Token* scannerItem);
-void Token_Swap(struct Token* scannerItem, struct Token* other);
-void Token_Destroy(struct Token* scannerItem);
-void Token_Copy(struct Token* scannerItem, struct Token* other);
-void Token_Delete(struct Token* scannerItem);
-
 
 struct TokenList
 {
@@ -310,12 +304,6 @@ struct TokenList
 };
 #define TOKENLIST_INIT {0}
 
-void TokenList_Destroy(struct TokenList* p);
-void TokenList_Init(struct TokenList* p);
-void TokenList_PushBack(struct TokenList* p, struct Token* pItem);
-void TokenList_Swap(struct TokenList* a, struct TokenList* b);
-void TokenList_Clear(struct TokenList* p);
-void TokenList_PopFront(struct TokenList* p);
 
 
 struct FileInfo
