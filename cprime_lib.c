@@ -2709,6 +2709,31 @@ bool PPToken_IsLexeme(struct PPToken* pHead, const char* lexeme)
     return strcmp(pHead->Lexeme, lexeme) == 0;
 }
 
+#define PPTOKENARRAY_INIT {0}
+
+void PPTokenArray_Reserve(struct PPTokenArray* p, int nelements);
+
+void PPTokenArray_Pop(struct PPTokenArray* p);
+
+struct PPToken* PPTokenArray_PopFront(struct PPTokenArray* p);
+
+
+void PPTokenArray_PushBack(struct PPTokenArray* p, struct PPToken* pItem);
+void PPTokenArray_Clear(struct PPTokenArray* p);
+
+
+void PPTokenArray_Destroy(struct PPTokenArray* st);
+void PPTokenArray_Delete(struct PPTokenArray* st);
+void PPTokenArray_Swap(struct PPTokenArray* p1, struct PPTokenArray* p2);
+
+
+void PPTokenArray_AppendCopy(struct PPTokenArray* pArrayTo, const struct PPTokenArray* pArrayFrom);
+void PPTokenArray_AppendMove(struct PPTokenArray* pArrayTo, struct PPTokenArray* pArrayFrom);
+void PPTokenArray_Print(const struct PPTokenArray* tokens);
+
+struct PPToken* PPTokenArray_Find(const struct PPTokenArray* pArray, const char* lexeme);
+void PPTokenArray_Erase(struct PPTokenArray* pArray, int begin, int end);
+
 
 /*
   based on
