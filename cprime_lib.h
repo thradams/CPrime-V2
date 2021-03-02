@@ -366,27 +366,6 @@ struct PPToken
     struct PPTokenSet HiddenSet;
 };
 
-#define PPTOKEN_INIT { PPTokenType_Other, NULL, TOKENSET_INIT }
-
-void PPToken_Destroy(struct PPToken* p);
-
-struct PPToken* PPToken_Create(const char* s, enum PPTokenType token);
-struct PPToken* PPToken_Clone(struct PPToken* p);
-void PPToken_Delete(struct PPToken* p);
-
-void PPToken_Swap(struct PPToken* pA, struct PPToken* pB);
-
-
-bool PPToken_IsIdentifier(struct PPToken* pHead);
-bool PPToken_IsSpace(struct PPToken* pHead);
-bool PPToken_IsStringizingOp(struct PPToken* pHead);
-bool PPToken_IsConcatOp(struct PPToken* pHead);
-bool PPToken_IsStringLit(struct PPToken* pHead);
-bool PPToken_IsCharLit(struct PPToken* pHead);
-bool PPToken_IsOpenPar(struct PPToken* pHead);
-bool PPToken_IsChar(struct PPToken* pHead, char ch);
-bool PPToken_IsLexeme(struct PPToken* pHead, const char* ch);
-
 
 
 struct StrBuilder
@@ -395,57 +374,6 @@ struct StrBuilder
     int size;
     int capacity;
 };
-
-#define STRBUILDER_INIT { 0, 0, 0 }
-#define STRBUILDER_DEFAULT_SIZE 17
-
-void StrBuilder_Init(struct StrBuilder* p);
-
-bool StrBuilder_Reserve(struct StrBuilder* p, int nelements);
-
-void StrBuilder_Attach(struct StrBuilder* wstr,
-                       char* psz,
-                       int nBytes);
-
-void StrBuilder_Destroy(struct StrBuilder* wstr);
-void StrBuilder_Swap(struct StrBuilder* str1, struct StrBuilder* str2);
-
-
-void StrBuilder_Clear(struct StrBuilder* wstr);
-
-bool StrBuilder_SetN(struct StrBuilder* p,
-                     const char* source,
-                     int nelements);
-
-bool StrBuilder_Set(struct StrBuilder* p,
-                    const char* source);
-
-bool StrBuilder_AppendN(struct StrBuilder* p,
-                        const char* source,
-                        int nelements);
-
-bool StrBuilder_Append(struct StrBuilder* p,
-                       const char* source);
-
-void StrBuilder_AppendFmt(struct StrBuilder* p, const char* fmt, ...);
-void StrBuilder_AppendFmtIdent(struct StrBuilder* p, int nspaces, const char* fmt, ...);
-
-bool StrBuilder_AppendWChar(struct StrBuilder* p, wchar_t wch);
-bool StrBuilder_AppendW(struct StrBuilder* p, const wchar_t* psz);
-bool StrBuilder_AppendChar(struct StrBuilder* p, char wch);
-void StrBuilder_Trim(struct StrBuilder* p);
-
-bool StrBuilder_AppendIdent(struct StrBuilder* p,
-                            int nspaces,
-                            const char* source);
-
-
-void StrBuilder_AppendFmtLn(struct StrBuilder* p,
-                            int nspaces,
-                            const char* fmt,
-                            ...);
-void StrBuilder_AppendFmtV(struct StrBuilder* p, const char* fmt, va_list va);
-
 
 
 struct Macro

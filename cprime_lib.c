@@ -511,6 +511,26 @@ bool Stream_MatchChar(struct Stream* pStream, wchar_t ch)
     return b;
 }
 
+
+#define STRBUILDER_INIT { 0, 0, 0 }
+#define STRBUILDER_DEFAULT_SIZE 17
+
+
+#define STRBUILDER_INIT { 0, 0, 0 }
+#define STRBUILDER_DEFAULT_SIZE 17
+
+void StrBuilder_Init(struct StrBuilder* p);
+
+bool StrBuilder_Reserve(struct StrBuilder* p, int nelements);
+
+void StrBuilder_Attach(struct StrBuilder* wstr,
+                       char* psz,
+                       int nBytes);
+
+
+void StrBuilder_Clear(struct StrBuilder* wstr);
+
+
 void StrBuilder_Init(struct StrBuilder* p)
 {
     p->c_str = NULL;
@@ -625,6 +645,16 @@ bool StrBuilder_AppendN(struct StrBuilder* p, const char* source, int nelements)
     return r;
 }
 
+bool StrBuilder_Append(struct StrBuilder* p, const char* source)
+{
+    if (source == NULL || source[0] == '\0')
+    {
+        return true;
+    }
+    return StrBuilder_AppendN(p, source, (int)strlen(source));
+}
+
+
 bool StrBuilder_AppendIdent(struct StrBuilder* p, int nspaces, const char* source)
 {
     for (int i = 0; i < nspaces; i++)
@@ -634,14 +664,6 @@ bool StrBuilder_AppendIdent(struct StrBuilder* p, int nspaces, const char* sourc
     return StrBuilder_Append(p, source);
 }
 
-bool StrBuilder_Append(struct StrBuilder* p, const char* source)
-{
-    if (source == NULL || source[0] == '\0')
-    {
-        return true;
-    }
-    return StrBuilder_AppendN(p, source, (int)strlen(source));
-}
 
 void StrBuilder_Clear(struct StrBuilder* p)
 {
@@ -2609,6 +2631,29 @@ void TokenList_Clear(struct TokenList* p)
     TokenList_Destroy(p);
     TokenList_Init(p);
 }
+
+
+
+#define PPTOKEN_INIT { PPTokenType_Other, NULL, TOKENSET_INIT }
+
+void PPToken_Destroy(struct PPToken* p);
+
+struct PPToken* PPToken_Create(const char* s, enum PPTokenType token);
+struct PPToken* PPToken_Clone(struct PPToken* p);
+void PPToken_Delete(struct PPToken* p);
+
+void PPToken_Swap(struct PPToken* pA, struct PPToken* pB);
+
+
+bool PPToken_IsIdentifier(struct PPToken* pHead);
+bool PPToken_IsSpace(struct PPToken* pHead);
+bool PPToken_IsStringizingOp(struct PPToken* pHead);
+bool PPToken_IsConcatOp(struct PPToken* pHead);
+bool PPToken_IsStringLit(struct PPToken* pHead);
+bool PPToken_IsCharLit(struct PPToken* pHead);
+bool PPToken_IsOpenPar(struct PPToken* pHead);
+bool PPToken_IsChar(struct PPToken* pHead, char ch);
+bool PPToken_IsLexeme(struct PPToken* pHead, const char* ch);
 
 
 #define TOKENSET_INIT { 0 }
