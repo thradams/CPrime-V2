@@ -406,22 +406,6 @@ struct MacroMap
 
 
 
-#define CAST(FROM, TO) \
-static inline struct TO *  FROM##_As_##TO( struct FROM*  p)\
-{\
-if (p != NULL &&  p->Type == TO##_ID)\
-    return ( struct TO * )p;\
-  return NULL;\
-}\
-static inline  struct FROM *  TO##_As_##FROM(struct TO*  p)\
-{\
-    return (  struct FROM * )p;\
-}
-
-#define CASTSAME(FROM, TO) \
-static inline struct TO * FROM##_As_##TO(struct FROM* p) { return (struct TO * ) p; }\
-static inline struct FROM * TO##_As_##FROM(struct TO* p) { return (struct FROM *) p; }
-
 
 /*
 AST data structures
@@ -509,8 +493,6 @@ struct StaticAssertDeclaration
 
 #define STATICASSERTDECLARATION_INIT {StaticAssertDeclaration_ID}
 
-void StaticAssertDeclaration_Delete(struct StaticAssertDeclaration* p);
-
 
 struct EofDeclaration
 {
@@ -521,7 +503,7 @@ struct EofDeclaration
     struct TokenList ClueList0;
 };
 #define EOFDECLARATION_INIT {EofDeclaration_ID}
-void EofDeclaration_Delete(struct EofDeclaration* p);
+
 
 
 struct AnyDeclaration
@@ -535,7 +517,6 @@ struct AnyDeclaration
     enum Type Type;
 };
 
-void AnyDeclaration_Delete(struct AnyDeclaration* p);
 
 struct BlockItemList
 {
@@ -597,12 +578,7 @@ struct TypeQualifierList
     struct TypeQualifier* Data[4];
     int Size;
 };
-#define TYPEQUALIFIERLIST_INIT  {0}
 
-void TypeQualifierList_Destroy(struct TypeQualifierList* p);
-void TypeQualifierList_PushBack(struct TypeQualifierList* p, struct TypeQualifier* pItem);
-void TypeQualifierList_CopyFrom(struct TypeQualifierList* dest, struct TypeQualifierList* src);
-void TypeQualifier_Delete(struct TypeQualifier* p);
 
 
 struct ExpressionStatement
@@ -613,7 +589,7 @@ struct ExpressionStatement
 };
 
 #define EXPRESSIONSTATEMENT_INIT {ExpressionStatement_ID}
-void ExpressionStatement_Delete(struct ExpressionStatement* p);
+
 
 struct JumpStatement
 {
@@ -632,8 +608,7 @@ struct JumpStatement
     struct TokenList ClueList1;
     struct TokenList ClueList2;
 };
-#define JUMPSTATEMENT_INIT {JumpStatement_ID}
-void JumpStatement_Delete(struct JumpStatement* p);
+
 
 
 struct AsmStatement
@@ -641,8 +616,7 @@ struct AsmStatement
     enum Type Type;
     struct TokenList ClueList;
 };
-#define ASMSTATEMENT_INIT {AsmStatement_ID}
-void AsmStatement_Delete(struct AsmStatement* p);
+
 
 struct ForStatement
 {
@@ -1013,12 +987,6 @@ struct DeclarationSpecifier
 
 struct DeclarationSpecifier* DeclarationSpecifier_Clone(struct DeclarationSpecifier* p);
 
-CAST(DeclarationSpecifier, StorageSpecifier)
-CAST(DeclarationSpecifier, FunctionSpecifier)
-CAST(DeclarationSpecifier, AlignmentSpecifier)
-CAST(DeclarationSpecifier, SingleTypeSpecifier)
-CAST(DeclarationSpecifier, EnumSpecifier)
-
 /*
 specifier-qualifier-list:
 type-specifier specifier-qualifier-listopt
@@ -1043,12 +1011,7 @@ type-qualifier specifier-qualifier-listopt
 struct SpecifierQualifier* SpecifierQualifier_Clone(struct SpecifierQualifier* p);
 void SpecifierQualifier_Delete(struct SpecifierQualifier* p);
 
-CAST(SpecifierQualifier, StorageSpecifier)
-CAST(SpecifierQualifier, AlignmentSpecifier)
-CAST(SpecifierQualifier, SingleTypeSpecifier)
 
-CAST(SpecifierQualifier, TypeQualifier)
-CAST(SpecifierQualifier, EnumSpecifier)
 
 
 struct SpecifierQualifierList
@@ -1416,9 +1379,7 @@ struct /*<TStructDeclaration | TStaticAssertDeclaration>*/ AnyStructDeclaration
 
 void AnyStructDeclaration_Delete(struct AnyStructDeclaration* p);
 
-CAST(AnyStructDeclaration, StructDeclaration)
-CAST(AnyStructDeclaration, StaticAssertDeclaration)
-CAST(AnyStructDeclaration, EofDeclaration)
+
 
 struct StructDeclarationList
 {
@@ -1511,12 +1472,6 @@ struct TypeSpecifier
 bool TypeSpecifier_Compare(struct TypeSpecifier* p1, struct TypeSpecifier* p2);
 
 
-CAST(TypeSpecifier, SingleTypeSpecifier)
-CAST(TypeSpecifier, EnumSpecifier)
-CAST(TypeSpecifier, StructUnionSpecifier)
-CAST(DeclarationSpecifier, StructUnionSpecifier)
-CAST(SpecifierQualifier, StructUnionSpecifier)
-CAST(TypeSpecifier, AtomicTypeSpecifier)
 
 
 
@@ -1563,7 +1518,6 @@ struct Declarator* Declaration_FindDeclarator(struct Declaration* p, const char*
 const char* Declaration_GetFunctionName(struct Declaration* p);
 
 
-CAST(AnyDeclaration, Declaration)
 
 
 bool AnyDeclaration_IsTypedef(struct AnyDeclaration* pDeclaration);

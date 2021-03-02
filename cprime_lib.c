@@ -39,6 +39,23 @@ inline void* mallocinit(int size, void* value)
     return p;
 }
 
+#define CAST(FROM, TO) \
+static inline struct TO *  FROM##_As_##TO( struct FROM*  p)\
+{\
+if (p != NULL &&  p->Type == TO##_ID)\
+    return ( struct TO * )p;\
+  return NULL;\
+}\
+static inline  struct FROM *  TO##_As_##FROM(struct TO*  p)\
+{\
+    return (  struct FROM * )p;\
+}
+
+#define CASTSAME(FROM, TO) \
+static inline struct TO * FROM##_As_##TO(struct FROM* p) { return (struct TO * ) p; }\
+static inline struct FROM * TO##_As_##FROM(struct TO* p) { return (struct FROM *) p; }
+
+
 
 struct StrArray
 {
@@ -1333,6 +1350,21 @@ static void SymbolMap_PrintCore(struct SymbolMap* pMap, int* n)
     }
 }
 
+
+CAST(DeclarationSpecifier, StorageSpecifier)
+CAST(DeclarationSpecifier, FunctionSpecifier)
+CAST(DeclarationSpecifier, AlignmentSpecifier)
+CAST(DeclarationSpecifier, SingleTypeSpecifier)
+CAST(DeclarationSpecifier, EnumSpecifier)
+
+CAST(TypeSpecifier, SingleTypeSpecifier)
+CAST(TypeSpecifier, EnumSpecifier)
+CAST(TypeSpecifier, StructUnionSpecifier)
+CAST(DeclarationSpecifier, StructUnionSpecifier)
+CAST(SpecifierQualifier, StructUnionSpecifier)
+CAST(TypeSpecifier, AtomicTypeSpecifier)
+
+CAST(AnyDeclaration, Declaration)
 
 void SymbolMap_Print(struct SymbolMap* pMap)
 {
@@ -4030,6 +4062,13 @@ void SyntaxTree_PrintCodeToString(struct SyntaxTree* pSyntaxTree,
 
 void TTypeName_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct TypeName* p, struct StrBuilder* fp);
 
+
+CAST(SpecifierQualifier, StorageSpecifier)
+CAST(SpecifierQualifier, AlignmentSpecifier)
+CAST(SpecifierQualifier, SingleTypeSpecifier)
+
+CAST(SpecifierQualifier, TypeQualifier)
+CAST(SpecifierQualifier, EnumSpecifier)
 
 void TSpecifierQualifierList_CodePrint(struct SyntaxTree* pSyntaxTree,
                                        struct PrintCodeOptions* options,
@@ -7046,9 +7085,20 @@ static void TInitializerListItem_CodePrint(struct SyntaxTree* pSyntaxTree,
 struct TypeQualifier* TTypeQualifier_Clone(struct TypeQualifier* p);
 bool TypeQualifier_Compare(struct TypeQualifier* p1, struct TypeQualifier* p2);
 
+#define TYPEQUALIFIERLIST_INIT  {0}
+
+void TypeQualifierList_Destroy(struct TypeQualifierList* p);
+void TypeQualifierList_PushBack(struct TypeQualifierList* p, struct TypeQualifier* pItem);
+void TypeQualifierList_CopyFrom(struct TypeQualifierList* dest, struct TypeQualifierList* src);
+void TypeQualifier_Delete(struct TypeQualifier* p);
+
 static void TTypeQualifierList_CodePrint(struct PrintCodeOptions* options, struct TypeQualifierList* p, struct StrBuilder* fp);
 
 static void TAnyDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct AnyDeclaration* pDeclaration, struct StrBuilder* fp);
+
+CAST(AnyStructDeclaration, StructDeclaration)
+CAST(AnyStructDeclaration, StaticAssertDeclaration)
+CAST(AnyStructDeclaration, EofDeclaration)
 
 static void TAnyStructDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct AnyStructDeclaration* p, struct StrBuilder* fp);
 static void TTypeQualifier_CodePrint(struct PrintCodeOptions* options, struct TypeQualifier* p, struct StrBuilder* fp);
@@ -7351,6 +7401,8 @@ static void TExpressionStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struc
     Output_Append(fp, options, ";");
 }
 
+#define JUMPSTATEMENT_INIT {JumpStatement_ID}
+void JumpStatement_Delete(struct JumpStatement* p);
 
 static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct JumpStatement* p, struct StrBuilder* fp)
 {
@@ -7394,6 +7446,9 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
     TNodeClueList_CodePrint(options, &p->ClueList2, fp);
     Output_Append(fp, options, ";");
 }
+
+#define ASMSTATEMENT_INIT {AsmStatement_ID}
+void AsmStatement_Delete(struct AsmStatement* p);
 
 static void TAsmStatement_CodePrint(struct PrintCodeOptions* options, struct AsmStatement* p, struct StrBuilder* fp)
 {
@@ -11696,6 +11751,8 @@ bool IsSizeToken(enum TokenType token)
     return token == TK_LEFT_SQUARE_BRACKET;
 }
 
+void AnyDeclaration_Delete(struct AnyDeclaration* pDeclaration);
+
 void Declarations_Destroy(struct Declarations* p)
 {
     for (int i = 0; i < p->Size; i++)
@@ -14361,6 +14418,7 @@ int AnyDeclaration_GetFileIndex(struct AnyDeclaration* pDeclaration)
     }
     return result;
 }
+
 
 void AnyDeclaration_Delete(struct AnyDeclaration* pDeclaration)
 {
