@@ -1,5 +1,5 @@
 
-#include "..\cprime_lib.c"
+#include "..\cprime_lib.h"
 #include <string.h>
 #include <stdio.h>
 
