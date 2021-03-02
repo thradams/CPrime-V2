@@ -2875,6 +2875,23 @@ static void HidenSetAdd(const struct PPTokenSet* hs, const struct PPTokenArray* 
     //printf("\n");
 }
 
+#define MACROMAP_INIT { NULL, 0, 0 }
+
+int MacroMap_SetAt(struct MacroMap* pMap, const char* Key, struct Macro* newValue);
+
+bool MacroMap_Lookup(const struct MacroMap* pMap, const char* Key, struct Macro** rValue);
+
+bool MacroMap_RemoveKey(struct MacroMap* pMap, const char* Key);
+
+void MacroMap_Init(struct MacroMap* p);
+
+void MacroMap_Destroy(struct MacroMap* p);
+
+void MacroMap_Swap(struct MacroMap* pA, struct MacroMap* pB);
+
+struct Macro* MacroMap_Find(const struct MacroMap* pMap, const char* Key);
+
+
 static void ExpandMacro(const struct PPTokenArray* pTokenSequence,
                         const struct MacroMap* macros,
                         bool get_more,
@@ -7025,6 +7042,9 @@ static void TInitializerListItem_CodePrint(struct SyntaxTree* pSyntaxTree,
 
         struct StrBuilder* fp);
 
+
+struct TypeQualifier* TTypeQualifier_Clone(struct TypeQualifier* p);
+bool TypeQualifier_Compare(struct TypeQualifier* p1, struct TypeQualifier* p2);
 
 static void TTypeQualifierList_CodePrint(struct PrintCodeOptions* options, struct TypeQualifierList* p, struct StrBuilder* fp);
 
@@ -13465,7 +13485,6 @@ void TypeQualifierList_Destroy(struct TypeQualifierList* p)  /*custom*/
         TypeQualifier_Delete(p->Data[i]);
     }
 }
-
 
 void TypeQualifierList_CopyFrom(struct TypeQualifierList* dest, struct TypeQualifierList* src)
 {

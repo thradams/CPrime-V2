@@ -403,21 +403,6 @@ struct MacroMap
 };
 
 
-#define MACROMAP_INIT { NULL, 0, 0 }
-
-int MacroMap_SetAt(struct MacroMap* pMap, const char* Key, struct Macro* newValue);
-
-bool MacroMap_Lookup(const struct MacroMap* pMap, const char* Key, struct Macro** rValue);
-
-bool MacroMap_RemoveKey(struct MacroMap* pMap, const char* Key);
-
-void MacroMap_Init(struct MacroMap* p);
-
-void MacroMap_Destroy(struct MacroMap* p);
-
-void MacroMap_Swap(struct MacroMap* pA, struct MacroMap* pB);
-
-struct Macro* MacroMap_Find(const struct MacroMap* pMap, const char* Key);
 
 
 
@@ -566,9 +551,6 @@ struct BlockItemList
 
 #define BLOCKITEMLIST_INIT {0}
 
-void BlockItemList_Destroy(struct BlockItemList* p);
-void BlockItemList_PushBack(struct BlockItemList* p, struct BlockItem* pItem);
-
 
 struct CompoundStatement
 {
@@ -580,8 +562,6 @@ struct CompoundStatement
 };
 
 #define COMPOUNDSTATEMENT_INIT {CompoundStatement_ID}
-void CompoundStatement_Delete(struct CompoundStatement* p);
-
 
 struct TypeQualifier
 {
@@ -604,8 +584,7 @@ struct TypeQualifier
 
 #define TYPEQUALIFIER_INIT {TypeQualifier_ID}
 
-struct TypeQualifier* TTypeQualifier_Clone(struct TypeQualifier* p);
-bool TypeQualifier_Compare(struct TypeQualifier* p1, struct TypeQualifier* p2);
+
 
 struct TypeQualifierList
 {
