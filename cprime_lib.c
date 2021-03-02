@@ -1868,6 +1868,13 @@ void FileInfoMap_Destroy(FileInfoMap* p)
     HashMap_Destroy(p, FileInfo_DeleteVoid);
 }
 
+void FileArray_Init(struct FileArray* p);
+void FileArray_Destroy(struct FileArray* p);
+void FileArray_PushBack(struct FileArray* p, struct FileInfo* pItem);
+void FileArray_Reserve(struct FileArray* p, int n);
+
+
+
 void FileArray_Init(struct FileArray* p)
 {
     p->pItems = NULL;
@@ -2582,6 +2589,18 @@ void TokenList_Clear(struct TokenList* p)
 }
 
 
+#define TOKENSET_INIT { 0 }
+
+void PPTokenSet_PushUnique(struct PPTokenSet* p, struct PPToken* pItem);
+
+void TokenSetAppendCopy(struct PPTokenSet* pArrayTo, const struct PPTokenSet* pArrayFrom);
+
+struct PPToken* PPTokenSet_Find(const struct PPTokenSet* pArray, const char* lexeme);
+
+void PPTokenSet_Destroy(struct PPTokenSet* pArray);
+
+void SetIntersection(const struct PPTokenSet* p1, const struct PPTokenSet* p2, struct PPTokenSet* pResult);
+
 
 
 void TokenList_Swap(struct TokenList* a, struct TokenList* b)
@@ -2888,6 +2907,26 @@ static void AppendStringize(struct StrBuilder* strBuilder, const struct PPTokenA
     // Remove trailing spaces
     StrBuilder_Trim(strBuilder);
 }
+
+
+#define TOKENARRAYMAP_INIT { NULL, 0, 0 }
+
+int TokenArrayMap_SetAt(struct TokenArrayMap* pMap,
+                        const char* Key,
+                        struct PPTokenArray* newValue);
+
+bool TokenArrayMap_Lookup(const struct TokenArrayMap* pMap,
+                          const char* Key,
+                          struct PPTokenArray** rValue);
+
+bool TokenArrayMap_RemoveKey(struct TokenArrayMap* pMap,
+                             const char* Key);
+
+void TokenArrayMap_Destroy(struct TokenArrayMap* p);
+
+
+void TokenArrayMap_Swap(struct TokenArrayMap* pA, struct TokenArrayMap* pB);
+
 
 
 /*
