@@ -1833,6 +1833,16 @@ struct TypeSpecifier* SymbolMap_FindTypedefSpecifierTarget(struct SymbolMap* pMa
 }
 
 
+#define FILEINFO_INIT {0}
+void FileInfo_Delete(struct FileInfo* p);
+
+typedef struct HashMap FileInfoMap;
+
+void FileInfoMap_Destroy(FileInfoMap* p);
+bool FileInfoMap_Set(FileInfoMap* map, const char* key, struct FileInfo* data);
+struct FileInfo* FileInfoMap_Find(FileInfoMap* map, const char* key);
+
+
 void FileInfo_Destroy(struct FileInfo* p)
 {
     free((void*)p->FullPath);
