@@ -1943,6 +1943,28 @@ struct FileInfo* FileInfoMap_Find(FileInfoMap* map, const char* key)
 }
 
 
+#define LOCALSTRBUILDER_INIT {0}
+
+void LocalStrBuilder_Init(struct LocalStrBuilder* p);
+
+void LocalStrBuilder_Swap(struct LocalStrBuilder* pA, struct LocalStrBuilder* pB);
+
+void LocalStrBuilder_Destroy(struct LocalStrBuilder* p);
+
+void LocalStrBuilder_Reserve(struct LocalStrBuilder* p, int nelements);
+
+void LocalStrBuilder_Print(struct LocalStrBuilder* p);
+
+void LocalStrBuilder_Clear(struct LocalStrBuilder* p);
+
+void LocalStrBuilder_Grow(struct LocalStrBuilder* p, int nelements);
+
+void LocalStrBuilder_Append(struct LocalStrBuilder* p, const char* source);
+
+void LocalStrBuilder_AppendChar(struct LocalStrBuilder* p, char ch);
+
+void LocalStrBuilder_Set(struct LocalStrBuilder* p, const char* source);
+
 const char* TokenToNameString(enum TokenType tk)
 {
     switch (tk)
