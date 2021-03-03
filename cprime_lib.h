@@ -985,13 +985,7 @@ struct DeclarationSpecifier
     enum Type Type;
 };
 
-struct DeclarationSpecifier* DeclarationSpecifier_Clone(struct DeclarationSpecifier* p);
 
-/*
-specifier-qualifier-list:
-type-specifier specifier-qualifier-listopt
-type-qualifier specifier-qualifier-listopt
-*/
 struct SpecifierQualifier
 {
     /* 
@@ -1000,18 +994,6 @@ struct SpecifierQualifier
     */
     enum Type Type;
 };
-
-
-/*
-specifier-qualifier-list:
-type-specifier specifier-qualifier-listopt
-type-qualifier specifier-qualifier-listopt
-*/
-
-struct SpecifierQualifier* SpecifierQualifier_Clone(struct SpecifierQualifier* p);
-void SpecifierQualifier_Delete(struct SpecifierQualifier* p);
-
-
 
 
 struct SpecifierQualifierList

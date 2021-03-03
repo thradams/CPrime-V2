@@ -1,4 +1,4 @@
-#if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
+#if !defined(_CRT_SECURE_NO_WARNINGS) && defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
@@ -12944,6 +12944,10 @@ struct DeclarationSpecifier* DeclarationSpecifier_Clone(struct DeclarationSpecif
     assert(false);
     return NULL;
 }
+
+struct SpecifierQualifier* SpecifierQualifier_Clone(struct SpecifierQualifier* p);
+void SpecifierQualifier_Delete(struct SpecifierQualifier* p);
+
 
 struct DeclarationSpecifier* SpecifierQualifierList_GetMainSpecifier(struct SpecifierQualifierList* p)
 {
