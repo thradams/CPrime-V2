@@ -294,6 +294,43 @@ int main()
 
 `
 
+sample["try error propagation pattern"] =
+`
+#include <stdio.h>
+
+struct error {
+  int code;
+  char message[100];
+};
+
+int Parse1(struct error* error){
+  return error->code;
+}
+
+int Parse2(struct error* error){
+  return error->code;
+}
+
+int Parse3(struct error* error){
+  return error->code;
+}
+
+int main()
+{
+    struct error error = {0};
+    {
+        try(Parse1(&error) == 0);
+        try(Parse2(&error) == 0);
+        try(Parse3(&error) == 0);
+    }
+    if (error.code != 0)
+      printf("parsing error : %s", error.message);
+      
+    printf("continuation...\\n");
+}
+
+`;
+
 sample["Polimorphism"] =
     `
 
