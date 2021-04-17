@@ -194,6 +194,7 @@ enum TokenType
     TK_FOR,
     TK_GOTO,
     TK_IF,
+    TK_TRY,
     TK_INT,
     TK_LONG,
     ////////////////

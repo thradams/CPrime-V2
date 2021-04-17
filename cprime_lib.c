@@ -32,7 +32,7 @@
 #endif
 
 
-inline void* mallocinit(int size, void* value)
+void* mallocinit(int size, void* value)
 {
     void* p = malloc(size);
     if (p) memcpy(p, value, size);
@@ -2225,6 +2225,8 @@ const char* TokenToNameString(enum TokenType tk)
         return "TK_GOTO";
     case TK_IF:
         return "TK_IF";
+    case TK_TRY:
+        return "TK_TRY";
     case TK_INT:
         return "TK_INT";
     case TK_LONG:
@@ -2480,6 +2482,8 @@ const char* TokenToString(enum TokenType tk)
         return "goto";
     case TK_IF:
         return "if";
+    case TK_TRY:
+        return "try";
     case TK_INT:
         return "int";
     case TK_LONG:
@@ -3933,7 +3937,7 @@ bool BasicScanner_Create(struct BasicScanner** pp, const char* name, const char*
 
 void BasicScanner_Destroy(struct BasicScanner* pScanner);
 
-bool IsPreprocessorTokenPhase(enum TokenType token);
+static bool IsPreprocessorTokenPhase(enum TokenType token);
 
 
 //Quando existe um include ou macro é expandida
@@ -4158,6 +4162,7 @@ enum PPTokenType TokenToPPToken(enum TokenType token)
     case TK_FOR:
     case TK_GOTO:
     case TK_IF:
+    case TK_TRY:
     case TK_INT:
     case TK_LONG:
     ////////////////
@@ -11057,6 +11062,7 @@ static struct TkPair keywords[] =
     {"for", TK_FOR},
     {"goto", TK_GOTO},
     {"if", TK_IF},
+    {"try", TK_TRY},
     {"inline", TK_INLINE},
     {"__inline", TK__INLINE},
     {"__forceinline", TK__FORCEINLINE},
@@ -15651,6 +15657,7 @@ void PrimaryExpressionLiteral(struct Parser* ctx, struct Expression** ppPrimaryE
 }
 
 void Compound_Statement(struct Parser* ctx, struct Statement** ppStatement);
+void VirtualCompound_Statement(struct Parser* ctx, struct Statement** ppStatement);
 
 void Parameter_Type_List(struct Parser* ctx, struct ParameterTypeList* pParameterList);
 
@@ -17204,6 +17211,42 @@ void Selection_Statement(struct Parser* ctx, struct Statement** ppStatement)
         ctx->pCurrentScope = BlockScope.pPrevious;
     }
     break;
+    case TK_TRY:
+    {
+        struct IfStatement* pIfStatement = NEW((struct IfStatement)IFSTATEMENT_INIT);
+        *ppStatement = (struct Statement*)pIfStatement;
+        Parser_Match(ctx, &pIfStatement->ClueList0);
+        Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pIfStatement->ClueList1);
+        struct SymbolMap BlockScope = SYMBOLMAP_INIT;
+        BlockScope.pPrevious = ctx->pCurrentScope;
+        ctx->pCurrentScope = &BlockScope;
+        //primeira expressao do if
+        bool bHasDeclaration = Declaration(ctx, &pIfStatement->pInitDeclarationOpt);
+        if (bHasDeclaration)
+        {
+            token = Parser_CurrentTokenType(ctx);
+            //Esta eh a 2 expressao do if a que tem a condicao a declaracao ja comeu 1
+            Expression(ctx, &pIfStatement->pConditionExpression);
+            token = Parser_CurrentTokenType(ctx);
+            if (token == TK_SEMICOLON)
+            {
+                //TEM DEFER
+                Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList2);
+                Expression(ctx, &pIfStatement->pDeferExpression);
+            }
+            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList4);
+        }
+        else /*if normal*/
+        {
+            Expression(ctx, &pIfStatement->pConditionExpression);
+            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList2);
+        }
+        Parser_MatchToken(ctx, TK_SEMICOLON, NULL);
+        VirtualCompound_Statement(ctx, &pIfStatement->pStatement);
+     
+        ctx->pCurrentScope = BlockScope.pPrevious;
+    }
+    break;
     case TK_SWITCH:
     {
         struct SwitchStatement* pSelectionStatement = NEW((struct SwitchStatement)SWITCHSTATEMENT_INIT);
@@ -17535,6 +17578,7 @@ bool Statement(struct Parser* ctx, struct Statement** ppStatement)
         Selection_Statement(ctx, ppStatement);
         break;
     case TK_IF:
+    case TK_TRY:
         bResult = true;
         Selection_Statement(ctx, ppStatement);
         break;
@@ -17696,6 +17740,29 @@ void Block_Item_List(struct Parser* ctx, struct BlockItemList* pBlockItemList)
         if (ErrorOrEof(ctx))
             break;
     }
+}
+
+void VirtualCompound_Statement(struct Parser* ctx, struct Statement** ppStatement)
+{
+    /*
+    compound-statement:
+    { block-item-listopt }
+    */
+    struct CompoundStatement* pCompoundStatement = NEW((struct CompoundStatement)COMPOUNDSTATEMENT_INIT);
+    *ppStatement = (struct Statement*)pCompoundStatement;
+    struct SymbolMap BlockScope = SYMBOLMAP_INIT;
+    BlockScope.pPrevious = ctx->pCurrentScope;
+    ctx->pCurrentScope = &BlockScope;
+   // Parser_MatchToken(ctx, TK_LEFT_CURLY_BRACKET, &pCompoundStatement->ClueList0);
+    enum TokenType token = Parser_CurrentTokenType(ctx);
+    if (token != TK_RIGHT_CURLY_BRACKET)
+    {
+        Block_Item_List(ctx, &pCompoundStatement->BlockItemList);
+    }
+    //Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET, &pCompoundStatement->ClueList1);
+    //SymbolMap_Print(ctx->pCurrentScope);
+    ctx->pCurrentScope = BlockScope.pPrevious;
+    SymbolMap_Destroy(&BlockScope);
 }
 
 void Compound_Statement(struct Parser* ctx, struct Statement** ppStatement)

@@ -317,6 +317,57 @@ int main()
 `;
 
 
+
+sample["try"] =
+`
+#include <stdio.h>
+#include <stdlib.h>
+
+int F1(){return 1;}
+int F2(){return 2;}
+
+int main()
+{
+    {
+        try (F1() == 1);        
+        printf("this line is printed 1\n");      
+        try (F2() == 2);
+        printf("this line is printed 2\n");
+        try (F1() == 0);        
+        printf("this line is NOT printed 3\n");      
+        try (F2() == 0);        
+        printf("this line is NOT printed 4\n");
+    }
+    printf("continuation...\n");
+}
+`;
+
+
+sample["try with defer"] =
+`
+#include <stdio.h>
+#include <stdlib.h>
+
+int F2() {return 2;}
+
+int main()
+{
+    {
+        try (char *p1 = malloc(1); p1; free(p1));        
+        printf("this line is printed 1\n");      
+        try (char *p2 = malloc(1); p2; free(p2));        
+        printf("this line is printed 1\n");                
+        try (F2() == 2);
+        printf("this line NOT is printed 2\n");
+        
+    }
+    printf("continuation...\n");
+}
+
+`;
+
+
+
 sample["Lambdas"] =
 `
 #include <stdio.h>
