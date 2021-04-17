@@ -2,7 +2,7 @@ var sample = {};
 
 
 sample["Default Initialization"] =
-`
+    `
 
 struct Point {
   int x = 1;
@@ -26,7 +26,7 @@ int main()
 
 
 sample["Destructor"] =
-`
+    `
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -57,7 +57,7 @@ int main()
 
 
 sample["new operator"] =
-`
+    `
 /*
    New operator allocates the memory using malloc and initializes the
    object using the compound literal.
@@ -90,7 +90,7 @@ int main()
 `;
 
 sample["If with initializer"] =
-`
+    `
 #include <stdlib.h>
 
 struct Person {
@@ -107,7 +107,7 @@ int main()
 `;
 
 sample["If with initializer and defer"] =
-`
+    `
 #include <stdlib.h>
 
 struct Person {
@@ -125,7 +125,7 @@ int main()
 
 
 sample["If defer and jumps"] =
-`
+    `
 
 #include <stdlib.h>
 
@@ -153,7 +153,7 @@ int main()
 `;
 
 sample["If+defer and return"] =
-`
+    `
 /*
  *  This sample shows why we need a temporary copy before return
  */
@@ -177,7 +177,7 @@ void * F() {
 }
 `
 sample["If + defer"] =
-`
+    `
 #include  <stdlib.h>
 
 struct allocator {
@@ -209,8 +209,93 @@ int main() {
 `
 
 
-sample["Polimorphism"] =
+sample["try"] =
+    `
+#include <stdio.h>
+#include <stdlib.h>
+
+int F1(){return 1;}
+int F2(){return 2;}
+
+int main()
+{
+    {
+        try (F1() == 1);        
+        printf("this line is printed 1\\n");      
+        try (F2() == 2);
+        printf("this line is printed 2\\n");
+        try (F1() == 0);        
+        printf("this line is NOT printed 3\\n");      
+        try (F2() == 0);        
+        printf("this line is NOT printed 4\\n");
+    }
+    printf("continuation...\\n");
+}
+`;
+
+
+sample["try with defer"] =
+    `
+#include <stdio.h>
+#include <stdlib.h>
+
+int F2() {return 2;}
+
+int main()
+{
+    {
+        try (char *p1 = malloc(1); p1; free(p1));        
+        printf("this line is printed 1\\n");      
+        try (char *p2 = malloc(1); p2; free(p2));        
+        printf("this line is printed 1\\n");                
+        try (F2() == 0);
+        printf("this line NOT is printed 2\\n");
+        
+    }
+    printf("continuation...\\n");
+}
+
+`;
+
+sample["try with defer (destructor)"] =
 `
+#include <stdio.h>
+#include <stdlib.h>
+
+int F2() {return 2;}
+
+
+struct Person {
+  char* auto name;
+};
+
+void destroy(struct Person* p) overload {
+    /*
+      this is a user defined function to receive an event
+      just before the object destruction.
+      This function is called indirectly by the destroy.
+    */
+    printf("person destructor called\\n");
+}
+
+int main()
+{
+    {
+        try (struct Person * auto p1 = new (struct Person); p1; destroy(p1));
+        printf("this line is printed 1\\n");      
+        try (struct Person * auto p2 = new (struct Person); p2; destroy(p2));
+        printf("this line is printed 1\\n");                
+        try (F2() == 0);
+        printf("this line NOT is printed 2\\n");
+        
+    }
+    printf("continuation...\\n");
+}
+
+`
+
+sample["Polimorphism"] =
+    `
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -250,7 +335,7 @@ int main()
 
 
 sample["Polimorphism 2"] =
-`
+    `
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -317,59 +402,8 @@ int main()
 `;
 
 
-
-sample["try"] =
-`
-#include <stdio.h>
-#include <stdlib.h>
-
-int F1(){return 1;}
-int F2(){return 2;}
-
-int main()
-{
-    {
-        try (F1() == 1);        
-        printf("this line is printed 1\n");      
-        try (F2() == 2);
-        printf("this line is printed 2\n");
-        try (F1() == 0);        
-        printf("this line is NOT printed 3\n");      
-        try (F2() == 0);        
-        printf("this line is NOT printed 4\n");
-    }
-    printf("continuation...\n");
-}
-`;
-
-
-sample["try with defer"] =
-`
-#include <stdio.h>
-#include <stdlib.h>
-
-int F2() {return 2;}
-
-int main()
-{
-    {
-        try (char *p1 = malloc(1); p1; free(p1));        
-        printf("this line is printed 1\n");      
-        try (char *p2 = malloc(1); p2; free(p2));        
-        printf("this line is printed 1\n");                
-        try (F2() == 2);
-        printf("this line NOT is printed 2\n");
-        
-    }
-    printf("continuation...\n");
-}
-
-`;
-
-
-
 sample["Lambdas"] =
-`
+    `
 #include <stdio.h>
 
 void Run(void (*callback)(void*), void* data) {
