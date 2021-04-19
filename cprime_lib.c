@@ -7388,14 +7388,21 @@ static void TDoStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintC
     Output_Append(fp, options, "do");
     TStatement_CodePrint(pSyntaxTree, options, p->pStatement, fp);
     TNodeClueList_CodePrint(options, &p->ClueList1, fp);
-    Output_Append(fp, options, "while");
-    TNodeClueList_CodePrint(options, &p->ClueList2, fp);
-    Output_Append(fp, options, "(");
-    TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
-    TNodeClueList_CodePrint(options, &p->ClueList3, fp);
-    Output_Append(fp, options, ")");
-    TNodeClueList_CodePrint(options, &p->ClueList4, fp);
-    Output_Append(fp, options, ";");
+    if (p->pExpression != NULL)
+    {
+        Output_Append(fp, options, "while");
+        TNodeClueList_CodePrint(options, &p->ClueList2, fp);
+        Output_Append(fp, options, "(");
+        TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+        TNodeClueList_CodePrint(options, &p->ClueList3, fp);
+        Output_Append(fp, options, ")");
+        TNodeClueList_CodePrint(options, &p->ClueList4, fp);
+        Output_Append(fp, options, ";");
+    }
+    else
+    {
+        Output_Append(fp, options, " while(0);");
+    }
 }
 
 
@@ -17354,11 +17361,15 @@ void Iteration_Statement(struct Parser* ctx, struct Statement** ppStatement)
         *ppStatement = (struct Statement*)pDoStatement;
         Parser_Match(ctx, &pDoStatement->ClueList0); //do
         Statement(ctx, &pDoStatement->pStatement);
-        Parser_MatchToken(ctx, TK_WHILE, &pDoStatement->ClueList1); //while
-        Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pDoStatement->ClueList2); //(
-        Expression(ctx, &pDoStatement->pExpression);
-        Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pDoStatement->ClueList3); //)
-        Parser_MatchToken(ctx, TK_SEMICOLON, &pDoStatement->ClueList4); //;
+        token = Parser_CurrentTokenType(ctx);
+        if (token == TK_WHILE) /*language extension make while optional*/
+        {
+            Parser_MatchToken(ctx, TK_WHILE, &pDoStatement->ClueList1); //while
+            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pDoStatement->ClueList2); //(
+            Expression(ctx, &pDoStatement->pExpression);
+            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pDoStatement->ClueList3); //)
+            Parser_MatchToken(ctx, TK_SEMICOLON, &pDoStatement->ClueList4); //;
+        }        
     }
     break;
     case TK_FOR:

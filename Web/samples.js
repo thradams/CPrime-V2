@@ -208,6 +208,21 @@ int main() {
 }
 `
 
+sample["Optional while at do statement"] =
+    `
+#include <stdio.h>
+int main()
+{  
+   do
+   {
+       if (1) break;
+       printf("this line is not printed\\n");
+   }
+   printf("continuation...\\n");
+}
+`;
+
+
 
 sample["try"] =
     `
@@ -219,7 +234,7 @@ int F2(){return 2;}
 
 int main()
 {
-    {
+    do {
         try (F1() == 1);        
         printf("this line is printed 1\\n");      
         try (F2() == 2);
@@ -243,7 +258,7 @@ int F2() {return 2;}
 
 int main()
 {
-    {
+    do {
         try (char *p1 = malloc(1); p1; free(p1));        
         printf("this line is printed 1\\n");      
         try (char *p2 = malloc(1); p2; free(p2));        
@@ -280,7 +295,7 @@ void destroy(struct Person* p) overload {
 
 int main()
 {
-    {
+    do {
         try (struct Person * auto p1 = new (struct Person); p1; destroy(p1));
         printf("this line is printed 1\\n");      
         try (struct Person * auto p2 = new (struct Person); p2; destroy(p2));
@@ -318,11 +333,13 @@ int Parse3(struct error* error){
 int main()
 {
     struct error error = {0};
-    {
+
+    do {
         try(Parse1(&error) == 0);
         try(Parse2(&error) == 0);
         try(Parse3(&error) == 0);
     }
+
     if (error.code != 0)
       printf("parsing error : %s", error.message);
       
@@ -437,6 +454,9 @@ int main()
 }
 
 `;
+
+
+
 
 
 sample["Lambdas"] =
