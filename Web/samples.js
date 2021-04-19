@@ -209,7 +209,7 @@ int main() {
 `
 
 sample["do statement with optional while"] =
-    `
+`
 #include <stdio.h>
 int main()
 {  
@@ -250,26 +250,31 @@ int main()
 
 
 sample["try with defer"] =
-    `
-#include <stdio.h>
-#include <stdlib.h>
-
-int F2() {return 2;}
-
-int main()
-{
-    do {
-        try (char *p1 = malloc(1); p1; free(p1));        
-        printf("this line is printed 1\\n");      
-        try (char *p2 = malloc(1); p2; free(p2));        
-        printf("this line is printed 1\\n");                
-        try (F2() == 0);
-        printf("this line NOT is printed 2\\n");
-        
+`
+    #include <stdio.h>
+    #include <stdlib.h>
+    
+    int F2() {return 2;}
+    
+    void Free(const char* msg, void* p)
+    {
+       printf("%s\\n",msg);
+       free(p);
     }
-    printf("continuation...\\n");
-}
-
+    
+    int main()
+    {
+        do {
+            try (char *p1 = malloc(1); p1; Free("free p1", p1));
+            printf("this line is printed 1\\n");      
+            try (char *p2 = malloc(1); p2;  Free("free p2", p2));        
+            printf("this line is printed 1\\n");                
+            try (F2() == 0);
+            printf("this line NOT is printed 2\\n");
+            
+        }
+        printf("continuation...\\n");
+    }      
 `;
 
 sample["try with defer (destructor)"] =
