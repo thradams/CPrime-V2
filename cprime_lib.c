@@ -2460,10 +2460,14 @@ const char* TokenToString(enum TokenType tk)
         return "continue";
     case TK_DEFAULT:
         return "default";
+    case TK_RESTRICT:
+        return "restrict";
     case TK_INLINE:
         return "inline";
     case TK__INLINE:
         return "_inline";
+    case TK__NORETURN:
+        return "_Noreturn";
     case TK_DO:
         return "do";
     case TK_DOUBLE:
