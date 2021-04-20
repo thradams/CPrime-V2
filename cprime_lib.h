@@ -715,15 +715,21 @@ struct IfStatement
 {
     /*
     selection-statement:
-      if ( expression ) statement
-      if ( expression ) statement else statement
+      if ( condition-expression ) statement
+      if ( condition-expression ) statement else statement
     */
 
     /*
     selection-statement:
-     if ( declaration expression) statement
-     if ( declaration expression) statement else statement
-     if ( declaration expression ; expression) statement
+     if ( declaration condition-expression) statement
+     if ( declaration condition-expression) statement else statement
+     if ( declaration condition-expression ; expression) statement
+    */
+
+    /*
+    selection-statement:
+     try (condition-expression) ;
+     try (declaration or expression ; condition-expression; defer optional) ;     
     */
 
     enum Type Type;
@@ -731,14 +737,17 @@ struct IfStatement
     struct AnyDeclaration* pInitDeclarationOpt;
     struct Expression* pDeferExpression;
     struct Expression* pConditionExpression;
+    struct Expression* pInitialExpression;
 
     struct Statement* pStatement;
     struct Statement* pElseStatement;
-    struct TokenList ClueList0; //if
+    struct TokenList ClueList0; //if or try
     struct TokenList ClueList1; //(
-    struct TokenList ClueList2; //)
-    struct TokenList ClueList3; //else
-    struct TokenList ClueList4; //else
+    struct TokenList ClueList2; //;
+    struct TokenList ClueList3; //;
+    struct TokenList ClueList4; //)
+    struct TokenList ClueList5; //)
+    struct TokenList ClueList6; //; 
 };
 
 #define IFSTATEMENT_INIT  {IfStatement_ID}

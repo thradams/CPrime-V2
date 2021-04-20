@@ -7492,11 +7492,21 @@ static void TIfStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
                                    struct StrBuilder* fp)
 {
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-    if (p->pInitDeclarationOpt)
+    if (p->pInitDeclarationOpt || p->pInitialExpression)
     {
         //quantos de espacamento?
-        Output_Append(fp, options, "{");
-        TAnyDeclaration_CodePrint(pSyntaxTree, options, p->pInitDeclarationOpt, fp);
+        
+        if (p->pInitDeclarationOpt != NULL)
+        {
+            Output_Append(fp, options, "{");
+            TAnyDeclaration_CodePrint(pSyntaxTree, options, p->pInitDeclarationOpt, fp);
+        }
+        else
+        {
+            TExpression_CodePrint(pSyntaxTree, options, p->pInitialExpression, fp);
+            Output_Append(fp, options, ";");
+        }
+        
         TNodeClueList_CodePrint(options, &p->ClueList1, fp);
         Output_Append(fp, options, "if");
         Output_Append(fp, options, "(");
@@ -7508,13 +7518,14 @@ static void TIfStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
         Output_Append(fp, options, "(");
     }
     TExpression_CodePrint(pSyntaxTree, options, p->pConditionExpression, fp);
-    TNodeClueList_CodePrint(options, &p->ClueList2, fp);
+    TNodeClueList_CodePrint(options, &p->ClueList4, fp);
     Output_Append(fp, options, ")");
+
     if (p->pStatement->Type != CompoundStatement_ID)
         Output_Append(fp, options, "");
     if (p->pStatement)
     {
-        if (p->pInitDeclarationOpt && p->pDeferExpression)
+        if (p->pDeferExpression)
         {
             Output_Append(fp, options, "{");
             struct StrBuilder  copyLoop = { 0 };
@@ -11989,7 +12000,7 @@ void SwitchStatement_Delete(struct SwitchStatement* p)
 {
     if (p != NULL)
     {
-        Expression_Delete(p->pConditionExpression);
+        Expression_Delete(p->pConditionExpression);        
         Statement_Delete(p->pExpression);
         TokenList_Destroy(&p->ClueList0);
         TokenList_Destroy(&p->ClueList1);
@@ -12002,6 +12013,7 @@ void IfStatement_Delete(struct IfStatement* p)
 {
     if (p != NULL)
     {
+        Expression_Delete(p->pInitialExpression);
         Expression_Delete(p->pConditionExpression);
         Statement_Delete(p->pStatement);
         Statement_Delete(p->pElseStatement);
@@ -12009,6 +12021,9 @@ void IfStatement_Delete(struct IfStatement* p)
         TokenList_Destroy(&p->ClueList1);
         TokenList_Destroy(&p->ClueList2);
         TokenList_Destroy(&p->ClueList3);
+        TokenList_Destroy(&p->ClueList4);
+        TokenList_Destroy(&p->ClueList5);
+        TokenList_Destroy(&p->ClueList6);
         free((void*)p);
     }
 }
@@ -17182,8 +17197,10 @@ void Selection_Statement(struct Parser* ctx, struct Statement** ppStatement)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
+    case TK_TRY:
     case TK_IF:
     {
+        bool bIsTryStatement = (token == TK_TRY);
         struct IfStatement* pIfStatement = NEW((struct IfStatement)IFSTATEMENT_INIT);
         *ppStatement = (struct Statement*)pIfStatement;
         Parser_Match(ctx, &pIfStatement->ClueList0);
@@ -17209,55 +17226,55 @@ void Selection_Statement(struct Parser* ctx, struct Statement** ppStatement)
         }
         else /*if normal*/
         {
-            Expression(ctx, &pIfStatement->pConditionExpression);
-            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList2);
-        }
-        Statement(ctx, &pIfStatement->pStatement);
-        token = Parser_CurrentTokenType(ctx);
-        if (token == TK_ELSE)
-        {
-            Parser_Match(ctx, &pIfStatement->ClueList3);
-            Statement(ctx, &pIfStatement->pElseStatement);
-        }
-        ctx->pCurrentScope = BlockScope.pPrevious;
-    }
-    break;
-    case TK_TRY:
-    {
-        struct IfStatement* pIfStatement = NEW((struct IfStatement)IFSTATEMENT_INIT);
-        *ppStatement = (struct Statement*)pIfStatement;
-        Parser_Match(ctx, &pIfStatement->ClueList0);
-        Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pIfStatement->ClueList1);
-        struct SymbolMap BlockScope = SYMBOLMAP_INIT;
-        BlockScope.pPrevious = ctx->pCurrentScope;
-        ctx->pCurrentScope = &BlockScope;
-        //primeira expressao do if
-        bool bHasDeclaration = Declaration(ctx, &pIfStatement->pInitDeclarationOpt);
-        if (bHasDeclaration)
-        {
+            struct Expression* pExpression = NULL;
+            Expression(ctx, &pExpression);
             token = Parser_CurrentTokenType(ctx);
-            //Esta eh a 2 expressao do if a que tem a condicao a declaracao ja comeu 1
-            Expression(ctx, &pIfStatement->pConditionExpression);
+            
+            if (token == TK_SEMICOLON)
+            {
+                Parser_Match(ctx, &pIfStatement->ClueList2);
+                pIfStatement->pInitialExpression = pExpression;
+                Expression(ctx, &pIfStatement->pConditionExpression);
+            }
+            else if (token == TK_RIGHT_PARENTHESIS)
+            {
+                //Parser_Match(ctx, &pIfStatement->ClueList2);
+                pIfStatement->pConditionExpression = pExpression;
+            }
+            else {
+                //error
+            }
+
             token = Parser_CurrentTokenType(ctx);
             if (token == TK_SEMICOLON)
             {
                 //TEM DEFER
-                Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList2);
+                Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList3);
                 Expression(ctx, &pIfStatement->pDeferExpression);
             }
             Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList4);
         }
-        else /*if normal*/
+
+        if (bIsTryStatement)
         {
-            Expression(ctx, &pIfStatement->pConditionExpression);
-            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList2);
+            Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList5);
+            VirtualCompound_Statement(ctx, &pIfStatement->pStatement);
         }
-        Parser_MatchToken(ctx, TK_SEMICOLON, NULL);
-        VirtualCompound_Statement(ctx, &pIfStatement->pStatement);
-     
+        else
+        {
+            Statement(ctx, &pIfStatement->pStatement);
+            token = Parser_CurrentTokenType(ctx);
+            if (token == TK_ELSE)
+            {
+                Parser_Match(ctx, &pIfStatement->ClueList3);
+                Statement(ctx, &pIfStatement->pElseStatement);
+            }
+            
+        }
+        
         ctx->pCurrentScope = BlockScope.pPrevious;
     }
-    break;
+    break;  
     case TK_SWITCH:
     {
         struct SwitchStatement* pSelectionStatement = NEW((struct SwitchStatement)SWITCHSTATEMENT_INIT);
