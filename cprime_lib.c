@@ -253,7 +253,7 @@ bool IsFullPath(const char* path)
     if (path != NULL)
     {
         if ((path[0] >= 'a' && path[0] <= 'z') ||
-                (path[0] >= 'A' && path[0] <= 'Z'))
+            (path[0] >= 'A' && path[0] <= 'Z'))
         {
             if (path[1] == ':')
             {
@@ -264,7 +264,7 @@ bool IsFullPath(const char* path)
                     while (*p)
                     {
                         if ((*p == '.' && *(p - 1) == '\\') ||
-                                (*p == '.' && *(p - 1) == '/'))
+                            (*p == '.' && *(p - 1) == '/'))
                         {
                             return false;
                         }
@@ -443,7 +443,7 @@ bool Stream_OpenFile(struct Stream* pStream, const char* fullPath)
     if (result)
     {
         if (pStream->Text != NULL &&
-                pStream->Text[0] != '\0')
+            pStream->Text[0] != '\0')
         {
             //unicode?
             pStream->Character = pStream->Text[0];
@@ -471,7 +471,7 @@ bool Stream_OpenString(struct Stream* pStream, const char* Text)
         pStream->TextLen = 0;
     }
     if (pStream->Text != NULL &&
-            pStream->Text[0] != '\0')
+        pStream->Text[0] != '\0')
     {
         //unicode?
         pStream->Character = pStream->Text[0];
@@ -868,11 +868,11 @@ void HashMap_RemoveAll(struct HashMap* pMap, void(*DeleteFunc)(void*))
     if (pMap->pHashTable != NULL)
     {
         for (unsigned int nHash = 0;
-                nHash < pMap->nHashTableSize;
-                nHash++)
+             nHash < pMap->nHashTableSize;
+             nHash++)
         {
             struct HashMapEntry* pKeyValue =
-                    pMap->pHashTable[nHash];
+                pMap->pHashTable[nHash];
             while (pKeyValue != NULL)
             {
                 struct HashMapEntry* pKeyValueCurrent = pKeyValue;
@@ -909,11 +909,11 @@ static struct HashMapEntry* HashMap_GetAssocAt(
     *nHashBucket = *HashValue % pMap->nHashTableSize;
     struct HashMapEntry* pResult = NULL;
     struct HashMapEntry* pKeyValue =
-            pMap->pHashTable[*nHashBucket];
+        pMap->pHashTable[*nHashBucket];
     for (; pKeyValue != NULL; pKeyValue = pKeyValue->pNext)
     {
         if (pKeyValue->HashValue == *HashValue &&
-                strcmp(pKeyValue->Key, Key) == 0)
+            strcmp(pKeyValue->Key, Key) == 0)
         {
             pResult = pKeyValue;
             break;
@@ -927,9 +927,9 @@ bool HashMap_Lookup(struct HashMap* pMap, const char* Key, void** rValue)
     bool bResult = false;
     unsigned int nHashBucket, HashValue;
     struct HashMapEntry* pKeyValue = HashMap_GetAssocAt(pMap,
-                                     Key,
-                                     &nHashBucket,
-                                     &HashValue);
+                                                        Key,
+                                                        &nHashBucket,
+                                                        &HashValue);
     if (pKeyValue != NULL)
     {
         *rValue = pKeyValue->pValue;
@@ -943,9 +943,9 @@ bool HashMap_LookupKey(struct HashMap* pMap, const char* Key, const char** rKey)
     bool bResult = false;
     unsigned int nHashBucket, HashValue;
     struct HashMapEntry* pKeyValue = HashMap_GetAssocAt(pMap,
-                                     Key,
-                                     &nHashBucket,
-                                     &HashValue);
+                                                        Key,
+                                                        &nHashBucket,
+                                                        &HashValue);
     if (pKeyValue != NULL)
     {
         *rKey = pKeyValue->Key;
@@ -963,12 +963,12 @@ bool HashMap_RemoveKey(struct HashMap* pMap, const char* Key, void** ppValue)
         unsigned int HashValue =
             String2_HashKey(Key);
         struct HashMapEntry** ppKeyValuePrev =
-                &pMap->pHashTable[HashValue % pMap->nHashTableSize];
+            &pMap->pHashTable[HashValue % pMap->nHashTableSize];
         struct HashMapEntry* pKeyValue = *ppKeyValuePrev;
         for (; pKeyValue != NULL; pKeyValue = pKeyValue->pNext)
         {
             if ((pKeyValue->HashValue == HashValue) &&
-                    (strcmp(pKeyValue->Key, Key) == 0))
+                (strcmp(pKeyValue->Key, Key) == 0))
             {
                 // remove from list
                 *ppKeyValuePrev = pKeyValue->pNext;
@@ -1070,9 +1070,9 @@ static void SymbolMap_KeyValue_Delete(struct SymbolMapItem* p)
 }
 
 struct SymbolMapItem* SymbolMap_GetAssocAt(struct SymbolMap* pMap,
-        const char* Key,
-        unsigned int* nHashBucket,
-        unsigned int* HashValue);
+    const char* Key,
+                                           unsigned int* nHashBucket,
+                                           unsigned int* HashValue);
 
 
 void SymbolMap_RemoveAll(struct SymbolMap* pMap)
@@ -1080,11 +1080,11 @@ void SymbolMap_RemoveAll(struct SymbolMap* pMap)
     if (pMap->pHashTable != NULL)
     {
         for (int nHash = 0;
-                nHash < pMap->nHashTableSize;
-                nHash++)
+             nHash < pMap->nHashTableSize;
+             nHash++)
         {
             struct SymbolMapItem* pKeyValue =
-                    pMap->pHashTable[nHash];
+                pMap->pHashTable[nHash];
             while (pKeyValue != NULL)
             {
                 struct SymbolMapItem* pKeyValueCurrent = pKeyValue;
@@ -1112,7 +1112,7 @@ struct SymbolMapItem* SymbolMap_FindBucket(struct SymbolMap* pMap, const char* K
     unsigned int HashValue = String2_HashKey(Key);
     unsigned int nHashBucket = HashValue % pMap->nHashTableSize;
     struct SymbolMapItem* pKeyValue =
-            pMap->pHashTable[nHashBucket];
+        pMap->pHashTable[nHashBucket];
     return pKeyValue;
 }
 
@@ -1132,11 +1132,11 @@ struct SymbolMapItem* SymbolMap_GetAssocAt(
     *nHashBucket = *HashValue % pMap->nHashTableSize;
     struct SymbolMapItem* pResult = NULL;
     struct SymbolMapItem* pKeyValue =
-            pMap->pHashTable[*nHashBucket];
+        pMap->pHashTable[*nHashBucket];
     for (; pKeyValue != NULL; pKeyValue = pKeyValue->pNext)
     {
         if (pKeyValue->HashValue == *HashValue &&
-                strcmp(pKeyValue->Key, Key) == 0)
+            strcmp(pKeyValue->Key, Key) == 0)
         {
             pResult = pKeyValue;
             break;
@@ -1150,9 +1150,9 @@ struct TypePointer* SymbolMap_Find(struct SymbolMap* pMap, const char* Key)
     struct TypePointer* pTypePointer = NULL;
     unsigned int nHashBucket, HashValue;
     struct SymbolMapItem* pKeyValue = SymbolMap_GetAssocAt(pMap,
-                                      Key,
-                                      &nHashBucket,
-                                      &HashValue);
+                                                           Key,
+                                                           &nHashBucket,
+                                                           &HashValue);
     if (pKeyValue != NULL)
     {
         pTypePointer = pKeyValue->pValue;
@@ -1171,9 +1171,9 @@ bool SymbolMap_LookupKey(struct SymbolMap* pMap,
     bool bResult = false;
     unsigned int nHashBucket, HashValue;
     struct SymbolMapItem* pKeyValue = SymbolMap_GetAssocAt(pMap,
-                                      Key,
-                                      &nHashBucket,
-                                      &HashValue);
+                                                           Key,
+                                                           &nHashBucket,
+                                                           &HashValue);
     if (pKeyValue != NULL)
     {
         *rKey = pKeyValue->Key;
@@ -1193,12 +1193,12 @@ bool SymbolMap_RemoveKey(struct SymbolMap* pMap,
         unsigned int HashValue =
             String2_HashKey(Key);
         struct SymbolMapItem** ppKeyValuePrev =
-                &pMap->pHashTable[HashValue % pMap->nHashTableSize];
+            &pMap->pHashTable[HashValue % pMap->nHashTableSize];
         struct SymbolMapItem* pKeyValue = *ppKeyValuePrev;
         for (; pKeyValue != NULL; pKeyValue = pKeyValue->pNext)
         {
             if ((pKeyValue->HashValue == HashValue) &&
-                    (strcmp(pKeyValue->Key, Key) == 0))
+                (strcmp(pKeyValue->Key, Key) == 0))
             {
                 // remove from list
                 *ppKeyValuePrev = pKeyValue->pNext;
@@ -1279,48 +1279,48 @@ const char* PrintType(enum Type type)
 {
     switch (type)
     {
-    case Null_ID:
-    case Declaration_ID:
-        return "TDeclaration_ID";
-    case StaticAssertDeclaration_ID:
-    case EofDeclaration_ID:
-    case SingleTypeSpecifier_ID:
-        return "TSingleTypeSpecifier_ID";
-    case EnumSpecifier_ID:
-        return "TEnumSpecifier_ID";
-    case StructUnionSpecifier_ID:
-        return "TStructUnionSpecifier_ID";
-    case StorageSpecifier_ID:
-    case AtomicTypeSpecifier_ID:
-    case TemplateTypeSpecifier_ID:
-    case StructDeclaration_ID:
-    case AlignmentSpecifier_ID:
-    case TypeQualifier_ID:
-    case FunctionSpecifier_ID:
-    case CompoundStatement_ID:
-    case ExpressionStatement_ID:
-    case SwitchStatement_ID:
-    case LabeledStatement_ID:
-    case ForStatement_ID:
-    case JumpStatement_ID:
-    case AsmStatement_ID:
-    case WhileStatement_ID:
-    case DoStatement_ID:
-    case IfStatement_ID:
-    case TypeName_ID:
-    case InitializerListType_ID:
-    case PrimaryExpression_ID:
-    case UnaryExpressionOperator_ID:
-    case CastExpressionType_ID:
-    case PrimaryExpressionValue_ID:
-    case PrimaryExpressionLiteral_ID:
-    case PostfixExpression_ID:
-    case BinaryExpression_ID:
-    case TernaryExpression_ID:
-    case Enumerator_ID:
-        break;
-    default:
-        break;
+        case Null_ID:
+        case Declaration_ID:
+            return "TDeclaration_ID";
+        case StaticAssertDeclaration_ID:
+        case EofDeclaration_ID:
+        case SingleTypeSpecifier_ID:
+            return "TSingleTypeSpecifier_ID";
+        case EnumSpecifier_ID:
+            return "TEnumSpecifier_ID";
+        case StructUnionSpecifier_ID:
+            return "TStructUnionSpecifier_ID";
+        case StorageSpecifier_ID:
+        case AtomicTypeSpecifier_ID:
+        case TemplateTypeSpecifier_ID:
+        case StructDeclaration_ID:
+        case AlignmentSpecifier_ID:
+        case TypeQualifier_ID:
+        case FunctionSpecifier_ID:
+        case CompoundStatement_ID:
+        case ExpressionStatement_ID:
+        case SwitchStatement_ID:
+        case LabeledStatement_ID:
+        case ForStatement_ID:
+        case JumpStatement_ID:
+        case AsmStatement_ID:
+        case WhileStatement_ID:
+        case DoStatement_ID:
+        case IfStatement_ID:
+        case TypeName_ID:
+        case InitializerListType_ID:
+        case PrimaryExpression_ID:
+        case UnaryExpressionOperator_ID:
+        case CastExpressionType_ID:
+        case PrimaryExpressionValue_ID:
+        case PrimaryExpressionLiteral_ID:
+        case PostfixExpression_ID:
+        case BinaryExpression_ID:
+        case TernaryExpression_ID:
+        case Enumerator_ID:
+            break;
+        default:
+            break;
     }
     return "";
 }
@@ -1383,7 +1383,7 @@ bool SymbolMap_IsTypeName(struct SymbolMap* pMap, const char* identifierName)
         while (pBucket)
         {
             if (pBucket->pValue->Type == Declaration_ID &&
-                    strcmp(pBucket->Key, identifierName) == 0)
+                strcmp(pBucket->Key, identifierName) == 0)
             {
                 foundResult = true;
                 struct Declaration* pDeclaration =
@@ -1428,7 +1428,7 @@ struct EnumSpecifier* SymbolMap_FindCompleteEnumSpecifier(struct SymbolMap* pMap
         while (pKeyValue != NULL)
         {
             if (pKeyValue->pValue->Type == EnumSpecifier_ID &&
-                    strcmp(pKeyValue->Key, enumName) == 0)
+                strcmp(pKeyValue->Key, enumName) == 0)
             {
                 struct EnumSpecifier* pEnumSpecifier =
                     (struct EnumSpecifier*)pKeyValue->pValue;
@@ -1498,7 +1498,7 @@ struct StructUnionSpecifier* SymbolMap_FindCompleteStructUnionSpecifier(struct S
                     pStructUnionSpecifier =
                         (struct StructUnionSpecifier*)pKeyValue->pValue;
                     if (pStructUnionSpecifier->StructDeclarationList.Size > 0 ||
-                            pStructUnionSpecifier->UnionSet.pHead != NULL)
+                        pStructUnionSpecifier->UnionSet.pHead != NULL)
                     {
                         //Se achou definicao completa pode sair
                         //se achou um _union pode sair tb
@@ -1514,7 +1514,7 @@ struct StructUnionSpecifier* SymbolMap_FindCompleteStructUnionSpecifier(struct S
 }
 
 struct Declaration* SymbolMap_FindTypedefDeclarationTarget(struct SymbolMap* pMap,
-        const char* typedefName)
+    const char* typedefName)
 {
     struct Declaration* pDeclarationResult = NULL;
     if (pMap->pHashTable != NULL)
@@ -1528,7 +1528,7 @@ struct Declaration* SymbolMap_FindTypedefDeclarationTarget(struct SymbolMap* pMa
         while (pKeyValue != NULL)
         {
             if (pKeyValue->pValue->Type == Declaration_ID &&
-                    strcmp(pKeyValue->Key, typedefName) == 0)
+                strcmp(pKeyValue->Key, typedefName) == 0)
             {
                 struct Declaration* pDeclaration =
                     (struct Declaration*)pKeyValue->pValue;
@@ -1540,29 +1540,29 @@ struct Declaration* SymbolMap_FindTypedefDeclarationTarget(struct SymbolMap* pMa
                     struct DeclarationSpecifier* pItem = pDeclaration->Specifiers.pData[i];
                     switch (pItem->Type)
                     {
-                    case StorageSpecifier_ID:
-                    {
-                        struct StorageSpecifier* pStorageSpecifier =
-                            (struct StorageSpecifier*)pItem;
-                        if (pStorageSpecifier->Token == TK_TYPEDEF)
+                        case StorageSpecifier_ID:
                         {
-                            bIsTypedef = true;
+                            struct StorageSpecifier* pStorageSpecifier =
+                                (struct StorageSpecifier*)pItem;
+                            if (pStorageSpecifier->Token == TK_TYPEDEF)
+                            {
+                                bIsTypedef = true;
+                            }
                         }
-                    }
-                    break;
-                    case SingleTypeSpecifier_ID:
-                    {
-                        struct SingleTypeSpecifier* pSingleTypeSpecifier =
-                            (struct SingleTypeSpecifier*)pItem;
-                        if (pSingleTypeSpecifier->Token2 == TK_IDENTIFIER)
-                        {
-                            indirectTypedef = pSingleTypeSpecifier->TypedefName;
-                        }
-                    }
-                    break;
-                    default:
-                        //assert(false);
                         break;
+                        case SingleTypeSpecifier_ID:
+                        {
+                            struct SingleTypeSpecifier* pSingleTypeSpecifier =
+                                (struct SingleTypeSpecifier*)pItem;
+                            if (pSingleTypeSpecifier->Token2 == TK_IDENTIFIER)
+                            {
+                                indirectTypedef = pSingleTypeSpecifier->TypedefName;
+                            }
+                        }
+                        break;
+                        default:
+                            //assert(false);
+                            break;
                     }
                 }
                 if (!bIsTypedef)
@@ -1597,8 +1597,8 @@ struct Declaration* SymbolMap_FindTypedefDeclarationTarget(struct SymbolMap* pMa
 //por exemplo no meio do caminho dos typedefs
 //pode ter ponteiros e depois const etc.
 struct DeclarationSpecifiers* SymbolMap_FindTypedefTarget(struct SymbolMap* pMap,
-        const char* typedefName,
-        struct Declarator* declarator)
+    const char* typedefName,
+                                                          struct Declarator* declarator)
 {
     //struct TDeclaration* pDeclarationResult = NULL;
     struct DeclarationSpecifiers* pSpecifiersResult = NULL;
@@ -1613,7 +1613,7 @@ struct DeclarationSpecifiers* SymbolMap_FindTypedefTarget(struct SymbolMap* pMap
         while (pKeyValue != NULL)
         {
             if (pKeyValue->pValue->Type == Declaration_ID &&
-                    strcmp(pKeyValue->Key, typedefName) == 0)
+                strcmp(pKeyValue->Key, typedefName) == 0)
             {
                 struct Declaration* pDeclaration =
                     (struct Declaration*)pKeyValue->pValue;
@@ -1625,29 +1625,29 @@ struct DeclarationSpecifiers* SymbolMap_FindTypedefTarget(struct SymbolMap* pMap
                     struct DeclarationSpecifier* pItem = pDeclaration->Specifiers.pData[i];
                     switch (pItem->Type)
                     {
-                    case StorageSpecifier_ID:
-                    {
-                        struct StorageSpecifier* pStorageSpecifier =
-                            (struct StorageSpecifier*)pItem;
-                        if (pStorageSpecifier->Token == TK_TYPEDEF)
+                        case StorageSpecifier_ID:
                         {
-                            bIsTypedef = true;
+                            struct StorageSpecifier* pStorageSpecifier =
+                                (struct StorageSpecifier*)pItem;
+                            if (pStorageSpecifier->Token == TK_TYPEDEF)
+                            {
+                                bIsTypedef = true;
+                            }
                         }
-                    }
-                    break;
-                    case SingleTypeSpecifier_ID:
-                    {
-                        struct SingleTypeSpecifier* pSingleTypeSpecifier =
-                            (struct SingleTypeSpecifier*)pItem;
-                        if (pSingleTypeSpecifier->Token2 == TK_IDENTIFIER)
-                        {
-                            indirectTypedef = pSingleTypeSpecifier->TypedefName;
-                        }
-                    }
-                    break;
-                    default:
-                        //assert(false);
                         break;
+                        case SingleTypeSpecifier_ID:
+                        {
+                            struct SingleTypeSpecifier* pSingleTypeSpecifier =
+                                (struct SingleTypeSpecifier*)pItem;
+                            if (pSingleTypeSpecifier->Token2 == TK_IDENTIFIER)
+                            {
+                                indirectTypedef = pSingleTypeSpecifier->TypedefName;
+                            }
+                        }
+                        break;
+                        default:
+                            //assert(false);
+                            break;
                     }
                 }
                 if (!bIsTypedef)
@@ -1665,8 +1665,8 @@ struct DeclarationSpecifiers* SymbolMap_FindTypedefTarget(struct SymbolMap* pMap
                         {
                             //copiar o pointer list deste typedef para o outro
                             for (struct Pointer* pItem = pDeclarator->PointerList.pHead;
-                                    pItem != NULL;
-                                    pItem = pItem->pNext)
+                                 pItem != NULL;
+                                 pItem = pItem->pNext)
                             {
                                 struct Pointer* pNew = NEW((struct Pointer)POINTER_INIT);
                                 Pointer_CopyFrom(pNew, pItem);
@@ -1700,8 +1700,8 @@ struct DeclarationSpecifiers* SymbolMap_FindTypedefTarget(struct SymbolMap* pMap
 //Acha o primeiro typedef
 //somas as partes do declarator
 struct DeclarationSpecifiers* SymbolMap_FindTypedefFirstTarget(struct SymbolMap* pMap,
-        const char* typedefName,
-        struct Declarator* declarator)
+    const char* typedefName,
+                                                               struct Declarator* declarator)
 {
     //struct TDeclaration* pDeclarationResult = NULL;
     struct DeclarationSpecifiers* pSpecifiersResult = NULL;
@@ -1716,7 +1716,7 @@ struct DeclarationSpecifiers* SymbolMap_FindTypedefFirstTarget(struct SymbolMap*
         while (pKeyValue != NULL)
         {
             if (pKeyValue->pValue->Type == Declaration_ID &&
-                    strcmp(pKeyValue->Key, typedefName) == 0)
+                strcmp(pKeyValue->Key, typedefName) == 0)
             {
                 struct Declaration* pDeclaration =
                     (struct Declaration*)pKeyValue->pValue;
@@ -1728,29 +1728,29 @@ struct DeclarationSpecifiers* SymbolMap_FindTypedefFirstTarget(struct SymbolMap*
                     struct DeclarationSpecifier* pItem = pDeclaration->Specifiers.pData[i];
                     switch (pItem->Type)
                     {
-                    case StorageSpecifier_ID:
-                    {
-                        struct StorageSpecifier* pStorageSpecifier =
-                            (struct StorageSpecifier*)pItem;
-                        if (pStorageSpecifier->Token == TK_TYPEDEF)
+                        case StorageSpecifier_ID:
                         {
-                            bIsTypedef = true;
+                            struct StorageSpecifier* pStorageSpecifier =
+                                (struct StorageSpecifier*)pItem;
+                            if (pStorageSpecifier->Token == TK_TYPEDEF)
+                            {
+                                bIsTypedef = true;
+                            }
                         }
-                    }
-                    break;
-                    case SingleTypeSpecifier_ID:
-                    {
-                        struct SingleTypeSpecifier* pSingleTypeSpecifier =
-                            (struct SingleTypeSpecifier*)pItem;
-                        if (pSingleTypeSpecifier->Token2 == TK_IDENTIFIER)
-                        {
-                            indirectTypedef = pSingleTypeSpecifier->TypedefName;
-                        }
-                    }
-                    break;
-                    default:
-                        //assert(false);
                         break;
+                        case SingleTypeSpecifier_ID:
+                        {
+                            struct SingleTypeSpecifier* pSingleTypeSpecifier =
+                                (struct SingleTypeSpecifier*)pItem;
+                            if (pSingleTypeSpecifier->Token2 == TK_IDENTIFIER)
+                            {
+                                indirectTypedef = pSingleTypeSpecifier->TypedefName;
+                            }
+                        }
+                        break;
+                        default:
+                            //assert(false);
+                            break;
                     }
                 }
                 if (!bIsTypedef)
@@ -1768,8 +1768,8 @@ struct DeclarationSpecifiers* SymbolMap_FindTypedefFirstTarget(struct SymbolMap*
                         {
                             //copiar o pointer list deste typedef para o outro
                             for (struct Pointer* pItem = pDeclarator->PointerList.pHead;
-                                    pItem != NULL;
-                                    pItem = pItem->pNext)
+                                 pItem != NULL;
+                                 pItem = pItem->pNext)
                             {
                                 struct Pointer* pNew = NEW((struct Pointer)POINTER_INIT);
                                 Pointer_CopyFrom(pNew, pItem);
@@ -1792,8 +1792,8 @@ struct DeclarationSpecifiers* SymbolMap_FindTypedefFirstTarget(struct SymbolMap*
                             Declaration_FindDeclarator(pDeclaration, typedefName);
                         //copiar o pointer list deste typedef para o outro
                         for (struct Pointer* pItem = pDeclarator->PointerList.pHead;
-                                pItem != NULL;
-                                pItem = pItem->pNext)
+                             pItem != NULL;
+                             pItem = pItem->pNext)
                         {
                             struct Pointer* pNew = NEW((struct Pointer)POINTER_INIT);
                             Pointer_CopyFrom(pNew, pItem);
@@ -1810,7 +1810,7 @@ struct DeclarationSpecifiers* SymbolMap_FindTypedefFirstTarget(struct SymbolMap*
     return pSpecifiersResult;// &pDeclarationResult->Specifiers;
 }
 struct TypeSpecifier* SymbolMap_FindTypedefSpecifierTarget(struct SymbolMap* pMap,
-        const char* typedefName)
+    const char* typedefName)
 {
     /*Sample:
     struct X;
@@ -1828,53 +1828,53 @@ struct TypeSpecifier* SymbolMap_FindTypedefSpecifierTarget(struct SymbolMap* pMa
             struct DeclarationSpecifier* pItem = pDeclaration->Specifiers.pData[i];
             switch (pItem->Type)
             {
-            case SingleTypeSpecifier_ID:
-                pSpecifierTarget = (struct TypeSpecifier*)pItem;
-                break;
-            case StructUnionSpecifier_ID:
-            {
-                struct StructUnionSpecifier* pStructUnionSpecifier =
-                    (struct StructUnionSpecifier*)pItem;
-                if (pStructUnionSpecifier->StructDeclarationList.Size == 0)
+                case SingleTypeSpecifier_ID:
+                    pSpecifierTarget = (struct TypeSpecifier*)pItem;
+                    break;
+                case StructUnionSpecifier_ID:
                 {
-                    if (pStructUnionSpecifier->Tag != NULL)
+                    struct StructUnionSpecifier* pStructUnionSpecifier =
+                        (struct StructUnionSpecifier*)pItem;
+                    if (pStructUnionSpecifier->StructDeclarationList.Size == 0)
                     {
-                        pSpecifierTarget = (struct TypeSpecifier*)SymbolMap_FindCompleteStructUnionSpecifier(pMap, pStructUnionSpecifier->Tag);
+                        if (pStructUnionSpecifier->Tag != NULL)
+                        {
+                            pSpecifierTarget = (struct TypeSpecifier*)SymbolMap_FindCompleteStructUnionSpecifier(pMap, pStructUnionSpecifier->Tag);
+                        }
+                        else
+                        {
+                            //assert(false);
+                        }
                     }
                     else
                     {
-                        //assert(false);
+                        pSpecifierTarget = (struct TypeSpecifier*)pStructUnionSpecifier;
                     }
                 }
-                else
+                break;
+                case EnumSpecifier_ID:
                 {
-                    pSpecifierTarget = (struct TypeSpecifier*)pStructUnionSpecifier;
-                }
-            }
-            break;
-            case EnumSpecifier_ID:
-            {
-                struct EnumSpecifier* pEnumSpecifier =
-                    (struct EnumSpecifier*)pItem;
-                if (pEnumSpecifier->EnumeratorList.pHead == NULL)
-                {
-                    if (pEnumSpecifier->Tag != NULL)
+                    struct EnumSpecifier* pEnumSpecifier =
+                        (struct EnumSpecifier*)pItem;
+                    if (pEnumSpecifier->EnumeratorList.pHead == NULL)
                     {
-                        pEnumSpecifier = SymbolMap_FindCompleteEnumSpecifier(pMap, pEnumSpecifier->Tag);
+                        if (pEnumSpecifier->Tag != NULL)
+                        {
+                            pEnumSpecifier = SymbolMap_FindCompleteEnumSpecifier(pMap, pEnumSpecifier->Tag);
+                        }
+                        else
+                        {
+                            //assert(false);
+                        }
                     }
                     else
                     {
-                        //assert(false);
+                        pSpecifierTarget = (struct TypeSpecifier*)pEnumSpecifier;
                     }
                 }
-                else
-                {
-                    pSpecifierTarget = (struct TypeSpecifier*)pEnumSpecifier;
-                }
-            }
-            break;
-            default:
                 break;
+                default:
+                    break;
             }
             if (pSpecifierTarget != NULL)
             {
@@ -2023,322 +2023,326 @@ const char* TokenToNameString(enum TokenType tk)
 {
     switch (tk)
     {
-    case TK_NONE:
-        return "TK_NONE";
-    case TK_BOF:
-        return "TK_BOF";
-    case TK_EOF:
-        return "TK_EOF";
-    case TK_ENDMARK:
-        return "TK_ENDMARK";
-    case TK_LINE_COMMENT:
-        return "TK_LINE_COMMENT";
-    case TK_COMMENT:
-        return "TK_COMMENT";
-    case TK_OPEN_COMMENT:
-        return "TK_OPEN_COMMENT";
-    case TK_CLOSE_COMMENT:
-        return "TK_CLOSE_COMMENT";
-    case TK_STRING_LITERAL:
-        return "TK_STRING_LITERAL";
-    case TK_IDENTIFIER:
-        return "TK_IDENTIFIER";
-    case TK_SPACES:
-        return "TK_SPACES";
-    case TK_DECIMAL_INTEGER:
-        return "TK_DECIMAL_INTEGER";
-    case TK_HEX_INTEGER:
-        return "TK_HEX_INTEGER";
-    case TK_OCTAL_INTEGER:
-        return "TK_OCTAL_INTEGER";
-    case TK_FLOAT_NUMBER:
-        return "TK_FLOAT_NUMBER";
-    case TK_MACROPLACEHOLDER:
-        return "TK_MACROPLACEHOLDER";
-    case TK_BREAKLINE:
-        return "TK_BREAKLINE";
-    case TK_BACKSLASHBREAKLINE:
-        return "TK_BACKSLASHBREAKLINE";
-    case CHAR1:
-        return "CHAR1";
-    case CHARACTER_TABULATION:
-        return "CHARACTER_TABULATION";
-    case TK_PREPROCESSOR:
-        return "TK_PREPROCESSOR";
-    case TK_ERROR:
-        return "TK_ERROR";
-    case TK_EXCLAMATION_MARK:
-        return "TK_EXCLAMATION_MARK";
-    case TK_QUOTATION_MARK:
-        return "TK_QUOTATION_MARK";
-    case TK_NUMBER_SIGN:
-        return "TK_NUMBER_SIGN";
-    case TK_DOLLAR_SIGN:
-        return "TK_DOLLAR_SIGN";
-    case TK_PERCENT_SIGN:
-        return "TK_PERCENT_SIGN";
-    case TK_AMPERSAND:
-        return "TK_AMPERSAND";
-    case TK_APOSTROPHE:
-        return "TK_APOSTROPHE";
-    case TK_LEFT_PARENTHESIS:
-        return "TK_LEFT_PARENTHESIS";
-    case TK_RIGHT_PARENTHESIS:
-        return "TK_RIGHT_PARENTHESIS";
-    case TK_ASTERISK:
-        return "TK_ASTERISK";
-    case TK_PLUS_SIGN:
-        return "TK_PLUS_SIGN";
-    case TK_COMMA:
-        return "TK_COMMA";
-    case TK_HYPHEN_MINUS:
-        return "TK_HYPHEN_MINUS";
-    case TK_HYPHEN_MINUS_NEG:
-        return "TK_HYPHEN_MINUS_NEG";
-    case TK_FULL_STOP:
-        return "TK_FULL_STOP";
-    case TK_SOLIDUS:
-        return "TK_SOLIDUS";
-    case TK_COLON:
-        return "TK_COLON";
-    case TK_SEMICOLON:
-        return "TK_SEMICOLON";
-    case TK_LESS_THAN_SIGN:
-        return "TK_LESS_THAN_SIGN";
-    case TK_EQUALS_SIGN:
-        return "TK_EQUALS_SIGN";
-    case TK_GREATER_THAN_SIGN:
-        return "TK_GREATER_THAN_SIGN";
-    case TK_QUESTION_MARK:
-        return "TK_QUESTION_MARK";
-    case TK_COMMERCIAL_AT:
-        return "TK_COMMERCIAL_AT";
-    case TK_LEFT_SQUARE_BRACKET:
-        return "TK_LEFT_SQUARE_BRACKET";
-    case REVERSE_SOLIDUS:
-        return "REVERSE_SOLIDUS";
-    case TK_RIGHT_SQUARE_BRACKET:
-        return "TK_RIGHT_SQUARE_BRACKET";
-    case TK_CIRCUMFLEX_ACCENT:
-        return "TK_CIRCUMFLEX_ACCENT";
-    case TK_LOW_LINE:
-        return "TK_LOW_LINE";
-    case TK_GRAVE_ACCENT:
-        return "TK_GRAVE_ACCENT";
-    case TK_LEFT_CURLY_BRACKET:
-        return "TK_LEFT_CURLY_BRACKET";
-    case TK_VERTICAL_LINE:
-        return "TK_VERTICAL_LINE";
-    case TK_RIGHT_CURLY_BRACKET:
-        return "TK_RIGHT_CURLY_BRACKET";
-    case TK_TILDE:
-        return "TK_TILDE";
-    case TK_ARROW:
-        return "TK_ARROW";
-    case TK_PLUSPLUS:
-        return "TK_PLUSPLUS";
-    case TK_MINUSMINUS:
-        return "TK_MINUSMINUS";
-    case TK_LESSLESS:
-        return "TK_LESSLESS";
-    case TK_GREATERGREATER:
-        return "TK_GREATERGREATER";
-    case TK_LESSEQUAL:
-        return "TK_LESSEQUAL";
-    case TK_GREATEREQUAL:
-        return "TK_GREATEREQUAL";
-    case TK_EQUALEQUAL:
-        return "TK_EQUALEQUAL";
-    case TK_NOTEQUAL:
-        return "TK_NOTEQUAL";
-    case TK_ANDAND:
-        return "TK_ANDAND";
-    case TK_OROR:
-        return "TK_OROR";
-    case TK_MULTIEQUAL:
-        return "TK_MULTIEQUAL";
-    case TK_DIVEQUAL:
-        return "TK_DIVEQUAL";
-    case TK_PERCENT_EQUAL:
-        return "TK_PERCENT_EQUAL";
-    case TK_PLUSEQUAL:
-        return "TK_PLUSEQUAL";
-    case TK_MINUS_EQUAL:
-        return "TK_MINUS_EQUAL";
-    case TK_ANDEQUAL:
-        return "TK_ANDEQUAL";
-    case TK_CARETEQUAL:
-        return "TK_CARETEQUAL";
-    case TK_OREQUAL:
-        return "TK_OREQUAL";
-    case TK_NUMBERNUMBER:
-        return "TK_NUMBERNUMBER";
-    case TK_LESSCOLON:
-        return "TK_LESSCOLON";
-    case TK_COLONGREATER:
-        return "TK_COLONGREATER";
-    case TK_LESSPERCENT:
-        return "TK_LESSPERCENT";
-    case TK_PERCENTGREATER:
-        return "TK_PERCENTGREATER";
-    case TK_PERCENTCOLON:
-        return "TK_PERCENTCOLON";
-    case TK_DOTDOTDOT:
-        return "TK_DOTDOTDOT";
-    case TK_GREATERGREATEREQUAL:
-        return "TK_GREATERGREATEREQUAL";
-    case TK_LESSLESSEQUAL:
-        return "TK_LESSLESSEQUAL";
-    case TK_PERCENTCOLONPERCENTCOLON:
-        return "TK_PERCENTCOLONPERCENTCOLON";
-    case TK_CHAR_LITERAL:
-        return "TK_CHAR_LITERAL";
-    case TK_AUTO:
-        return "TK_AUTO";
-    case TK_BREAK:
-        return "TK_BREAK";
-    case TK_CASE:
-        return "TK_CASE";
-    case TK_CHAR:
-        return "TK_CHAR";
-    case TK_CONST:
-        return "TK_CONST";
-    case TK_CONTINUE:
-        return "TK_CONTINUE";
-    case TK_DEFAULT:
-        return "TK_DEFAULT";
-    case TK_DO:
-        return "TK_DO";
-    case TK_DOUBLE:
-        return "TK_DOUBLE";
-    case TK_ELSE:
-        return "TK_ELSE";
-    case TK_ENUM:
-        return "TK_ENUM";
-    case TK_EXTERN:
-        return "TK_EXTERN";
-    case TK_FLOAT:
-        return "TK_FLOAT";
-    case TK_FOR:
-        return "TK_FOR";
-    case TK_GOTO:
-        return "TK_GOTO";
-    case TK_IF:
-        return "TK_IF";
-    case TK_TRY:
-        return "TK_TRY";
-    case TK_INT:
-        return "TK_INT";
-    case TK_LONG:
-        return "TK_LONG";
-    case TK__INT8:
-        return "TK__INT8";
-    case TK__INT16:
-        return "TK__INT16";
-    case TK__INT32:
-        return "TK__INT32";
-    case TK__INT64:
-        return "TK__INT64";
-    case TK__WCHAR_T:
-        return "TK__WCHAR_T";
-    case TK___DECLSPEC:
-        return "TK___DECLSPEC";
-    case TK_REGISTER:
-        return "TK_REGISTER";
-    case TK_RETURN:
-        return "TK_RETURN";
-    case TK_SHORT:
-        return "TK_SHORT";
-    case TK_SIGNED:
-        return "TK_SIGNED";
-    case TK_SIZEOF:
-        return "TK_SIZEOF";
-    case TK_STATIC:
-        return "TK_STATIC";
-    case TK_STRUCT:
-        return "TK_STRUCT";
-    case TK_SWITCH:
-        return "TK_SWITCH";
-    case TK_TYPEDEF:
-        return "TK_TYPEDEF";
-    case TK_UNION:
-        return "TK_UNION";
-    case TK_UNSIGNED:
-        return "TK_UNSIGNED";
-    case TK_VOID:
-        return "TK_VOID";
-    case TK_VOLATILE:
-        return "TK_VOLATILE";
-    case TK_WHILE:
-        return "TK_WHILE";
-    case TK__THREAD_LOCAL:
-        return "TK__THREAD_LOCAL";
-    case TK__BOOL:
-        return "TK__BOOL";
-    case TK__COMPLEX:
-        return "TK__COMPLEX";
-    case TK__ATOMIC:
-        return "TK__ATOMIC";
-    case TK_RESTRICT:
-        return "TK_RESTRICT";
-    case TK__STATIC_ASSERT:
-        return "TK__STATIC_ASSERT";
-    case TK_INLINE:
-        return "TK_INLINE";
-    case TK__INLINE:
-        return "TK__INLINE";
-    case TK__FORCEINLINE:
-        return "TK__FORCEINLINE";
-    case TK__NORETURN:
-        return "TK__NORETURN";
-    case TK__ALIGNAS:
-        return "TK__ALIGNAS";
-    case TK__GENERIC:
-        return "TK__GENERIC";
-    case TK__IMAGINARY:
-        return "TK__IMAGINARY";
-    case TK__ALINGOF:
-        return "TK__ALINGOF";
-    case TK__ASM:
-        return "TK__ASM";
-    case TK__PRAGMA:
-        return "TK__PRAGMA";
-    case TK__C99PRAGMA:
-        return "TK__C99PRAGMA";
-    case TK_PRE_INCLUDE:
-        return "TK_PRE_INCLUDE";
-    case TK_PRE_PRAGMA:
-        return "TK_PRE_PRAGMA";
-    case TK_PRE_IF:
-        return "TK_PRE_IF";
-    case TK_PRE_ELIF:
-        return "TK_PRE_ELIF";
-    case TK_PRE_IFNDEF:
-        return "TK_PRE_IFNDEF";
-    case TK_PRE_IFDEF:
-        return "TK_PRE_IFDEF";
-    case TK_PRE_ENDIF:
-        return "TK_PRE_ENDIF";
-    case TK_PRE_ELSE:
-        return "TK_PRE_ELSE";
-    case TK_PRE_ERROR:
-        return "TK_PRE_ERROR";
-    case TK_PRE_LINE:
-        return "TK_PRE_LINE";
-    case TK_PRE_UNDEF:
-        return "TK_PRE_UNDEF";
-    case TK_PRE_DEFINE:
-        return "TK_PRE_DEFINE";
-    case TK_MACRO_CALL:
-        return "TK_MACRO_CALL";
-    case TK_MACRO_EOF:
-        return "TK_MACRO_EOF";
-    case TK_FILE_EOF:
-        return "TK_FILE_EOF";
-    case TK_NEW:
-        return "TK_NEW";
-    default:
-        break;
+        case TK_NONE:
+            return "TK_NONE";
+        case TK_BOF:
+            return "TK_BOF";
+        case TK_EOF:
+            return "TK_EOF";
+        case TK_ENDMARK:
+            return "TK_ENDMARK";
+        case TK_LINE_COMMENT:
+            return "TK_LINE_COMMENT";
+        case TK_COMMENT:
+            return "TK_COMMENT";
+        case TK_OPEN_COMMENT:
+            return "TK_OPEN_COMMENT";
+        case TK_CLOSE_COMMENT:
+            return "TK_CLOSE_COMMENT";
+        case TK_STRING_LITERAL:
+            return "TK_STRING_LITERAL";
+        case TK_IDENTIFIER:
+            return "TK_IDENTIFIER";
+        case TK_SPACES:
+            return "TK_SPACES";
+        case TK_DECIMAL_INTEGER:
+            return "TK_DECIMAL_INTEGER";
+        case TK_HEX_INTEGER:
+            return "TK_HEX_INTEGER";
+        case TK_OCTAL_INTEGER:
+            return "TK_OCTAL_INTEGER";
+        case TK_FLOAT_NUMBER:
+            return "TK_FLOAT_NUMBER";
+        case TK_MACROPLACEHOLDER:
+            return "TK_MACROPLACEHOLDER";
+        case TK_BREAKLINE:
+            return "TK_BREAKLINE";
+        case TK_BACKSLASHBREAKLINE:
+            return "TK_BACKSLASHBREAKLINE";
+        case CHAR1:
+            return "CHAR1";
+        case CHARACTER_TABULATION:
+            return "CHARACTER_TABULATION";
+        case TK_PREPROCESSOR:
+            return "TK_PREPROCESSOR";
+        case TK_ERROR:
+            return "TK_ERROR";
+        case TK_EXCLAMATION_MARK:
+            return "TK_EXCLAMATION_MARK";
+        case TK_QUOTATION_MARK:
+            return "TK_QUOTATION_MARK";
+        case TK_NUMBER_SIGN:
+            return "TK_NUMBER_SIGN";
+        case TK_DOLLAR_SIGN:
+            return "TK_DOLLAR_SIGN";
+        case TK_PERCENT_SIGN:
+            return "TK_PERCENT_SIGN";
+        case TK_AMPERSAND:
+            return "TK_AMPERSAND";
+        case TK_APOSTROPHE:
+            return "TK_APOSTROPHE";
+        case TK_LEFT_PARENTHESIS:
+            return "TK_LEFT_PARENTHESIS";
+        case TK_RIGHT_PARENTHESIS:
+            return "TK_RIGHT_PARENTHESIS";
+        case TK_ASTERISK:
+            return "TK_ASTERISK";
+        case TK_PLUS_SIGN:
+            return "TK_PLUS_SIGN";
+        case TK_COMMA:
+            return "TK_COMMA";
+        case TK_HYPHEN_MINUS:
+            return "TK_HYPHEN_MINUS";
+        case TK_HYPHEN_MINUS_NEG:
+            return "TK_HYPHEN_MINUS_NEG";
+        case TK_FULL_STOP:
+            return "TK_FULL_STOP";
+        case TK_SOLIDUS:
+            return "TK_SOLIDUS";
+        case TK_COLON:
+            return "TK_COLON";
+        case TK_SEMICOLON:
+            return "TK_SEMICOLON";
+        case TK_LESS_THAN_SIGN:
+            return "TK_LESS_THAN_SIGN";
+        case TK_EQUALS_SIGN:
+            return "TK_EQUALS_SIGN";
+        case TK_GREATER_THAN_SIGN:
+            return "TK_GREATER_THAN_SIGN";
+        case TK_QUESTION_MARK:
+            return "TK_QUESTION_MARK";
+        case TK_COMMERCIAL_AT:
+            return "TK_COMMERCIAL_AT";
+        case TK_LEFT_SQUARE_BRACKET:
+            return "TK_LEFT_SQUARE_BRACKET";
+        case REVERSE_SOLIDUS:
+            return "REVERSE_SOLIDUS";
+        case TK_RIGHT_SQUARE_BRACKET:
+            return "TK_RIGHT_SQUARE_BRACKET";
+        case TK_CIRCUMFLEX_ACCENT:
+            return "TK_CIRCUMFLEX_ACCENT";
+        case TK_LOW_LINE:
+            return "TK_LOW_LINE";
+        case TK_GRAVE_ACCENT:
+            return "TK_GRAVE_ACCENT";
+        case TK_LEFT_CURLY_BRACKET:
+            return "TK_LEFT_CURLY_BRACKET";
+        case TK_VERTICAL_LINE:
+            return "TK_VERTICAL_LINE";
+        case TK_RIGHT_CURLY_BRACKET:
+            return "TK_RIGHT_CURLY_BRACKET";
+        case TK_TILDE:
+            return "TK_TILDE";
+        case TK_ARROW:
+            return "TK_ARROW";
+        case TK_PLUSPLUS:
+            return "TK_PLUSPLUS";
+        case TK_MINUSMINUS:
+            return "TK_MINUSMINUS";
+        case TK_LESSLESS:
+            return "TK_LESSLESS";
+        case TK_GREATERGREATER:
+            return "TK_GREATERGREATER";
+        case TK_LESSEQUAL:
+            return "TK_LESSEQUAL";
+        case TK_GREATEREQUAL:
+            return "TK_GREATEREQUAL";
+        case TK_EQUALEQUAL:
+            return "TK_EQUALEQUAL";
+        case TK_NOTEQUAL:
+            return "TK_NOTEQUAL";
+        case TK_ANDAND:
+            return "TK_ANDAND";
+        case TK_OROR:
+            return "TK_OROR";
+        case TK_MULTIEQUAL:
+            return "TK_MULTIEQUAL";
+        case TK_DIVEQUAL:
+            return "TK_DIVEQUAL";
+        case TK_PERCENT_EQUAL:
+            return "TK_PERCENT_EQUAL";
+        case TK_PLUSEQUAL:
+            return "TK_PLUSEQUAL";
+        case TK_MINUS_EQUAL:
+            return "TK_MINUS_EQUAL";
+        case TK_ANDEQUAL:
+            return "TK_ANDEQUAL";
+        case TK_CARETEQUAL:
+            return "TK_CARETEQUAL";
+        case TK_OREQUAL:
+            return "TK_OREQUAL";
+        case TK_NUMBERNUMBER:
+            return "TK_NUMBERNUMBER";
+        case TK_LESSCOLON:
+            return "TK_LESSCOLON";
+        case TK_COLONGREATER:
+            return "TK_COLONGREATER";
+        case TK_LESSPERCENT:
+            return "TK_LESSPERCENT";
+        case TK_PERCENTGREATER:
+            return "TK_PERCENTGREATER";
+        case TK_PERCENTCOLON:
+            return "TK_PERCENTCOLON";
+        case TK_DOTDOTDOT:
+            return "TK_DOTDOTDOT";
+        case TK_GREATERGREATEREQUAL:
+            return "TK_GREATERGREATEREQUAL";
+        case TK_LESSLESSEQUAL:
+            return "TK_LESSLESSEQUAL";
+        case TK_PERCENTCOLONPERCENTCOLON:
+            return "TK_PERCENTCOLONPERCENTCOLON";
+        case TK_CHAR_LITERAL:
+            return "TK_CHAR_LITERAL";
+        case TK_AUTO:
+            return "TK_AUTO";
+        case TK_BREAK:
+            return "TK_BREAK";
+        case TK_CASE:
+            return "TK_CASE";
+        case TK_CHAR:
+            return "TK_CHAR";
+        case TK_CONST:
+            return "TK_CONST";
+        case TK_CONTINUE:
+            return "TK_CONTINUE";
+        case TK_DEFAULT:
+            return "TK_DEFAULT";
+        case TK_DO:
+            return "TK_DO";
+        case TK_DOUBLE:
+            return "TK_DOUBLE";
+        case TK_ELSE:
+            return "TK_ELSE";
+        case TK_ENUM:
+            return "TK_ENUM";
+        case TK_EXTERN:
+            return "TK_EXTERN";
+        case TK_FLOAT:
+            return "TK_FLOAT";
+        case TK_FOR:
+            return "TK_FOR";
+        case TK_GOTO:
+            return "TK_GOTO";
+        case TK_IF:
+            return "TK_IF";
+        case TK_TRY:
+            return "TK_TRY";
+        case TK_INT:
+            return "TK_INT";
+        case TK_LONG:
+            return "TK_LONG";
+        case TK__INT8:
+            return "TK__INT8";
+        case TK__INT16:
+            return "TK__INT16";
+        case TK__INT32:
+            return "TK__INT32";
+        case TK__INT64:
+            return "TK__INT64";
+        case TK__WCHAR_T:
+            return "TK__WCHAR_T";
+        case TK___DECLSPEC:
+            return "TK___DECLSPEC";
+        case TK_REGISTER:
+            return "TK_REGISTER";
+        case TK_RETURN:
+            return "TK_RETURN";
+        case TK_THROW:
+            return "TK_THROW";
+        case TK_SHORT:
+            return "TK_SHORT";
+        case TK_SIGNED:
+            return "TK_SIGNED";
+        case TK_SIZEOF:
+            return "TK_SIZEOF";
+        case TK_STATIC:
+            return "TK_STATIC";
+        case TK_STRUCT:
+            return "TK_STRUCT";
+        case TK_SWITCH:
+            return "TK_SWITCH";
+        case TK_TYPEDEF:
+            return "TK_TYPEDEF";
+        case TK_UNION:
+            return "TK_UNION";
+        case TK_UNSIGNED:
+            return "TK_UNSIGNED";
+        case TK_VOID:
+            return "TK_VOID";
+        case TK_VOLATILE:
+            return "TK_VOLATILE";
+        case TK_WHILE:
+            return "TK_WHILE";
+        case TK_CATCH:
+            return "TK_CATCH";
+        case TK__THREAD_LOCAL:
+            return "TK__THREAD_LOCAL";
+        case TK__BOOL:
+            return "TK__BOOL";
+        case TK__COMPLEX:
+            return "TK__COMPLEX";
+        case TK__ATOMIC:
+            return "TK__ATOMIC";
+        case TK_RESTRICT:
+            return "TK_RESTRICT";
+        case TK__STATIC_ASSERT:
+            return "TK__STATIC_ASSERT";
+        case TK_INLINE:
+            return "TK_INLINE";
+        case TK__INLINE:
+            return "TK__INLINE";
+        case TK__FORCEINLINE:
+            return "TK__FORCEINLINE";
+        case TK__NORETURN:
+            return "TK__NORETURN";
+        case TK__ALIGNAS:
+            return "TK__ALIGNAS";
+        case TK__GENERIC:
+            return "TK__GENERIC";
+        case TK__IMAGINARY:
+            return "TK__IMAGINARY";
+        case TK__ALINGOF:
+            return "TK__ALINGOF";
+        case TK__ASM:
+            return "TK__ASM";
+        case TK__PRAGMA:
+            return "TK__PRAGMA";
+        case TK__C99PRAGMA:
+            return "TK__C99PRAGMA";
+        case TK_PRE_INCLUDE:
+            return "TK_PRE_INCLUDE";
+        case TK_PRE_PRAGMA:
+            return "TK_PRE_PRAGMA";
+        case TK_PRE_IF:
+            return "TK_PRE_IF";
+        case TK_PRE_ELIF:
+            return "TK_PRE_ELIF";
+        case TK_PRE_IFNDEF:
+            return "TK_PRE_IFNDEF";
+        case TK_PRE_IFDEF:
+            return "TK_PRE_IFDEF";
+        case TK_PRE_ENDIF:
+            return "TK_PRE_ENDIF";
+        case TK_PRE_ELSE:
+            return "TK_PRE_ELSE";
+        case TK_PRE_ERROR:
+            return "TK_PRE_ERROR";
+        case TK_PRE_LINE:
+            return "TK_PRE_LINE";
+        case TK_PRE_UNDEF:
+            return "TK_PRE_UNDEF";
+        case TK_PRE_DEFINE:
+            return "TK_PRE_DEFINE";
+        case TK_MACRO_CALL:
+            return "TK_MACRO_CALL";
+        case TK_MACRO_EOF:
+            return "TK_MACRO_EOF";
+        case TK_FILE_EOF:
+            return "TK_FILE_EOF";
+        case TK_NEW:
+            return "TK_NEW";
+        default:
+            break;
     }
     return "";
 }
@@ -2347,266 +2351,270 @@ const char* TokenToString(enum TokenType tk)
 {
     switch (tk)
     {
-    case TK_NONE:
-        return "None";
-    case TK_BOF:
-        return "Bof";
-    case TK_EOF:
-        return "Eof";
-    case TK_LINE_COMMENT:
-        return "LINE_COMMENT";
-    case TK_COMMENT:
-        return "COMMENT";
-    case TK_CLOSE_COMMENT:
-        return "CLOSE_COMMENT";
-    case TK_OPEN_COMMENT:
-        return "OPEN_COMMENT";
-    case TK_STRING_LITERAL:
-        return "LITERALSTR";
-    case TK_IDENTIFIER:
-        return "IDENTIFIER";
-    case TK_SPACES:
-        return "SPACES";
-    case TK_DECIMAL_INTEGER:
-        return "TK_DECIMAL_INTEGER";
-    case TK_HEX_INTEGER:
-        return "TK_HEX_INTEGER";
-    case TK_FLOAT_NUMBER:
-        return "TK_FLOAT_NUMBER";
-    case TK_BREAKLINE:
-        return "BREAKLINE";
-    case TK_BACKSLASHBREAKLINE:
-        return "TK_BACKSLASHBREAKLINE";
-    case TK_PREPROCESSOR:
-        return "PREPROCESSOR";
-    case CHARACTER_TABULATION:
-        return "CHARACTER_TABULATION";
-    case TK_EXCLAMATION_MARK:
-        return "!";// = '!';
-    case TK_QUOTATION_MARK:
-        return "\"";//,// = '\"';
-    case TK_NUMBER_SIGN:
-        return "#";//,// = '#';
-    case TK_DOLLAR_SIGN:
-        return "$";//,// = '$';
-    case TK_PERCENT_SIGN:
-        return "%";//,// = '%';
-    case TK_AMPERSAND:
-        return "&";//,// = '&';
-    case TK_APOSTROPHE:
-        return "'";//,// = '\'';
-    case TK_LEFT_PARENTHESIS:
-        return "(";//,// = '(';
-    case TK_RIGHT_PARENTHESIS:
-        return ")";//,// = ')';
-    case TK_ASTERISK:
-        return "*";//,// = '*';
-    case TK_PLUS_SIGN:
-        return "+";//,// = '+';
-    case TK_COMMA:
-        return ",";//,// = ',';
-    case TK_HYPHEN_MINUS:
-        return "-";//,// = '-';
-    case TK_FULL_STOP:
-        return ".";//,// = '.';
-    case TK_SOLIDUS:
-        return "/";//,// = '/';
-    case TK_COLON:
-        return ":";//,// = ':';
-    case TK_SEMICOLON:
-        return ";";//,// = ';';
-    case TK_LESS_THAN_SIGN:
-        return "<";//,// = '<';
-    case TK_EQUALS_SIGN:
-        return "=";//,// = '=';
-    case TK_GREATER_THAN_SIGN:
-        return ">";//,// = '>';
-    case TK_QUESTION_MARK:
-        return "?";//,// = '\?';
-    case TK_COMMERCIAL_AT:
-        return "@";//,// = '@';
-    case TK_LEFT_SQUARE_BRACKET:
-        return "[";//,// = '[';
-    case REVERSE_SOLIDUS:
-        return "\\";//,// = '\\';
-    case TK_RIGHT_SQUARE_BRACKET:
-        return "]";//,// = ']';
-    case TK_CIRCUMFLEX_ACCENT:
-        return "^";// = '^';
-    case TK_LOW_LINE:
-        return "_";//,// = '_';
-    case TK_GRAVE_ACCENT:
-        return "`";//,// = '`';
-    case TK_LEFT_CURLY_BRACKET:
-        return "{";//,// = '{';
-    case TK_VERTICAL_LINE:
-        return "|";//,// = '|';
-    case TK_RIGHT_CURLY_BRACKET:
-        return "}";//,// = '}';
-    case TK_TILDE:
-        return "~";//,// = '~';
-        break;
-    case TK_AUTO:
-        return "auto";
-    case TK_BREAK:
-        return "break";
-    case TK_CASE:
-        return "case";
-    case TK_CHAR:
-        return "char";
-    case TK_CONST:
-        return "const";
-    case TK_CONTINUE:
-        return "continue";
-    case TK_DEFAULT:
-        return "default";
-    case TK_RESTRICT:
-        return "restrict";
-    case TK_INLINE:
-        return "inline";
-    case TK__INLINE:
-        return "_inline";
-    case TK__NORETURN:
-        return "_Noreturn";
-    case TK_DO:
-        return "do";
-    case TK_DOUBLE:
-        return "double";
-    case TK_ELSE:
-        return "else";
-    case TK_ENUM:
-        return "enum";
-    case TK_EXTERN:
-        return "extern";
-    case TK_FLOAT:
-        return "float";
-    case TK_FOR:
-        return "for";
-    case TK_GOTO:
-        return "goto";
-    case TK_IF:
-        return "if";
-    case TK_TRY:
-        return "try";
-    case TK_INT:
-        return "int";
-    case TK_LONG:
-        return "long";
-    case TK__INT8:
-        return "__int8";
-    case TK__INT16:
-        return "__int16";
-    case TK__INT32:
-        return "__int32";
-    case TK__INT64:
-        return "__int64";
-    case TK__WCHAR_T:
-        return "__wchar_t";
-    case TK_REGISTER:
-        return "register";
-    case TK_RETURN:
-        return "return";
-    case TK_SHORT:
-        return "short";
-    case TK_SIGNED:
-        return "signed";
-    case TK_SIZEOF:
-        return "sizeof";
-    case TK_STATIC:
-        return "static";
-    case TK_STRUCT:
-        return "struct";
-    case TK_SWITCH:
-        return "switch";
-    case TK_TYPEDEF:
-        return "typedef";
-    case TK_UNION:
-        return "union";
-    case TK_UNSIGNED:
-        return "unsigned";
-    case TK_VOID:
-        return "void";
-    case TK__BOOL:
-        return "_Bool";
-        break;
-    case TK_VOLATILE:
-        return "volatile";
-    case TK_WHILE:
-        return "while";
-    case TK_ARROW:
-        return "->";
-    case TK_PLUSPLUS:
-        return "++";
-    case TK_MINUSMINUS:
-        return "--";
-    case TK_EQUALEQUAL:
-        return "==";
-    case TK_NOTEQUAL:
-        return "!=";
-    case TK_LESSLESS:
-        return "<<";
-    case TK_GREATERGREATER:
-        return ">>";
-    case TK_LESSEQUAL:
-        return "<=";
-    case TK_GREATEREQUAL:
-        return ">=";
-    case TK_ANDAND:
-        return "&&";
-    case TK_OROR:
-        return "||";
-    case TK_MULTIEQUAL:
-        return "*=";
-    case TK_DIVEQUAL:
-        return "/=";
-    case TK_PERCENT_EQUAL:
-        return "/%=";
-    case TK_PLUSEQUAL:
-        return "+=";
-    case TK_MINUS_EQUAL:
-        return "-=";
-    case TK_ANDEQUAL:
-        return "!=";
-    case TK_CARETEQUAL:
-        return "^=";
-    case TK_OREQUAL:
-        return "|=";
-    case TK_NUMBERNUMBER:
-        return "##";
-    case TK_LESSCOLON:
-        return "<:";
-    case TK_COLONGREATER:
-        return ":>";
-    case TK_LESSPERCENT:
-        return "<%";
-    case TK_PERCENTGREATER:
-        return "%>";
-    case TK_PERCENTCOLON:
-        return "%:";
-    case TK_DOTDOTDOT:
-        return "...";
-    case TK_GREATERGREATEREQUAL:
-        return ">>=";
-    case TK_LESSLESSEQUAL:
-        return "<<=";
-    case TK_PERCENTCOLONPERCENTCOLON:
-        return "/%:/%:";
-    case TK_PRE_INCLUDE:
-        return "TK_PRE_INCLUDE";
-    case TK_PRE_DEFINE:
-        return "TK_PRE_DEFINE";
-    //
-    case TK_MACRO_CALL:
-        return "TK_MACRO_CALL";
-    case TK_MACRO_EOF:
-        return "TK_MACRO_EOF";
-    case TK_FILE_EOF:
-        return "TK_FILE_EOF";
-    case TK_PRE_PRAGMA:
-        return "TK_PRE_PRAGMA";
-    default:
-        //assert(false);
-        break;
+        case TK_NONE:
+            return "None";
+        case TK_BOF:
+            return "Bof";
+        case TK_EOF:
+            return "Eof";
+        case TK_LINE_COMMENT:
+            return "LINE_COMMENT";
+        case TK_COMMENT:
+            return "COMMENT";
+        case TK_CLOSE_COMMENT:
+            return "CLOSE_COMMENT";
+        case TK_OPEN_COMMENT:
+            return "OPEN_COMMENT";
+        case TK_STRING_LITERAL:
+            return "LITERALSTR";
+        case TK_IDENTIFIER:
+            return "IDENTIFIER";
+        case TK_SPACES:
+            return "SPACES";
+        case TK_DECIMAL_INTEGER:
+            return "TK_DECIMAL_INTEGER";
+        case TK_HEX_INTEGER:
+            return "TK_HEX_INTEGER";
+        case TK_FLOAT_NUMBER:
+            return "TK_FLOAT_NUMBER";
+        case TK_BREAKLINE:
+            return "BREAKLINE";
+        case TK_BACKSLASHBREAKLINE:
+            return "TK_BACKSLASHBREAKLINE";
+        case TK_PREPROCESSOR:
+            return "PREPROCESSOR";
+        case CHARACTER_TABULATION:
+            return "CHARACTER_TABULATION";
+        case TK_EXCLAMATION_MARK:
+            return "!";// = '!';
+        case TK_QUOTATION_MARK:
+            return "\"";//,// = '\"';
+        case TK_NUMBER_SIGN:
+            return "#";//,// = '#';
+        case TK_DOLLAR_SIGN:
+            return "$";//,// = '$';
+        case TK_PERCENT_SIGN:
+            return "%";//,// = '%';
+        case TK_AMPERSAND:
+            return "&";//,// = '&';
+        case TK_APOSTROPHE:
+            return "'";//,// = '\'';
+        case TK_LEFT_PARENTHESIS:
+            return "(";//,// = '(';
+        case TK_RIGHT_PARENTHESIS:
+            return ")";//,// = ')';
+        case TK_ASTERISK:
+            return "*";//,// = '*';
+        case TK_PLUS_SIGN:
+            return "+";//,// = '+';
+        case TK_COMMA:
+            return ",";//,// = ',';
+        case TK_HYPHEN_MINUS:
+            return "-";//,// = '-';
+        case TK_FULL_STOP:
+            return ".";//,// = '.';
+        case TK_SOLIDUS:
+            return "/";//,// = '/';
+        case TK_COLON:
+            return ":";//,// = ':';
+        case TK_SEMICOLON:
+            return ";";//,// = ';';
+        case TK_LESS_THAN_SIGN:
+            return "<";//,// = '<';
+        case TK_EQUALS_SIGN:
+            return "=";//,// = '=';
+        case TK_GREATER_THAN_SIGN:
+            return ">";//,// = '>';
+        case TK_QUESTION_MARK:
+            return "?";//,// = '\?';
+        case TK_COMMERCIAL_AT:
+            return "@";//,// = '@';
+        case TK_LEFT_SQUARE_BRACKET:
+            return "[";//,// = '[';
+        case REVERSE_SOLIDUS:
+            return "\\";//,// = '\\';
+        case TK_RIGHT_SQUARE_BRACKET:
+            return "]";//,// = ']';
+        case TK_CIRCUMFLEX_ACCENT:
+            return "^";// = '^';
+        case TK_LOW_LINE:
+            return "_";//,// = '_';
+        case TK_GRAVE_ACCENT:
+            return "`";//,// = '`';
+        case TK_LEFT_CURLY_BRACKET:
+            return "{";//,// = '{';
+        case TK_VERTICAL_LINE:
+            return "|";//,// = '|';
+        case TK_RIGHT_CURLY_BRACKET:
+            return "}";//,// = '}';
+        case TK_TILDE:
+            return "~";//,// = '~';
+            break;
+        case TK_AUTO:
+            return "auto";
+        case TK_BREAK:
+            return "break";
+        case TK_CASE:
+            return "case";
+        case TK_CHAR:
+            return "char";
+        case TK_CONST:
+            return "const";
+        case TK_CONTINUE:
+            return "continue";
+        case TK_DEFAULT:
+            return "default";
+        case TK_RESTRICT:
+            return "restrict";
+        case TK_INLINE:
+            return "inline";
+        case TK__INLINE:
+            return "_inline";
+        case TK__NORETURN:
+            return "_Noreturn";
+        case TK_DO:
+            return "do";
+        case TK_DOUBLE:
+            return "double";
+        case TK_ELSE:
+            return "else";
+        case TK_ENUM:
+            return "enum";
+        case TK_EXTERN:
+            return "extern";
+        case TK_FLOAT:
+            return "float";
+        case TK_FOR:
+            return "for";
+        case TK_GOTO:
+            return "goto";
+        case TK_IF:
+            return "if";
+        case TK_TRY:
+            return "try";
+        case TK_INT:
+            return "int";
+        case TK_LONG:
+            return "long";
+        case TK__INT8:
+            return "__int8";
+        case TK__INT16:
+            return "__int16";
+        case TK__INT32:
+            return "__int32";
+        case TK__INT64:
+            return "__int64";
+        case TK__WCHAR_T:
+            return "__wchar_t";
+        case TK_REGISTER:
+            return "register";
+        case TK_RETURN:
+            return "return";
+        case TK_THROW:
+            return "throw";
+        case TK_SHORT:
+            return "short";
+        case TK_SIGNED:
+            return "signed";
+        case TK_SIZEOF:
+            return "sizeof";
+        case TK_STATIC:
+            return "static";
+        case TK_STRUCT:
+            return "struct";
+        case TK_SWITCH:
+            return "switch";
+        case TK_TYPEDEF:
+            return "typedef";
+        case TK_UNION:
+            return "union";
+        case TK_UNSIGNED:
+            return "unsigned";
+        case TK_VOID:
+            return "void";
+        case TK__BOOL:
+            return "_Bool";
+            break;
+        case TK_VOLATILE:
+            return "volatile";
+        case TK_WHILE:
+            return "while";
+        case TK_CATCH:
+            return "catch";
+        case TK_ARROW:
+            return "->";
+        case TK_PLUSPLUS:
+            return "++";
+        case TK_MINUSMINUS:
+            return "--";
+        case TK_EQUALEQUAL:
+            return "==";
+        case TK_NOTEQUAL:
+            return "!=";
+        case TK_LESSLESS:
+            return "<<";
+        case TK_GREATERGREATER:
+            return ">>";
+        case TK_LESSEQUAL:
+            return "<=";
+        case TK_GREATEREQUAL:
+            return ">=";
+        case TK_ANDAND:
+            return "&&";
+        case TK_OROR:
+            return "||";
+        case TK_MULTIEQUAL:
+            return "*=";
+        case TK_DIVEQUAL:
+            return "/=";
+        case TK_PERCENT_EQUAL:
+            return "/%=";
+        case TK_PLUSEQUAL:
+            return "+=";
+        case TK_MINUS_EQUAL:
+            return "-=";
+        case TK_ANDEQUAL:
+            return "!=";
+        case TK_CARETEQUAL:
+            return "^=";
+        case TK_OREQUAL:
+            return "|=";
+        case TK_NUMBERNUMBER:
+            return "##";
+        case TK_LESSCOLON:
+            return "<:";
+        case TK_COLONGREATER:
+            return ":>";
+        case TK_LESSPERCENT:
+            return "<%";
+        case TK_PERCENTGREATER:
+            return "%>";
+        case TK_PERCENTCOLON:
+            return "%:";
+        case TK_DOTDOTDOT:
+            return "...";
+        case TK_GREATERGREATEREQUAL:
+            return ">>=";
+        case TK_LESSLESSEQUAL:
+            return "<<=";
+        case TK_PERCENTCOLONPERCENTCOLON:
+            return "/%:/%:";
+        case TK_PRE_INCLUDE:
+            return "TK_PRE_INCLUDE";
+        case TK_PRE_DEFINE:
+            return "TK_PRE_DEFINE";
+            //
+        case TK_MACRO_CALL:
+            return "TK_MACRO_CALL";
+        case TK_MACRO_EOF:
+            return "TK_MACRO_EOF";
+        case TK_FILE_EOF:
+            return "TK_FILE_EOF";
+        case TK_PRE_PRAGMA:
+            return "TK_PRE_PRAGMA";
+        default:
+            //assert(false);
+            break;
     }
     return "???";
 }
@@ -2808,14 +2816,14 @@ bool PPToken_IsSpace(struct PPToken* pHead)
 bool PPToken_IsStringizingOp(struct PPToken* pHead)
 {
     return pHead->Lexeme[0] == '#' &&
-           pHead->Lexeme[1] == '\0';
+        pHead->Lexeme[1] == '\0';
 }
 
 bool PPToken_IsConcatOp(struct PPToken* pHead)
 {
     return pHead->Lexeme[0] == '#' &&
-           pHead->Lexeme[1] == '#' &&
-           pHead->Lexeme[2] == '\0';
+        pHead->Lexeme[1] == '#' &&
+        pHead->Lexeme[2] == '\0';
 }
 
 bool PPToken_IsStringLit(struct PPToken* pHead)
@@ -2831,13 +2839,13 @@ bool PPToken_IsCharLit(struct PPToken* pHead)
 bool PPToken_IsOpenPar(struct PPToken* pHead)
 {
     return pHead->Lexeme[0] == '(' &&
-           pHead->Lexeme[1] == '\0';
+        pHead->Lexeme[1] == '\0';
 }
 
 bool PPToken_IsChar(struct PPToken* pHead, char ch)
 {
     return pHead->Lexeme[0] == ch &&
-           pHead->Lexeme[1] == '\0';
+        pHead->Lexeme[1] == '\0';
 }
 
 bool PPToken_IsLexeme(struct PPToken* pHead, const char* lexeme)
@@ -2967,12 +2975,12 @@ static void AppendEscaped(struct StrBuilder* strBuilder,
     {
         switch (*source)
         {
-        case '\\':
-        case '"':
-            StrBuilder_AppendChar(strBuilder, '\\');
-        // FALTHROUGH
-        default:
-            StrBuilder_AppendChar(strBuilder, *source);
+            case '\\':
+            case '"':
+                StrBuilder_AppendChar(strBuilder, '\\');
+                // FALTHROUGH
+            default:
+                StrBuilder_AppendChar(strBuilder, *source);
         }
         source++;
     }
@@ -3093,8 +3101,8 @@ static void SubstituteArgs(const struct MacroMap* macros,
             int idx = FindNoSpaceIndex(&is, 0);
             struct PPTokenArray* aseq;
             if (idx != -1 &&
-                    args != NULL &&
-                    TokenArrayMap_Lookup(args, is.pItems[idx]->Lexeme, &aseq))
+                args != NULL &&
+                TokenArrayMap_Lookup(args, is.pItems[idx]->Lexeme, &aseq))
             {
                 /*
                 If, in the replacement list, a parameter is immediately
@@ -3158,7 +3166,7 @@ static void SubstituteArgs(const struct MacroMap* macros,
         {
             int idx = FindNoSpaceIndex(&is, 0);
             if (idx != -1 &&
-                    PPToken_IsConcatOp(is.pItems[idx]))
+                PPToken_IsConcatOp(is.pItems[idx]))
             {
                 /*
                 * Implement the following gcc extension:
@@ -3226,7 +3234,7 @@ static void SubstituteArgs(const struct MacroMap* macros,
             }
             struct PPTokenArray* argseq = NULL;
             if (args != NULL &&
-                    TokenArrayMap_Lookup(args, head->Lexeme, &argseq))
+                TokenArrayMap_Lookup(args, head->Lexeme, &argseq))
             {
                 //expand head
                 struct PPTokenArray expanded = PPTOKENARRAY_INIT;
@@ -3375,8 +3383,8 @@ static bool GatherArgs(struct PPTokenArray* tokens,
             PPTokenArray_Print(tokens);
             //printf("\n");
             if (bracket == 0 && (
-                        (terminate == '.' && (PPToken_IsChar(&t, ',') || PPToken_IsChar(&t, ')'))) ||
-                        (terminate != '.' && PPToken_IsChar(&t, terminate))))
+                (terminate == '.' && (PPToken_IsChar(&t, ',') || PPToken_IsChar(&t, ')'))) ||
+                (terminate != '.' && PPToken_IsChar(&t, terminate))))
             {
                 break;
             }
@@ -3556,8 +3564,8 @@ static void ExpandMacro(const struct PPTokenArray* tsOriginal,
             continue;
         }
         if (skip_defined &&
-                PPToken_IsIdentifier(pHead) &&
-                PPToken_IsLexeme(pHead, "defined"))
+            PPToken_IsIdentifier(pHead) &&
+            PPToken_IsLexeme(pHead, "defined"))
         {
             struct PPTokenArray result = PPTOKENARRAY_INIT;
             GatherDefinedOperator(&ts, macros, &result);
@@ -3630,11 +3638,11 @@ static void ExpandMacro(const struct PPTokenArray* tsOriginal,
             PPToken_Delete(PPTokenArray_PopFront(&ts));
             struct PPToken close = PPTOKEN_INIT;
             if (!GatherArgs(&ts,
-                            &pMacro->FormalArguments,
-                            &args,
-                            get_more,
-                            false, /*m.is_vararg,*/
-                            &close))
+                &pMacro->FormalArguments,
+                &args,
+                get_more,
+                false, /*m.is_vararg,*/
+                &close))
             {
                 PPToken_Destroy(&close);
                 PPToken_Delete(pHead);
@@ -3699,7 +3707,7 @@ static void ExpandMacro(const struct PPTokenArray* tsOriginal,
 static bool FillIn(struct PPTokenArray* ts, bool get_more, struct PPTokenArray* removed)
 {
     while (ts->Size > 0 &&
-            PPToken_IsSpace(ts->pItems[0]))
+           PPToken_IsSpace(ts->pItems[0]))
     {
         PPTokenArray_PushBack(removed, PPTokenArray_PopFront(ts));
     }
@@ -3750,7 +3758,7 @@ static void Glue(const struct PPTokenArray* lsI,
     else
     {
         while (ls.Size > 0 &&
-                PPToken_IsSpace(ls.pItems[ls.Size - 1]))
+               PPToken_IsSpace(ls.pItems[ls.Size - 1]))
         {
             PPTokenArray_Pop(&ls);
         }
@@ -3761,7 +3769,7 @@ static void Glue(const struct PPTokenArray* lsI,
             tk = NULL;
         }
         if (ls.Size == 0 &&
-                rs.Size == 0)
+            rs.Size == 0)
         {
             PPTokenArray_Swap(out, &ls);
         }
@@ -4039,12 +4047,17 @@ struct PrintCodeOptions
 {
     struct OutputOptions Options;
 
+    struct TryBlockStatement* pCurrentTryBlock;
+
     ///////////
     //controle interno
+
     struct IntegerStack Stack;// = 0;
     bool bInclude;// = true;
     int IdentationLevel;
     //
+
+    
 
     struct StrBuilder sbPreDeclaration;
     struct HashMap instantiations;
@@ -4055,7 +4068,7 @@ struct PrintCodeOptions
     struct StrBuilder returnType;
 };
 
-#define CODE_PRINT_OPTIONS_INIT {OUTPUTOPTIONS_INIT, INTEGER_STACK_INIT, true, 0, STRBUILDER_INIT, HASHMAP_INIT, STRBUILDER_INIT, STRBUILDER_INIT, STRBUILDER_INIT, STRBUILDER_INIT}
+#define CODE_PRINT_OPTIONS_INIT {OUTPUTOPTIONS_INIT, NULL, INTEGER_STACK_INIT, true, 0, STRBUILDER_INIT, HASHMAP_INIT, STRBUILDER_INIT, STRBUILDER_INIT, STRBUILDER_INIT, STRBUILDER_INIT}
 
 void PrintCodeOptions_Destroy(struct PrintCodeOptions* options);
 
@@ -4150,151 +4163,153 @@ enum PPTokenType TokenToPPToken(enum TokenType token)
     enum PPTokenType result = PPTokenType_Other;
     switch (token)
     {
-    case TK_AUTO:
-    case TK_BREAK:
-    case TK_CASE:
-    case TK_CHAR:
-    case TK_CONST:
-    case TK_CONTINUE:
-    case TK_DEFAULT:
-    case TK_DO:
-    case TK_DOUBLE:
-    case TK_ELSE:
-    case TK_ENUM:
-    case TK_EXTERN:
-    case TK_FLOAT:
-    case TK_FOR:
-    case TK_GOTO:
-    case TK_IF:
-    case TK_TRY:
-    case TK_INT:
-    case TK_LONG:
-    ////////////////
-    //Microsoft - specific
-    case TK__INT8:
-    case TK__INT16:
-    case TK__INT32:
-    case TK__INT64:
-    case TK___DECLSPEC:
-    case TK__WCHAR_T:
-    ////////////////
-    case TK_REGISTER:
-    case TK_RETURN:
-    case TK_SHORT:
-    case TK_SIGNED:
-    case TK_SIZEOF:
-    case TK_STATIC:
-    case TK_STRUCT:
-    case TK_SWITCH:
-    case TK_TYPEDEF:
-    case  TK_UNION:
-    case TK_UNSIGNED:
-    case TK_VOID:
-    case TK_VOLATILE:
-    case TK_WHILE:
-    case TK__THREAD_LOCAL:
-    case TK__BOOL:
-    case TK__COMPLEX:
-    case TK__ATOMIC:
-    case TK_RESTRICT:
-    case TK__STATIC_ASSERT:
-    case TK_INLINE:
-    case TK__INLINE://ms
-    case TK__FORCEINLINE: //ms
-    case TK__NORETURN:
-    case TK__ALIGNAS:
-    case TK__GENERIC:
-    case  TK__IMAGINARY:
-    case TK__ALINGOF:
-    case TK_IDENTIFIER:
-        result = PPTokenType_Identifier;
-        break;
-    case TK_LINE_COMMENT:
-    case TK_COMMENT:
-    case TK_OPEN_COMMENT:
-    case TK_CLOSE_COMMENT:
-    case TK_SPACES:
-        result = PPTokenType_Spaces;
-        break;
-    case TK_HEX_INTEGER:
-    case TK_DECIMAL_INTEGER:
-    case TK_FLOAT_NUMBER:
-        result = PPTokenType_Number;
-        break;
-    case TK_CHAR_LITERAL:
-        result = PPTokenType_CharConstant;
-        break;
-    case TK_STRING_LITERAL:
-        result = PPTokenType_StringLiteral;
-        break;
-    case TK_ARROW:
-    case TK_PLUSPLUS:
-    case TK_MINUSMINUS:
-    case TK_LESSLESS:
-    case TK_GREATERGREATER:
-    case TK_LESSEQUAL:
-    case TK_GREATEREQUAL:
-    case TK_EQUALEQUAL:
-    case TK_NOTEQUAL:
-    case TK_ANDAND:
-    case TK_OROR:
-    case TK_MULTIEQUAL:
-    case TK_DIVEQUAL:
-    case TK_PERCENT_EQUAL:
-    case TK_PLUSEQUAL:
-    case TK_MINUS_EQUAL:
-    case TK_ANDEQUAL:
-    case TK_CARETEQUAL:
-    case TK_OREQUAL:
-    case TK_NUMBERNUMBER:
-    case TK_LESSCOLON:
-    case TK_COLONGREATER:
-    case TK_LESSPERCENT:
-    case TK_PERCENTGREATER:
-    case TK_PERCENTCOLON:
-    case TK_DOTDOTDOT:
-    case TK_GREATERGREATEREQUAL:
-    case TK_LESSLESSEQUAL:
-    case TK_PERCENTCOLONPERCENTCOLON:
-    case     TK_EXCLAMATION_MARK:// = '!';
-    case    TK_QUOTATION_MARK:// = '\"';
-    case    TK_NUMBER_SIGN:// = '#';
-    case    TK_DOLLAR_SIGN:// = '$';
-    case     TK_PERCENT_SIGN:// = '%';
-    case    TK_AMPERSAND:// = '&';
-    case     TK_APOSTROPHE:// = '\'';
-    case    TK_LEFT_PARENTHESIS:// = '(';
-    case    TK_RIGHT_PARENTHESIS:// = ')';
-    case    TK_ASTERISK:// = '*';
-    case    TK_PLUS_SIGN:// = '+';
-    case    TK_COMMA:// = ':';
-    case    TK_HYPHEN_MINUS:// = '-';
-    case    TK_HYPHEN_MINUS_NEG:// = '-'; //nao retorna no basic char mas eh usado para saber se eh - unario
-    case    TK_FULL_STOP:// = '.';
-    case    TK_SOLIDUS:// = '/';
-    case    TK_COLON:// = ':';
-    case    TK_SEMICOLON:// = ';';
-    case    TK_LESS_THAN_SIGN:// = '<';
-    case    TK_EQUALS_SIGN:// = '=';
-    case    TK_GREATER_THAN_SIGN:// = '>';
-    case    TK_QUESTION_MARK:// = '\?';
-    case    TK_COMMERCIAL_AT:// = '@';
-    case     TK_LEFT_SQUARE_BRACKET:// = '[';
-    case    REVERSE_SOLIDUS:// = '\\';
-    case     TK_RIGHT_SQUARE_BRACKET:// = ']';
-    case    TK_CIRCUMFLEX_ACCENT:// = '^';
-    case    TK_LOW_LINE:// = '_';
-    case    TK_GRAVE_ACCENT:// = '`';
-    case    TK_LEFT_CURLY_BRACKET:// = '{';
-    case    TK_VERTICAL_LINE:// = '|';
-    case    TK_RIGHT_CURLY_BRACKET:// = '}';
-    case    TK_TILDE: // ~
-        result = PPTokenType_Punctuator;
-        break;
-    default:
-        //assert(false);
-        result = PPTokenType_Punctuator;
-        break;
+        case TK_AUTO:
+        case TK_BREAK:
+        case TK_CASE:
+        case TK_CHAR:
+        case TK_CONST:
+        case TK_CONTINUE:
+        case TK_DEFAULT:
+        case TK_DO:
+        case TK_DOUBLE:
+        case TK_ELSE:
+        case TK_ENUM:
+        case TK_EXTERN:
+        case TK_FLOAT:
+        case TK_FOR:
+        case TK_GOTO:
+        case TK_IF:
+        case TK_TRY:
+        case TK_INT:
+        case TK_LONG:
+            ////////////////
+            //Microsoft - specific
+        case TK__INT8:
+        case TK__INT16:
+        case TK__INT32:
+        case TK__INT64:
+        case TK___DECLSPEC:
+        case TK__WCHAR_T:
+            ////////////////
+        case TK_REGISTER:
+        case TK_RETURN:
+        case TK_THROW:
+        case TK_SHORT:
+        case TK_SIGNED:
+        case TK_SIZEOF:
+        case TK_STATIC:
+        case TK_STRUCT:
+        case TK_SWITCH:
+        case TK_TYPEDEF:
+        case  TK_UNION:
+        case TK_UNSIGNED:
+        case TK_VOID:
+        case TK_VOLATILE:
+        case TK_WHILE:
+        case TK_CATCH:
+        case TK__THREAD_LOCAL:
+        case TK__BOOL:
+        case TK__COMPLEX:
+        case TK__ATOMIC:
+        case TK_RESTRICT:
+        case TK__STATIC_ASSERT:
+        case TK_INLINE:
+        case TK__INLINE://ms
+        case TK__FORCEINLINE: //ms
+        case TK__NORETURN:
+        case TK__ALIGNAS:
+        case TK__GENERIC:
+        case  TK__IMAGINARY:
+        case TK__ALINGOF:
+        case TK_IDENTIFIER:
+            result = PPTokenType_Identifier;
+            break;
+        case TK_LINE_COMMENT:
+        case TK_COMMENT:
+        case TK_OPEN_COMMENT:
+        case TK_CLOSE_COMMENT:
+        case TK_SPACES:
+            result = PPTokenType_Spaces;
+            break;
+        case TK_HEX_INTEGER:
+        case TK_DECIMAL_INTEGER:
+        case TK_FLOAT_NUMBER:
+            result = PPTokenType_Number;
+            break;
+        case TK_CHAR_LITERAL:
+            result = PPTokenType_CharConstant;
+            break;
+        case TK_STRING_LITERAL:
+            result = PPTokenType_StringLiteral;
+            break;
+        case TK_ARROW:
+        case TK_PLUSPLUS:
+        case TK_MINUSMINUS:
+        case TK_LESSLESS:
+        case TK_GREATERGREATER:
+        case TK_LESSEQUAL:
+        case TK_GREATEREQUAL:
+        case TK_EQUALEQUAL:
+        case TK_NOTEQUAL:
+        case TK_ANDAND:
+        case TK_OROR:
+        case TK_MULTIEQUAL:
+        case TK_DIVEQUAL:
+        case TK_PERCENT_EQUAL:
+        case TK_PLUSEQUAL:
+        case TK_MINUS_EQUAL:
+        case TK_ANDEQUAL:
+        case TK_CARETEQUAL:
+        case TK_OREQUAL:
+        case TK_NUMBERNUMBER:
+        case TK_LESSCOLON:
+        case TK_COLONGREATER:
+        case TK_LESSPERCENT:
+        case TK_PERCENTGREATER:
+        case TK_PERCENTCOLON:
+        case TK_DOTDOTDOT:
+        case TK_GREATERGREATEREQUAL:
+        case TK_LESSLESSEQUAL:
+        case TK_PERCENTCOLONPERCENTCOLON:
+        case     TK_EXCLAMATION_MARK:// = '!';
+        case    TK_QUOTATION_MARK:// = '\"';
+        case    TK_NUMBER_SIGN:// = '#';
+        case    TK_DOLLAR_SIGN:// = '$';
+        case     TK_PERCENT_SIGN:// = '%';
+        case    TK_AMPERSAND:// = '&';
+        case     TK_APOSTROPHE:// = '\'';
+        case    TK_LEFT_PARENTHESIS:// = '(';
+        case    TK_RIGHT_PARENTHESIS:// = ')';
+        case    TK_ASTERISK:// = '*';
+        case    TK_PLUS_SIGN:// = '+';
+        case    TK_COMMA:// = ':';
+        case    TK_HYPHEN_MINUS:// = '-';
+        case    TK_HYPHEN_MINUS_NEG:// = '-'; //nao retorna no basic char mas eh usado para saber se eh - unario
+        case    TK_FULL_STOP:// = '.';
+        case    TK_SOLIDUS:// = '/';
+        case    TK_COLON:// = ':';
+        case    TK_SEMICOLON:// = ';';
+        case    TK_LESS_THAN_SIGN:// = '<';
+        case    TK_EQUALS_SIGN:// = '=';
+        case    TK_GREATER_THAN_SIGN:// = '>';
+        case    TK_QUESTION_MARK:// = '\?';
+        case    TK_COMMERCIAL_AT:// = '@';
+        case     TK_LEFT_SQUARE_BRACKET:// = '[';
+        case    REVERSE_SOLIDUS:// = '\\';
+        case     TK_RIGHT_SQUARE_BRACKET:// = ']';
+        case    TK_CIRCUMFLEX_ACCENT:// = '^';
+        case    TK_LOW_LINE:// = '_';
+        case    TK_GRAVE_ACCENT:// = '`';
+        case    TK_LEFT_CURLY_BRACKET:// = '{';
+        case    TK_VERTICAL_LINE:// = '|';
+        case    TK_RIGHT_CURLY_BRACKET:// = '}';
+        case    TK_TILDE: // ~
+            result = PPTokenType_Punctuator;
+            break;
+        default:
+            //assert(false);
+            result = PPTokenType_Punctuator;
+            break;
     }
     return result;
 }
@@ -4635,16 +4650,16 @@ bool Scanner_IsAlreadyIncluded(struct Scanner* pScanner,
     bool bHasFullPath = false;
     switch (fileIncludeType)
     {
-    case FileIncludeTypeQuoted:
-    case FileIncludeTypeIncludes:
-        bHasFullPath = Scanner_GetFullPathS(pScanner, includeFileName,
-                                            fileIncludeType == FileIncludeTypeQuoted,
-                                            fullPath);
-        break;
-    case FileIncludeTypeFullPath:
-        strncpy(fullPath, includeFileName, CPRIME_MAX_PATH);
-        bHasFullPath = true;
-        break;
+        case FileIncludeTypeQuoted:
+        case FileIncludeTypeIncludes:
+            bHasFullPath = Scanner_GetFullPathS(pScanner, includeFileName,
+                                                fileIncludeType == FileIncludeTypeQuoted,
+                                                fullPath);
+            break;
+        case FileIncludeTypeFullPath:
+            strncpy(fullPath, includeFileName, CPRIME_MAX_PATH);
+            bHasFullPath = true;
+            break;
     };
     if (bHasFullPath)
     {
@@ -4673,16 +4688,16 @@ void Scanner_IncludeFile(struct Scanner* pScanner,
     bool bHasFullPath = false;
     switch (fileIncludeType)
     {
-    case FileIncludeTypeQuoted:
-    case FileIncludeTypeIncludes:
-        bHasFullPath = Scanner_GetFullPathS(pScanner, includeFileName,
-                                            fileIncludeType == FileIncludeTypeQuoted,
-                                            fullPath);
-        break;
-    case FileIncludeTypeFullPath:
-        strncpy(fullPath, includeFileName, CPRIME_MAX_PATH);
-        bHasFullPath = true;
-        break;
+        case FileIncludeTypeQuoted:
+        case FileIncludeTypeIncludes:
+            bHasFullPath = Scanner_GetFullPathS(pScanner, includeFileName,
+                                                fileIncludeType == FileIncludeTypeQuoted,
+                                                fullPath);
+            break;
+        case FileIncludeTypeFullPath:
+            strncpy(fullPath, includeFileName, CPRIME_MAX_PATH);
+            bHasFullPath = true;
+            break;
     };
     if (bHasFullPath)
     {
@@ -4816,7 +4831,7 @@ struct BasicScanner* Scanner_Top(struct Scanner* pScanner)
 void IgnorePreProcessorv2(struct BasicScanner* pBasicScanner, struct StrBuilder* strBuilder)
 {
     while (pBasicScanner->token != TK_EOF &&
-            pBasicScanner->token != TK_FILE_EOF)
+           pBasicScanner->token != TK_FILE_EOF)
     {
         if (pBasicScanner->token == TK_BREAKLINE)
         {
@@ -4845,9 +4860,9 @@ void GetDefineString(struct Scanner* pScanner, struct StrBuilder* strBuilder)
             break;
         }
         if (token == TK_OPEN_COMMENT ||
-                token == TK_CLOSE_COMMENT ||
-                token == TK_COMMENT ||
-                token == TK_LINE_COMMENT)
+            token == TK_CLOSE_COMMENT ||
+            token == TK_COMMENT ||
+            token == TK_LINE_COMMENT)
         {
             // transforma em espaços
             StrBuilder_Append(strBuilder, " ");
@@ -5114,20 +5129,20 @@ void GetPPTokens(struct BasicScanner* pBasicScanner, struct PPTokenArray* pptoke
     }
     // Remove os espaços do fim
     while (pptokens->Size > 0 &&
-            pptokens->pItems[pptokens->Size - 1]->Token == PPTokenType_Spaces)
+           pptokens->pItems[pptokens->Size - 1]->Token == PPTokenType_Spaces)
     {
         PPTokenArray_Pop(pptokens);
     }
 }
 
 static void Scanner_MatchAllPreprocessorSpaces(struct BasicScanner* pBasicScanner,
-        struct StrBuilder* strBuilder)
+                                               struct StrBuilder* strBuilder)
 {
     enum TokenType token = pBasicScanner->token;
     while (token == TK_SPACES || token == TK_BACKSLASHBREAKLINE ||
-            token == TK_COMMENT ||
-            token == TK_OPEN_COMMENT ||
-            token == TK_CLOSE_COMMENT)
+           token == TK_COMMENT ||
+           token == TK_OPEN_COMMENT ||
+           token == TK_CLOSE_COMMENT)
     {
         StrBuilder_Append(strBuilder, pBasicScanner->lexeme.c_str);
         BasicScanner_Match(pBasicScanner);
@@ -5302,7 +5317,7 @@ void Scanner_BuyIdentifierThatCanExpandAndCollapse(struct Scanner* pScanner)
         return;
     }
     if (pBasicScanner->bMacroExpanded &&
-            strcmp(pMacro2->Name, pBasicScanner->NameOrFullPath) == 0)
+        strcmp(pMacro2->Name, pBasicScanner->NameOrFullPath) == 0)
     {
         // ja estou expandindo esta mesma macro
         // nao eh macro
@@ -5373,9 +5388,9 @@ void Scanner_BuyIdentifierThatCanExpandAndCollapse(struct Scanner* pScanner)
             token = pBasicScanner->token;
             lexeme = pBasicScanner->lexeme.c_str;
             while (token == TK_SPACES ||
-                    token == TK_COMMENT ||
-                    token == TK_OPEN_COMMENT ||
-                    token == TK_CLOSE_COMMENT)
+                   token == TK_COMMENT ||
+                   token == TK_OPEN_COMMENT ||
+                   token == TK_CLOSE_COMMENT)
             {
                 // StrBuilder_Append(strBuilder, lexeme);
                 /////////////
@@ -5727,43 +5742,43 @@ void Scanner_BuyTokens(struct Scanner* pScanner)
             lexeme = pBasicScanner->lexeme.c_str;
             switch (state)
             {
-            case PPState_NONE:
-            case PPState_I1:
-            case PPState_E1:
-            {
-                int iRes = 0;
-                if (preToken == TK_PRE_IF)
+                case PPState_NONE:
+                case PPState_I1:
+                case PPState_E1:
                 {
-                    iRes = EvalPre(pScanner, &strBuilder);
-                }
-                else
-                {
-                    bool bFound = Scanner_FindPreprocessorItem2(pScanner, lexeme) != NULL;
-                    if (preToken == TK_PRE_IFDEF)
+                    int iRes = 0;
+                    if (preToken == TK_PRE_IF)
                     {
-                        iRes = bFound ? 1 : 0;
+                        iRes = EvalPre(pScanner, &strBuilder);
                     }
-                    else // if (preToken == TK_PRE_IFNDEF)
+                    else
                     {
-                        iRes = !bFound ? 1 : 0;
+                        bool bFound = Scanner_FindPreprocessorItem2(pScanner, lexeme) != NULL;
+                        if (preToken == TK_PRE_IFDEF)
+                        {
+                            iRes = bFound ? 1 : 0;
+                        }
+                        else // if (preToken == TK_PRE_IFNDEF)
+                        {
+                            iRes = !bFound ? 1 : 0;
+                        }
+                    }
+                    if (iRes != 0)
+                    {
+                        StatePush(pScanner, PPState_I1);
+                    }
+                    else
+                    {
+                        StatePush(pScanner, PPState_I0);
                     }
                 }
-                if (iRes != 0)
-                {
-                    StatePush(pScanner, PPState_I1);
-                }
-                else
-                {
+                break;
+                case PPState_I0:
                     StatePush(pScanner, PPState_I0);
-                }
-            }
-            break;
-            case PPState_I0:
-                StatePush(pScanner, PPState_I0);
-                break;
-            case PPState_E0:
-                StatePush(pScanner, PPState_E0);
-                break;
+                    break;
+                case PPState_E0:
+                    StatePush(pScanner, PPState_E0);
+                    break;
             }
             state = StateTop(pScanner);
             bool bActive = IsIncludeState(state);
@@ -5778,19 +5793,27 @@ void Scanner_BuyTokens(struct Scanner* pScanner)
             Scanner_MatchAllPreprocessorSpaces(pBasicScanner, &strBuilder);
             switch (state)
             {
-            case PPState_NONE:
-            case PPState_I1:
-                pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 1] = PPState_E0;
-                break;
-            case PPState_I0:
-            {
-                int iRes = EvalPre(pScanner, &strBuilder);
-                if (pScanner->StackIfDef.Size >= 2)
+                case PPState_NONE:
+                case PPState_I1:
+                    pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 1] = PPState_E0;
+                    break;
+                case PPState_I0:
                 {
-                    if ((pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 2] ==
+                    int iRes = EvalPre(pScanner, &strBuilder);
+                    if (pScanner->StackIfDef.Size >= 2)
+                    {
+                        if ((pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 2] ==
                             PPState_I1 ||
                             pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 2] ==
                             PPState_E1))
+                        {
+                            if (iRes)
+                            {
+                                pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 1] = PPState_I1;
+                            }
+                        }
+                    }
+                    else
                     {
                         if (iRes)
                         {
@@ -5798,20 +5821,12 @@ void Scanner_BuyTokens(struct Scanner* pScanner)
                         }
                     }
                 }
-                else
-                {
-                    if (iRes)
-                    {
-                        pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 1] = PPState_I1;
-                    }
-                }
-            }
-            break;
-            case PPState_E0:
                 break;
-            case PPState_E1:
-                //assert(0);
-                break;
+                case PPState_E0:
+                    break;
+                case PPState_E1:
+                    //assert(0);
+                    break;
             }
             state = StateTop(pScanner);
             bool bActive = IsIncludeState(state);
@@ -5837,33 +5852,33 @@ void Scanner_BuyTokens(struct Scanner* pScanner)
             BasicScanner_Match(pBasicScanner);
             switch (state)
             {
-            case PPState_NONE:
-                //assert(0);
-                break;
-            case PPState_I1:
-                pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 1] = PPState_E0;
-                break;
-            case PPState_I0:
-                if (pScanner->StackIfDef.Size >= 2)
-                {
-                    if ((pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 2] ==
+                case PPState_NONE:
+                    //assert(0);
+                    break;
+                case PPState_I1:
+                    pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 1] = PPState_E0;
+                    break;
+                case PPState_I0:
+                    if (pScanner->StackIfDef.Size >= 2)
+                    {
+                        if ((pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 2] ==
                             PPState_I1 ||
                             pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 2] ==
                             PPState_E1))
+                        {
+                            pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 1] = PPState_E1;
+                        }
+                    }
+                    else
                     {
                         pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 1] = PPState_E1;
                     }
-                }
-                else
-                {
-                    pScanner->StackIfDef.pItems[pScanner->StackIfDef.Size - 1] = PPState_E1;
-                }
-                break;
-            case PPState_E0:
-                break;
-            case PPState_E1:
-                //assert(false);
-                break;
+                    break;
+                case PPState_E0:
+                    break;
+                case PPState_E1:
+                    //assert(false);
+                    break;
             }
             state = StateTop(pScanner);
             bool bActive = IsIncludeState(state);
@@ -5985,37 +6000,37 @@ void PrintPreprocessedToFileCore(FILE* fp, struct Scanner* scanner)
         {
             switch (token)
             {
-            // enum Tokens para linhas do pre processador
-            case TK_PRE_INCLUDE:
-            case TK_PRE_PRAGMA:
-            case TK_PRE_IF:
-            case TK_PRE_ELIF:
-            case TK_PRE_IFNDEF:
-            case TK_PRE_IFDEF:
-            case TK_PRE_ENDIF:
-            case TK_PRE_ELSE:
-            case TK_PRE_ERROR:
-            case TK_PRE_LINE:
-            case TK_PRE_UNDEF:
-            case TK_PRE_DEFINE:
-                fprintf(fp, "\n");
-                break;
-            // fim tokens preprocessador
-            case TK_LINE_COMMENT:
-            case TK_COMMENT:
-            case TK_OPEN_COMMENT:
-            case TK_CLOSE_COMMENT:
-                fprintf(fp, " ");
-                break;
-            case TK_BOF:
-                break;
-            case TK_MACRO_CALL:
-            case TK_MACRO_EOF:
-            case TK_FILE_EOF:
-                break;
-            default:
-                fprintf(fp, "%s", lexeme);
-                break;
+                // enum Tokens para linhas do pre processador
+                case TK_PRE_INCLUDE:
+                case TK_PRE_PRAGMA:
+                case TK_PRE_IF:
+                case TK_PRE_ELIF:
+                case TK_PRE_IFNDEF:
+                case TK_PRE_IFDEF:
+                case TK_PRE_ENDIF:
+                case TK_PRE_ELSE:
+                case TK_PRE_ERROR:
+                case TK_PRE_LINE:
+                case TK_PRE_UNDEF:
+                case TK_PRE_DEFINE:
+                    fprintf(fp, "\n");
+                    break;
+                    // fim tokens preprocessador
+                case TK_LINE_COMMENT:
+                case TK_COMMENT:
+                case TK_OPEN_COMMENT:
+                case TK_CLOSE_COMMENT:
+                    fprintf(fp, " ");
+                    break;
+                case TK_BOF:
+                    break;
+                case TK_MACRO_CALL:
+                case TK_MACRO_EOF:
+                case TK_FILE_EOF:
+                    break;
+                default:
+                    fprintf(fp, "%s", lexeme);
+                    break;
             }
         }
         Scanner_Match(scanner);
@@ -6063,37 +6078,37 @@ void PrintPreprocessedToStringCore2(struct StrBuilder* fp, struct Scanner* scann
         {
             switch (token)
             {
-            // enum Tokens para linhas do pre processador
-            case TK_PRE_INCLUDE:
-            case TK_PRE_PRAGMA:
-            case TK_PRE_IF:
-            case TK_PRE_ELIF:
-            case TK_PRE_IFNDEF:
-            case TK_PRE_IFDEF:
-            case TK_PRE_ENDIF:
-            case TK_PRE_ELSE:
-            case TK_PRE_ERROR:
-            case TK_PRE_LINE:
-            case TK_PRE_UNDEF:
-            case TK_PRE_DEFINE:
-                StrBuilder_Append(fp, "\n");
-                break;
-            // fim tokens preprocessador
-            case TK_LINE_COMMENT:
-            case TK_COMMENT:
-            case TK_OPEN_COMMENT:
-            case TK_CLOSE_COMMENT:
-                StrBuilder_Append(fp, " ");
-                break;
-            case TK_BOF:
-                break;
-            case TK_MACRO_CALL:
-            case TK_MACRO_EOF:
-            case TK_FILE_EOF:
-                break;
-            default:
-                StrBuilder_Append(fp, lexeme);
-                break;
+                // enum Tokens para linhas do pre processador
+                case TK_PRE_INCLUDE:
+                case TK_PRE_PRAGMA:
+                case TK_PRE_IF:
+                case TK_PRE_ELIF:
+                case TK_PRE_IFNDEF:
+                case TK_PRE_IFDEF:
+                case TK_PRE_ENDIF:
+                case TK_PRE_ELSE:
+                case TK_PRE_ERROR:
+                case TK_PRE_LINE:
+                case TK_PRE_UNDEF:
+                case TK_PRE_DEFINE:
+                    StrBuilder_Append(fp, "\n");
+                    break;
+                    // fim tokens preprocessador
+                case TK_LINE_COMMENT:
+                case TK_COMMENT:
+                case TK_OPEN_COMMENT:
+                case TK_CLOSE_COMMENT:
+                    StrBuilder_Append(fp, " ");
+                    break;
+                case TK_BOF:
+                    break;
+                case TK_MACRO_CALL:
+                case TK_MACRO_EOF:
+                case TK_FILE_EOF:
+                    break;
+                default:
+                    StrBuilder_Append(fp, lexeme);
+                    break;
             }
         }
         Scanner_Match(scanner);
@@ -6368,12 +6383,12 @@ void TFileMapToStrArray(FileInfoMap* map, struct FileArray* arr)
     {
         struct HashMapEntry* data = map->pHashTable[i];
         for (struct HashMapEntry* pCurrent = data;
-                pCurrent;
-                pCurrent = pCurrent->pNext)
+             pCurrent;
+             pCurrent = pCurrent->pNext)
         {
             struct FileInfo* pFile = (struct FileInfo*)pCurrent->pValue;
             if (pFile->FileIndex >= 0 &&
-                    pFile->FileIndex < (int)arr->Size)
+                pFile->FileIndex < (int)arr->Size)
             {
                 arr->pItems[pFile->FileIndex] = pFile;
                 pCurrent->pValue = NULL; //movido para array
@@ -6400,16 +6415,16 @@ enum TokenType FinalMatch(struct Scanner* scanner, struct TokenList* listOpt)
     Scanner_Match(scanner);
     struct Token* pToken = Scanner_ScannerItemAt(scanner, 0);
     while (pToken &&
-            pToken->token != TK_EOF &&
-            pToken->token != TK_NONE &&
-            (!pToken->bActive || IsPreprocessorTokenPhase(pToken->token))
-          )
+           pToken->token != TK_EOF &&
+           pToken->token != TK_NONE &&
+           (!pToken->bActive || IsPreprocessorTokenPhase(pToken->token))
+           )
     {
         enum TokenType currentTokenType = pToken->token;
         struct Token* pCurrent = 0;
         Scanner_MatchGet(scanner, &pCurrent);
         if (scanner->Level == 0 ||
-                (scanner->Level == 1 && currentTokenType == TK_FILE_EOF))
+            (scanner->Level == 1 && currentTokenType == TK_FILE_EOF))
         {
             pCurrent->pNext = 0;
             TokenList_PushBack(&scanner->PreviousList, pCurrent /*movido*/);
@@ -6929,7 +6944,7 @@ void LocalStrBuilder_AppendChar(struct LocalStrBuilder* p, char ch)
 
 
 struct StructUnionSpecifier* FindStructUnionSpecifierByName(struct SyntaxTree* pSyntaxTree,
-        const char* structTagNameOrTypedef);
+    const char* structTagNameOrTypedef);
 
 
 void Parameter_PrintNameMangling(struct Parameter* p,
@@ -7046,6 +7061,7 @@ void IntegerStack_Destroy(struct IntegerStack* pItems)
 }
 
 static int global_lambda_counter = 0;
+static int try_statement_index = 0;
 
 
 void PrintCodeOptions_Destroy(struct PrintCodeOptions* options)
@@ -7083,12 +7099,12 @@ static void TInitializerList_CodePrint(struct SyntaxTree* pSyntaxTree,
 
 
 static void TInitializerListItem_CodePrint(struct SyntaxTree* pSyntaxTree,
-        struct PrintCodeOptions* options,
-        struct Declarator* pDeclarator,
-        struct DeclarationSpecifiers* pDeclarationSpecifiers,
-        struct InitializerListItem* p,
+                                           struct PrintCodeOptions* options,
+                                           struct Declarator* pDeclarator,
+                                           struct DeclarationSpecifiers* pDeclarationSpecifiers,
+                                           struct InitializerListItem* p,
 
-        struct StrBuilder* fp);
+                                           struct StrBuilder* fp);
 
 
 struct TypeQualifier* TTypeQualifier_Clone(struct TypeQualifier* p);
@@ -7125,7 +7141,7 @@ bool IsActive(struct PrintCodeOptions* options)
     if (options->bInclude)
     {
         if (options->Stack.Size == 0 ||
-                options->Stack.pData[options->Stack.Size - 1] == 1)
+            options->Stack.pData[options->Stack.Size - 1] == 1)
         {
             bResult = true;
         }
@@ -7158,145 +7174,150 @@ static void TNodeClueList_CodePrint(struct PrintCodeOptions* options, struct Tok
         return;
     };
     for (struct Token* pNodeClue = list->pHead;
-            pNodeClue != NULL;
-            pNodeClue = pNodeClue->pNext)
+         pNodeClue != NULL;
+         pNodeClue = pNodeClue->pNext)
     {
         switch (pNodeClue->token)
         {
-        case TK_PRE_INCLUDE:
-        {
-            bool bIncludeFile = true;
-            if (options->Stack.Size > 0 &&
+            case TK_PRE_INCLUDE:
+            {
+                bool bIncludeFile = true;
+                if (options->Stack.Size > 0 &&
                     options->Stack.pData[options->Stack.Size - 1] == 0)
-            {
-                bIncludeFile = false;
+                {
+                    bIncludeFile = false;
+                }
+                else
+                {
+                    bIncludeFile = false;
+                }
+                if (bIncludeFile)
+                {
+                    IntegerStack_PushBack(&options->Stack, bIncludeFile);
+                }
+                else
+                {
+                    Output_Append(fp, options, pNodeClue->lexeme.c_str);
+                    Output_Append(fp, options, "\n");
+                    IntegerStack_PushBack(&options->Stack, bIncludeFile);
+                }
             }
-            else
-            {
-                bIncludeFile = false;
-            }
-            if (bIncludeFile)
-            {
-                IntegerStack_PushBack(&options->Stack, bIncludeFile);
-            }
-            else
-            {
+            break;
+            case TK_FILE_EOF:
+                IntegerStack_Pop(&options->Stack);
+                //options->IncludeLevel--;
+                ////assert(IncludeLevel > 0);
+                //bInclude = true;
+                break;
+            case TK_PRE_DEFINE:
+                //TODO gerar macros como init
                 Output_Append(fp, options, pNodeClue->lexeme.c_str);
                 Output_Append(fp, options, "\n");
-                IntegerStack_PushBack(&options->Stack, bIncludeFile);
-            }
-        }
-        break;
-        case TK_FILE_EOF:
-            IntegerStack_Pop(&options->Stack);
-            //options->IncludeLevel--;
-            ////assert(IncludeLevel > 0);
-            //bInclude = true;
-            break;
-        case TK_PRE_DEFINE:
-            //TODO gerar macros como init
-            Output_Append(fp, options, pNodeClue->lexeme.c_str);
-            Output_Append(fp, options, "\n");
-            break;
-        case TK_PRE_PRAGMA:
-            if (strcmp(pNodeClue->lexeme.c_str, "#pragma expand on") == 0)
-            {
-                options->Options.bExpandMacros = true;
-            }
-            else if (strcmp(pNodeClue->lexeme.c_str, "#pragma expand off") == 0)
-            {
-                options->Options.bExpandMacros = false;
-            }
-            else
-            {
+                break;
+            case TK_PRE_PRAGMA:
+                if (strcmp(pNodeClue->lexeme.c_str, "#pragma expand on") == 0)
+                {
+                    options->Options.bExpandMacros = true;
+                }
+                else if (strcmp(pNodeClue->lexeme.c_str, "#pragma expand off") == 0)
+                {
+                    options->Options.bExpandMacros = false;
+                }
+                else
+                {
+                    Output_Append(fp, options, pNodeClue->lexeme.c_str);
+                }
+                Output_Append(fp, options, "\n");
+                break;
+            case TK_PRE_UNDEF:
+            case TK_PRE_IF:
+            case TK_PRE_ENDIF:
+            case TK_PRE_ELSE:
+            case TK_PRE_IFDEF:
+            case TK_PRE_IFNDEF:
+            case TK_PRE_ELIF:
                 Output_Append(fp, options, pNodeClue->lexeme.c_str);
-            }
-            Output_Append(fp, options, "\n");
-            break;
-        case TK_PRE_UNDEF:
-        case TK_PRE_IF:
-        case TK_PRE_ENDIF:
-        case TK_PRE_ELSE:
-        case TK_PRE_IFDEF:
-        case TK_PRE_IFNDEF:
-        case TK_PRE_ELIF:
-            Output_Append(fp, options, pNodeClue->lexeme.c_str);
-            Output_Append(fp, options, "\n");
-            break;
-        case TK_OPEN_COMMENT:
-        case TK_CLOSE_COMMENT:
-            //Output_Append(fp, options, pNodeClue->lexeme.c_str);
-            break;
-        case TK_COMMENT:
-            if (options->Options.bIncludeComments)
-            {
+                Output_Append(fp, options, "\n");
+                break;
+            case TK_OPEN_COMMENT:
+            case TK_CLOSE_COMMENT:
+                //Output_Append(fp, options, pNodeClue->lexeme.c_str);
+                break;
+            case TK_COMMENT:
+                if (options->Options.bIncludeComments)
+                {
+                    Output_Append(fp, options, pNodeClue->lexeme.c_str);
+                }
+                else
+                {
+                    Output_Append(fp, options, " ");
+                }
+                break;
+            case TK_LINE_COMMENT:
+                if (options->Options.bIncludeComments)
+                {
+                    Output_Append(fp, options, pNodeClue->lexeme.c_str);
+                }
+                else
+                {
+                }
+                break;
+            case TK_BREAKLINE:
+                Output_Append(fp, options, "\n");
+                break;
+            case TK_MACRO_CALL:
+                if (options->Options.bExpandMacros)
+                {
+                }
+                else
+                {
+                    //if (!strstr(pNodeClue->lexeme.c_str, "ForEachListItem"))
+                    //{
+                    Output_Append(fp, options, pNodeClue->lexeme.c_str);
+                    options->bInclude = false;
+                    //}
+                }
+                break;
+            case TK_MACRO_EOF:
+                if (options->Options.bExpandMacros)
+                {
+                }
+                else
+                {
+                    options->bInclude = true;
+                }
+                break;
+            case TK_SPACES:
                 Output_Append(fp, options, pNodeClue->lexeme.c_str);
-            }
-            else
-            {
-                Output_Append(fp, options, " ");
-            }
-            break;
-        case TK_LINE_COMMENT:
-            if (options->Options.bIncludeComments)
-            {
+                break;
+                //case NodeClueTypeNone:
+            default:
                 Output_Append(fp, options, pNodeClue->lexeme.c_str);
-            }
-            else
-            {
-            }
-            break;
-        case TK_BREAKLINE:
-            Output_Append(fp, options, "\n");
-            break;
-        case TK_MACRO_CALL:
-            if (options->Options.bExpandMacros)
-            {
-            }
-            else
-            {
-                //if (!strstr(pNodeClue->lexeme.c_str, "ForEachListItem"))
-                //{
-                Output_Append(fp, options, pNodeClue->lexeme.c_str);
-                options->bInclude = false;
-                //}
-            }
-            break;
-        case TK_MACRO_EOF:
-            if (options->Options.bExpandMacros)
-            {
-            }
-            else
-            {
-                options->bInclude = true;
-            }
-            break;
-        case TK_SPACES:
-            Output_Append(fp, options, pNodeClue->lexeme.c_str);
-            break;
-        //case NodeClueTypeNone:
-        default:
-            Output_Append(fp, options, pNodeClue->lexeme.c_str);
-            break;
+                break;
         }
     }
 }
 
 static void TCompoundStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
-        struct PrintCodeOptions* options,
-        struct CompoundStatement* p,
+                                         struct PrintCodeOptions* options,
+                                         struct CompoundStatement* p,
 
-        struct StrBuilder* fp)
+                                         struct StrBuilder* fp)
 {
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-    Output_Append(fp, options, "{");
+    
+    if (!p->bVirtual)
+      Output_Append(fp, options, "{");
+
     for (int j = 0; j < p->BlockItemList.size; j++)
     {
         struct BlockItem* pBlockItem = p->BlockItemList.data[j];
         TBlockItem_CodePrint(pSyntaxTree, options, pBlockItem, fp);
     }
     TNodeClueList_CodePrint(options, &p->ClueList1, fp);
-    Output_Append(fp, options, "}");
+
+    if (!p->bVirtual)
+        Output_Append(fp, options, "}");    
 }
 
 
@@ -7409,6 +7430,58 @@ static void TDoStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintC
     }
 }
 
+static void TTryBlockStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct TryBlockStatement* p, struct StrBuilder* fp)
+{
+    TNodeClueList_CodePrint(options, &p->ClueListTry, fp);
+
+    struct TryBlockStatement* pOld = options->pCurrentTryBlock;
+    options->pCurrentTryBlock = p;
+
+    try_statement_index++;
+    char indestrs[20];
+    snprintf(indestrs, sizeof(indestrs), "%d", try_statement_index);
+
+    StrBuilder_Clear(&options->sbDeferLoop);
+    TNodeClueList_CodePrint(options, &p->ClueListTry, fp);
+    //StrBuilder_AppendFmt
+    Output_Append(fp, options, "/*try-block*/ { ");
+    TParameter_CodePrint(pSyntaxTree, options, p->pParameter, fp);
+
+    //Output_Append(fp, options, indestrs);
+    Output_Append(fp, options, " = 0;");
+
+
+    TCompoundStatement_CodePrint(pSyntaxTree, options, p->pCompoundStatement, fp);
+    TNodeClueList_CodePrint(options, &p->ClueListCatch, fp);
+    TNodeClueList_CodePrint(options, &p->ClueListLeftPar, fp);
+    TNodeClueList_CodePrint(options, &p->ClueListRightPar, fp);
+
+    Output_Append(fp, options, "/*catch*/ goto _exit_try_label");
+    Output_Append(fp, options, indestrs);
+    Output_Append(fp, options, ";");
+
+    Output_Append(fp, options, "_catch_label");
+    Output_Append(fp, options, indestrs);
+    Output_Append(fp, options, ":;");
+
+    TCompoundStatement_CodePrint(pSyntaxTree, options, p->pCompoundCatchStatement, fp);
+
+    Output_Append(fp, options, "_exit_try_label");
+    Output_Append(fp, options, indestrs);
+    Output_Append(fp, options, ":;");
+
+
+    Output_Append(fp, options, "} /*end try-block*/");
+
+    //else
+    //{
+      //  Output_Append(fp, options, " while(0);");
+    //}
+    try_statement_index--;
+    options->pCurrentTryBlock = pOld;
+}
+
+
 
 static void TExpressionStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct ExpressionStatement* p, struct StrBuilder* fp)
 {
@@ -7416,6 +7489,11 @@ static void TExpressionStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struc
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
     Output_Append(fp, options, ";");
 }
+
+static void TDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
+                                  struct PrintCodeOptions* options,
+                                  struct Declarator* p,
+                                  struct StrBuilder* fp);
 
 #define JUMPSTATEMENT_INIT {JumpStatement_ID}
 void JumpStatement_Delete(struct JumpStatement* p);
@@ -7425,39 +7503,89 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
     switch (p->token)
     {
-    case TK_GOTO:
-        Output_Append(fp, options, "goto");
-        TNodeClueList_CodePrint(options, &p->ClueList1, fp);
-        Output_Append(fp, options, p->Identifier);
-        break;
-    case  TK_CONTINUE:
-        Output_Append(fp, options, options->sbDeferLoop.c_str);
-        Output_Append(fp, options, "continue");
-        break;
-    case TK_BREAK:
-        Output_Append(fp, options, options->sbDeferLoop.c_str);
-        Output_Append(fp, options, "break");
-        break;
-    case TK_RETURN:
-        if (p->pExpression && options->sbDefer.size > 0)
+        case TK_GOTO:
+            Output_Append(fp, options, "goto");
+            TNodeClueList_CodePrint(options, &p->ClueList1, fp);
+            Output_Append(fp, options, p->Identifier);
+            break;
+        case  TK_CONTINUE:
+            Output_Append(fp, options, options->sbDeferLoop.c_str);
+            Output_Append(fp, options, "continue");
+            break;
+        case TK_BREAK:
+            Output_Append(fp, options, options->sbDeferLoop.c_str);
+            Output_Append(fp, options, "break");
+            break;
+        case TK_THROW:
         {
-            Output_Append(fp, options, options->returnType.c_str);
-            Output_Append(fp, options, " _result = ");
-            TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
-            Output_Append(fp, options, ";");
-            Output_Append(fp, options, options->sbDefer.c_str);
-            Output_Append(fp, options, "return _result");
-        }
-        else
-        {
-            Output_Append(fp, options, options->sbDefer.c_str);
-            Output_Append(fp, options, "return");
-            TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+            if (options->pCurrentTryBlock)
+            {
+                char try_statement_index_string[20];
+                snprintf(try_statement_index_string, sizeof(try_statement_index_string), "%d", try_statement_index);
+
+                if (p->pExpression && options->sbDefer.size > 0)
+                {
+
+
+                    //Output_Append(fp, options, options->returnType.c_str);
+                    if (options->pCurrentTryBlock->pParameter)
+                    {
+                        TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameter->Declarator, fp);
+                        Output_Append(fp, options, " = ");
+                        TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+                        Output_Append(fp, options, ";");
+                    }
+                    else
+                    {
+                        /*error tem que estar dentro de try*/
+                    }
+
+
+
+
+                    Output_Append(fp, options, options->sbDefer.c_str);
+                    Output_Append(fp, options, " goto _catch_label");
+                    Output_Append(fp, options, try_statement_index_string);
+                }
+                else
+                {
+                    Output_Append(fp, options, options->sbDefer.c_str);
+                    TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameter->Declarator, fp);
+                    Output_Append(fp, options, " = ");
+                    TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+                    Output_Append(fp, options, ";");
+                    TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+                    Output_Append(fp, options, " goto _catch_label");
+                    Output_Append(fp, options, try_statement_index_string);
+                }
+            }
+            else
+            {
+                Output_Append(fp, options, "#error throw can be used only inside try-blocks");
+            }
         }
         break;
-    default:
-        //assert(false);
-        break;
+
+        case TK_RETURN:
+            if (p->pExpression && options->sbDefer.size > 0)
+            {
+                Output_Append(fp, options, options->returnType.c_str);
+                Output_Append(fp, options, " _result = ");
+                TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+                Output_Append(fp, options, ";");
+                Output_Append(fp, options, options->sbDefer.c_str);
+                Output_Append(fp, options, "return _result");
+            }
+            else
+            {
+                Output_Append(fp, options, options->sbDefer.c_str);
+                Output_Append(fp, options, "return");
+                TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+            }
+            break;
+        default:
+            //assert(false);
+            break;
     }
     TNodeClueList_CodePrint(options, &p->ClueList2, fp);
     Output_Append(fp, options, ";");
@@ -7486,6 +7614,137 @@ static void TSwitchStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Pr
 }
 
 
+
+static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
+                                   struct PrintCodeOptions* options,
+                                   struct TryStatement* p,
+                                   struct StrBuilder* fp)
+{
+    TNodeClueList_CodePrint(options, &p->ClueList0, fp);
+    Output_Append(fp, options, "/*try*/ ");
+
+    if (p->pInitDeclarationOpt || p->pInitialExpression)
+    {
+        //quantos de espacamento?
+
+        if (p->pInitDeclarationOpt != NULL)
+        {
+            //Output_Append(fp, options, "{");
+            TAnyDeclaration_CodePrint(pSyntaxTree, options, p->pInitDeclarationOpt, fp);
+        }
+        else
+        {
+            TExpression_CodePrint(pSyntaxTree, options, p->pInitialExpression, fp);
+            Output_Append(fp, options, ";");
+        }
+
+        TNodeClueList_CodePrint(options, &p->ClueList1, fp);
+        Output_Append(fp, options, "if ");
+        Output_Append(fp, options, "(!(");
+    }
+    else
+    {
+        Output_Append(fp, options, "if ");
+        TNodeClueList_CodePrint(options, &p->ClueList1, fp);
+        Output_Append(fp, options, "(!(");
+    }
+    TExpression_CodePrint(pSyntaxTree, options, p->pConditionExpression, fp);
+    TNodeClueList_CodePrint(options, &p->ClueList4, fp);
+    Output_Append(fp, options, ")) { ");
+
+    #pragma region throw_block
+    { /*mesmo codigo throw refatorar*/
+        char try_statement_index_string[20];
+        snprintf(try_statement_index_string, sizeof(try_statement_index_string), "%d", try_statement_index);
+
+        if (options->sbDefer.size > 0)
+        {
+
+
+            //Output_Append(fp, options, options->returnType.c_str);
+            if (options->pCurrentTryBlock->pParameter)
+            {
+                TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameter->Declarator, fp);
+                Output_Append(fp, options, " = 1;");
+
+            }
+            else
+            {
+                /*error tem que estar dentro de try*/
+            }
+
+
+
+
+            Output_Append(fp, options, options->sbDefer.c_str);
+            Output_Append(fp, options, " goto _catch_label");
+            Output_Append(fp, options, try_statement_index_string);
+            Output_Append(fp, options, ";");
+        }
+        else
+        {
+            Output_Append(fp, options, options->sbDefer.c_str);
+            TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameter->Declarator, fp);
+            Output_Append(fp, options, " = 1;");
+            //TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+            //Output_Append(fp, options, ";");
+            //TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+            Output_Append(fp, options, " goto _catch_label");
+            Output_Append(fp, options, try_statement_index_string);
+            Output_Append(fp, options, ";");
+        }
+    } /*refatorar com threoe*/
+    #pragma endregion 
+
+
+    Output_Append(fp, options, "}");
+
+    if (p->pStatement->Type != CompoundStatement_ID)
+        Output_Append(fp, options, "");
+    if (p->pStatement)
+    {
+        if (p->pDeferExpression)
+        {
+            //Output_Append(fp, options, "{");
+            struct StrBuilder  copyLoop = { 0 };
+            StrBuilder_Append(&copyLoop, options->sbDeferLoop.c_str);
+            struct StrBuilder  copy = { 0 };
+            StrBuilder_Append(&copy, options->sbDefer.c_str);
+            //vou empilhar o defer aqui..
+            struct StrBuilder  sb = { 0 };
+            StrBuilder_Clear(&options->sbDefer);
+            TExpression_CodePrint(pSyntaxTree, options, p->pDeferExpression, &sb);
+            StrBuilder_Append(&sb, ";");
+            StrBuilder_Append(&options->sbDefer, sb.c_str);
+            StrBuilder_Append(&options->sbDefer, copy.c_str);
+            StrBuilder_Clear(&options->sbDeferLoop);
+            StrBuilder_Append(&options->sbDeferLoop, sb.c_str);
+            StrBuilder_Append(&options->sbDeferLoop, copyLoop.c_str);
+            StrBuilder_Destroy(&sb);
+            TStatement_CodePrint(pSyntaxTree, options, p->pStatement, fp);
+            //volta ao que era antes...
+            StrBuilder_Swap(&copy, &options->sbDefer);
+            StrBuilder_Swap(&copyLoop, &options->sbDeferLoop);
+            StrBuilder_Destroy(&copy);
+            StrBuilder_Destroy(&copyLoop);
+            TExpression_CodePrint(pSyntaxTree, options, p->pDeferExpression, fp);
+            Output_Append(fp, options, ";");
+            //Output_Append(fp, options, "}");
+        }
+        else
+            TStatement_CodePrint(pSyntaxTree, options, p->pStatement, fp);
+    }
+    
+    
+
+
+
+    if (p->pInitDeclarationOpt)
+    {
+       // Output_Append(fp, options, "}");
+    }
+}
+
 static void TIfStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
                                    struct PrintCodeOptions* options,
                                    struct IfStatement* p,
@@ -7495,7 +7754,7 @@ static void TIfStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
     if (p->pInitDeclarationOpt || p->pInitialExpression)
     {
         //quantos de espacamento?
-        
+
         if (p->pInitDeclarationOpt != NULL)
         {
             Output_Append(fp, options, "{");
@@ -7506,7 +7765,7 @@ static void TIfStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
             TExpression_CodePrint(pSyntaxTree, options, p->pInitialExpression, fp);
             Output_Append(fp, options, ";");
         }
-        
+
         TNodeClueList_CodePrint(options, &p->ClueList1, fp);
         Output_Append(fp, options, "if");
         Output_Append(fp, options, "(");
@@ -7576,37 +7835,43 @@ static void TStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCod
     }
     switch (p->Type)
     {
-    case ExpressionStatement_ID:
-        TExpressionStatement_CodePrint(pSyntaxTree, options, (struct ExpressionStatement*)p, fp);
-        break;
-    case SwitchStatement_ID:
-        //aqui nao vai
-        TSwitchStatement_CodePrint(pSyntaxTree, options, (struct SwitchStatement*)p, fp);
-        break;
-    case LabeledStatement_ID:
-        TLabeledStatement_CodePrint(pSyntaxTree, options, (struct LabeledStatement*)p, fp);
-        break;
-    case ForStatement_ID:
-        TForStatement_CodePrint(pSyntaxTree, options, (struct ForStatement*)p, fp);
-        break;
-    case JumpStatement_ID:
-        TJumpStatement_CodePrint(pSyntaxTree, options, (struct JumpStatement*)p, fp);
-        break;
-    case AsmStatement_ID:
-        TAsmStatement_CodePrint(options, (struct AsmStatement*)p, fp);
-        break;
-    case CompoundStatement_ID:
-        TCompoundStatement_CodePrint(pSyntaxTree, options, (struct CompoundStatement*)p, fp);
-        break;
-    case IfStatement_ID:
-        TIfStatement_CodePrint(pSyntaxTree, options, (struct IfStatement*)p, fp);
-        break;
-    case DoStatement_ID:
-        TDoStatement_CodePrint(pSyntaxTree, options, (struct DoStatement*)p, fp);
-        break;
-    default:
-        //assert(false);
-        break;
+        case ExpressionStatement_ID:
+            TExpressionStatement_CodePrint(pSyntaxTree, options, (struct ExpressionStatement*)p, fp);
+            break;
+        case SwitchStatement_ID:
+            //aqui nao vai
+            TSwitchStatement_CodePrint(pSyntaxTree, options, (struct SwitchStatement*)p, fp);
+            break;
+        case LabeledStatement_ID:
+            TLabeledStatement_CodePrint(pSyntaxTree, options, (struct LabeledStatement*)p, fp);
+            break;
+        case ForStatement_ID:
+            TForStatement_CodePrint(pSyntaxTree, options, (struct ForStatement*)p, fp);
+            break;
+        case JumpStatement_ID:
+            TJumpStatement_CodePrint(pSyntaxTree, options, (struct JumpStatement*)p, fp);
+            break;
+        case AsmStatement_ID:
+            TAsmStatement_CodePrint(options, (struct AsmStatement*)p, fp);
+            break;
+        case CompoundStatement_ID:
+            TCompoundStatement_CodePrint(pSyntaxTree, options, (struct CompoundStatement*)p, fp);
+            break;
+        case IfStatement_ID:
+            TIfStatement_CodePrint(pSyntaxTree, options, (struct IfStatement*)p, fp);
+            break;
+        case DoStatement_ID:
+            TDoStatement_CodePrint(pSyntaxTree, options, (struct DoStatement*)p, fp);
+            break;
+        case TryBlockStatement_ID:
+            TTryBlockStatement_CodePrint(pSyntaxTree, options, (struct TryBlockStatement*)p, fp);
+            break;
+        case TryStatement_ID:
+            TTryStatement_CodePrint(pSyntaxTree, options, (struct TryStatement*)p, fp);
+            break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -7619,47 +7884,53 @@ static void TBlockItem_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCod
     }
     switch (p->Type)
     {
-    case EofDeclaration_ID:
-        break;
-    case StaticAssertDeclaration_ID:
-        break;
-    case SwitchStatement_ID:
-        TSwitchStatement_CodePrint(pSyntaxTree, options, (struct SwitchStatement*)p, fp);
-        break;
-    case JumpStatement_ID:
-        TJumpStatement_CodePrint(pSyntaxTree, options, (struct JumpStatement*)p, fp);
-        break;
-    case ForStatement_ID:
-        TForStatement_CodePrint(pSyntaxTree, options, (struct ForStatement*)p, fp);
-        break;
-    case IfStatement_ID:
-        TIfStatement_CodePrint(pSyntaxTree, options, (struct IfStatement*)p, fp);
-        break;
-    case WhileStatement_ID:
-        TWhileStatement_CodePrint(pSyntaxTree, options, (struct WhileStatement*)p, fp);
-        break;
-    case DoStatement_ID:
-        TDoStatement_CodePrint(pSyntaxTree, options, (struct DoStatement*)p, fp);
-        break;
-    case Declaration_ID:
-        TDeclaration_CodePrint(pSyntaxTree, options, (struct Declaration*)p, fp);
-        //Output_Append(fp, options,  "\n");
-        break;
-    case LabeledStatement_ID:
-        TLabeledStatement_CodePrint(pSyntaxTree, options, (struct LabeledStatement*)p, fp);
-        break;
-    case CompoundStatement_ID:
-        TCompoundStatement_CodePrint(pSyntaxTree, options, (struct CompoundStatement*)p, fp);
-        break;
-    case ExpressionStatement_ID:
-        TExpressionStatement_CodePrint(pSyntaxTree, options, (struct ExpressionStatement*)p, fp);
-        break;
-    case AsmStatement_ID:
-        TAsmStatement_CodePrint(options, (struct AsmStatement*)p, fp);
-        break;
-    default:
-        //assert(false);
-        break;
+        case EofDeclaration_ID:
+            break;
+        case StaticAssertDeclaration_ID:
+            break;
+        case SwitchStatement_ID:
+            TSwitchStatement_CodePrint(pSyntaxTree, options, (struct SwitchStatement*)p, fp);
+            break;
+        case JumpStatement_ID:
+            TJumpStatement_CodePrint(pSyntaxTree, options, (struct JumpStatement*)p, fp);
+            break;
+        case ForStatement_ID:
+            TForStatement_CodePrint(pSyntaxTree, options, (struct ForStatement*)p, fp);
+            break;
+        case IfStatement_ID:
+            TIfStatement_CodePrint(pSyntaxTree, options, (struct IfStatement*)p, fp);
+            break;
+        case WhileStatement_ID:
+            TWhileStatement_CodePrint(pSyntaxTree, options, (struct WhileStatement*)p, fp);
+            break;
+        case DoStatement_ID:
+            TDoStatement_CodePrint(pSyntaxTree, options, (struct DoStatement*)p, fp);
+            break;
+        case TryBlockStatement_ID:
+            TTryBlockStatement_CodePrint(pSyntaxTree, options, (struct TryBlockStatement*)p, fp);
+            break;
+        case TryStatement_ID:
+            TTryStatement_CodePrint(pSyntaxTree, options, (struct TryStatement*)p, fp);
+            break;
+        case Declaration_ID:
+            TDeclaration_CodePrint(pSyntaxTree, options, (struct Declaration*)p, fp);
+            //Output_Append(fp, options,  "\n");
+            break;
+        case LabeledStatement_ID:
+            TLabeledStatement_CodePrint(pSyntaxTree, options, (struct LabeledStatement*)p, fp);
+            break;
+        case CompoundStatement_ID:
+            TCompoundStatement_CodePrint(pSyntaxTree, options, (struct CompoundStatement*)p, fp);
+            break;
+        case ExpressionStatement_ID:
+            TExpressionStatement_CodePrint(pSyntaxTree, options, (struct ExpressionStatement*)p, fp);
+            break;
+        case AsmStatement_ID:
+            TAsmStatement_CodePrint(options, (struct AsmStatement*)p, fp);
+            break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -7669,7 +7940,7 @@ bool GetType(const char* source,
              struct StrBuilder* strBuilderType)
 {
     while (*source &&
-            *source != '_')
+           *source != '_')
     {
         StrBuilder_AppendChar(strBuilderType, *source);
         source++;
@@ -7683,7 +7954,7 @@ bool GetTypeAndFunction(const char* source,
                         struct StrBuilder* strBuilderFunc)
 {
     while (*source &&
-            *source != '_')
+           *source != '_')
     {
         StrBuilder_AppendChar(strBuilderType, *source);
         source++;
@@ -7700,9 +7971,9 @@ static void ParameterTypeList_CodePrint(struct SyntaxTree* pSyntaxTree, struct P
 
 
 static void TPrimaryExpressionLambda_CodePrint(struct SyntaxTree* pSyntaxTree,
-        struct PrintCodeOptions* options,
-        struct PrimaryExpressionLambda* p,
-        struct StrBuilder* fp)
+                                               struct PrintCodeOptions* options,
+                                               struct PrimaryExpressionLambda* p,
+                                               struct StrBuilder* fp)
 {
     //Output_Append(fp, options, "l1");
     //Output_Append
@@ -7926,229 +8197,229 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
     }
     switch (p->token)
     {
-    case TK_NEW:
-        InstantiateNew(options,
-                       pSyntaxTree,
-                       p,
-                       fp);
+        case TK_NEW:
+            InstantiateNew(options,
+                           pSyntaxTree,
+                           p,
+                           fp);
 #if 0
-        TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-        Output_Append(fp, options, "new");
-        TNodeClueList_CodePrint(options, &p->ClueList1, fp);
-        Output_Append(fp, options, "(");
-        TTypeName_CodePrint(pSyntaxTree, options, p->pTypeName, fp);
-        Output_Append(fp, options, ")");
-        if (p->InitializerList.pHead)
-        {
-            TInitializerList_CodePrint(pSyntaxTree,
-                                       options,
-                                       &p->pTypeName->SpecifierQualifierList,
-                                       &p->pTypeName->Declarator,
-                                       &p->InitializerList,
-                                       fp);
-        }
-        else
-        {
-            Output_Append(fp, options, "{}");
-        }
+            TNodeClueList_CodePrint(options, &p->ClueList0, fp);
+            Output_Append(fp, options, "new");
+            TNodeClueList_CodePrint(options, &p->ClueList1, fp);
+            Output_Append(fp, options, "(");
+            TTypeName_CodePrint(pSyntaxTree, options, p->pTypeName, fp);
+            Output_Append(fp, options, ")");
+            if (p->InitializerList.pHead)
+            {
+                TInitializerList_CodePrint(pSyntaxTree,
+                                           options,
+                                           &p->pTypeName->SpecifierQualifierList,
+                                           &p->pTypeName->Declarator,
+                                           &p->InitializerList,
+                                           fp);
+            }
+            else
+            {
+                Output_Append(fp, options, "{}");
+            }
 #endif
-        break;
-    case TK_FULL_STOP:
-        if (p->pExpressionLeft)
-        {
-            TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
-        }
-        TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-        Output_Append(fp, options, ".");
-        TNodeClueList_CodePrint(options, &p->ClueList1, fp);
-        Output_Append(fp, options, p->Identifier);
-        break;
-    case TK_ARROW:
-        if (p->pExpressionLeft)
-        {
-            TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
-        }
-        TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-        Output_Append(fp, options, "->");
-        TNodeClueList_CodePrint(options, &p->ClueList1, fp);
-        Output_Append(fp, options, p->Identifier);
-        break;
-    case TK_LEFT_SQUARE_BRACKET:
-        if (p->pExpressionLeft)
-        {
-            TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
-        }
-        TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-        Output_Append(fp, options, "[");
-        TExpression_CodePrint(pSyntaxTree, options, p->pExpressionRight, fp);
-        TNodeClueList_CodePrint(options, &p->ClueList1, fp);
-        Output_Append(fp, options, "]");
-        break;
-    case TK_LEFT_PARENTHESIS:
-    {
-        const char* funcName = GetFuncName(p->pExpressionLeft);
-        if (funcName != NULL && strcmp(funcName, "typename") == 0)
-        {
-            /*colocar uma string literal no lugar*/
-            if (p->ArgumentExpressionList.size == 1)
-            {
-                struct StrBuilder str = STRBUILDER_INIT;
-                GetTypeName(p->ArgumentExpressionList.data[0]->pExpression, &str);
-                StrBuilder_Append(fp, "\"");
-                StrBuilder_Append(fp, str.c_str);
-                StrBuilder_Append(fp, "\"");
-                StrBuilder_Destroy(&str);
-            }
-            else
-            {
-                //wrong number of argument
-            }
-        }
-        else if (funcName != NULL && strcmp(funcName, "destroy") == 0)
-        {
-            if (p->ArgumentExpressionList.size == 1)
-            {
-                struct TypeName* pTypeName = Expression_GetTypeName(p->ArgumentExpressionList.data[0]->pExpression);
-                struct StrBuilder strtemp = STRBUILDER_INIT;
-                struct StrBuilder instantiate = STRBUILDER_INIT;
-                TExpression_CodePrint(pSyntaxTree, options, p->ArgumentExpressionList.data[0]->pExpression, &strtemp);
-                InstanciateDestroy(pSyntaxTree,
-                                   options,
-                                   0,
-                                   &pTypeName->SpecifierQualifierList,
-                                   &pTypeName->Declarator,
-                                   strtemp.c_str,
-                                   false,
-                                   &instantiate);
-                //imprimir espacos na frente
-                TExpression_CodePrintSpaces(pSyntaxTree, options, p->pExpressionLeft, fp);
-                if (instantiate.size > 0)
-                {
-                    StrBuilder_Append(fp, instantiate.c_str);
-                }
-                /*se este cara for vazio nao precisaria fazer nada remover chamada*/
-                StrBuilder_Destroy(&strtemp);
-                StrBuilder_Destroy(&instantiate);
-            }
-            else
-            {
-                //wrong number of argument
-            }
-        }
-        else
-        {
-            bool bHandled = false;
-            struct TypeName* pTypeName = NULL;
-            if (p->ArgumentExpressionList.size == 1)
-            {
-                pTypeName = Expression_GetTypeName(p->ArgumentExpressionList.data[0]->pExpression);
-                if (pTypeName)
-                {
-                    struct StructUnionSpecifier* pStructUnionSpecifier =
-                        (struct StructUnionSpecifier*)
-                        DeclarationSpecifiers_GetMainSpecifier((struct DeclarationSpecifiers*)&pTypeName->SpecifierQualifierList, StructUnionSpecifier_ID);
-                    if (pStructUnionSpecifier)
-                    {
-                        if (pStructUnionSpecifier->Tag)
-                        {
-                            pStructUnionSpecifier = FindStructUnionSpecifierByName(pSyntaxTree, pStructUnionSpecifier->Tag);
-                        }
-                        if (pStructUnionSpecifier->UnionSet.pHead != NULL)
-                        {
-                            bHandled = true;
-                            //imprimir espacos na frente
-                            TExpression_CodePrintSpaces(pSyntaxTree, options, p->pExpressionLeft, fp);
-                            //se nao tem nome vou gerar um nome com todos
-                            char structTagName[1000] = { 0 };
-                            GetOrGenerateStructTagName(pStructUnionSpecifier, structTagName, sizeof(structTagName));
-                            //nome da funcao
-                            Output_Append(fp, options, structTagName);
-                            Output_Append(fp, options, "_");
-                            Output_Append(fp, options, funcName);
-                            UnionTypeDefault(pSyntaxTree,
-                                             options,
-                                             pStructUnionSpecifier,
-                                             NULL,
-                                             "p",
-                                             funcName,
-                                             &options->sbInstantiations,
-                                             &options->sbPreDeclaration);
-                        }
-                    }
-                    else
-                    {
-                        if (pTypeName->Declarator.pDirectDeclarator &&
-                                pTypeName->Declarator.pDirectDeclarator->DeclaratorType == TDirectDeclaratorTypeAutoArray &&
-                                (funcName != NULL && strcmp(funcName, "push") == 0))
-                        {
-                            //auto array
-                            bHandled = true;
-                            struct Declarator* pDeclarator = 0;
-                            struct Declaration* pDecl = GetDeclaration(p->pExpressionRight, &pDeclarator);
-                            struct StrBuilder strtemp = STRBUILDER_INIT;
-                            struct StrBuilder instantiate = STRBUILDER_INIT;
-                            TExpression_CodePrint(pSyntaxTree, options, p->pExpressionRight, &strtemp);
-                            //TDeclarationSpecifiers_PrintNameMangling(&pDecl->Specifiers, &instantiate);
-                            InstanciateVectorPush(pSyntaxTree,
-                                                  options,
-                                                  &pDecl->Specifiers,
-                                                  &instantiate);
-                            /*
-                            InstanciateDestroy(pSyntaxTree,
-                                               options,
-                                               0,
-                                               (struct TSpecifierQualifierList*)(&pDecl->Specifiers),
-                                               pDeclarator,
-                                               strtemp.c_str,
-                                               false,
-                                               &instantiate);
-                                               */
-                            //imprimir espacos na frente
-                            TExpression_CodePrintSpaces(pSyntaxTree, options, p->pExpressionLeft, fp);
-                            if (instantiate.size > 0)
-                            {
-                                StrBuilder_Append(fp, instantiate.c_str);
-                                //StrBuilder_Append(fp, "&");
-                            }
-                            /*se este cara for vazio nao precisaria fazer nada remover chamada*/
-                            StrBuilder_Destroy(&strtemp);
-                            StrBuilder_Destroy(&instantiate);
-                        }
-                    }
-                }
-            }
-            if (p->pExpressionLeft && !bHandled)
+            break;
+        case TK_FULL_STOP:
+            if (p->pExpressionLeft)
             {
                 TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
             }
-            //Do lado esquerdo vem o nome da funcao p->pExpressionLeft
             TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-            Output_Append(fp, options, "(");
-            ArgumentExpressionList_CodePrint(pSyntaxTree, options, &p->ArgumentExpressionList, fp);
+            Output_Append(fp, options, ".");
             TNodeClueList_CodePrint(options, &p->ClueList1, fp);
-            Output_Append(fp, options, ")");
-        }
-    }
-    break;
-    case TK_PLUSPLUS:
-        if (p->pExpressionLeft)
+            Output_Append(fp, options, p->Identifier);
+            break;
+        case TK_ARROW:
+            if (p->pExpressionLeft)
+            {
+                TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
+            }
+            TNodeClueList_CodePrint(options, &p->ClueList0, fp);
+            Output_Append(fp, options, "->");
+            TNodeClueList_CodePrint(options, &p->ClueList1, fp);
+            Output_Append(fp, options, p->Identifier);
+            break;
+        case TK_LEFT_SQUARE_BRACKET:
+            if (p->pExpressionLeft)
+            {
+                TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
+            }
+            TNodeClueList_CodePrint(options, &p->ClueList0, fp);
+            Output_Append(fp, options, "[");
+            TExpression_CodePrint(pSyntaxTree, options, p->pExpressionRight, fp);
+            TNodeClueList_CodePrint(options, &p->ClueList1, fp);
+            Output_Append(fp, options, "]");
+            break;
+        case TK_LEFT_PARENTHESIS:
         {
-            TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
+            const char* funcName = GetFuncName(p->pExpressionLeft);
+            if (funcName != NULL && strcmp(funcName, "typename") == 0)
+            {
+                /*colocar uma string literal no lugar*/
+                if (p->ArgumentExpressionList.size == 1)
+                {
+                    struct StrBuilder str = STRBUILDER_INIT;
+                    GetTypeName(p->ArgumentExpressionList.data[0]->pExpression, &str);
+                    StrBuilder_Append(fp, "\"");
+                    StrBuilder_Append(fp, str.c_str);
+                    StrBuilder_Append(fp, "\"");
+                    StrBuilder_Destroy(&str);
+                }
+                else
+                {
+                    //wrong number of argument
+                }
+            }
+            else if (funcName != NULL && strcmp(funcName, "destroy") == 0)
+            {
+                if (p->ArgumentExpressionList.size == 1)
+                {
+                    struct TypeName* pTypeName = Expression_GetTypeName(p->ArgumentExpressionList.data[0]->pExpression);
+                    struct StrBuilder strtemp = STRBUILDER_INIT;
+                    struct StrBuilder instantiate = STRBUILDER_INIT;
+                    TExpression_CodePrint(pSyntaxTree, options, p->ArgumentExpressionList.data[0]->pExpression, &strtemp);
+                    InstanciateDestroy(pSyntaxTree,
+                                       options,
+                                       0,
+                                       &pTypeName->SpecifierQualifierList,
+                                       &pTypeName->Declarator,
+                                       strtemp.c_str,
+                                       false,
+                                       &instantiate);
+                    //imprimir espacos na frente
+                    TExpression_CodePrintSpaces(pSyntaxTree, options, p->pExpressionLeft, fp);
+                    if (instantiate.size > 0)
+                    {
+                        StrBuilder_Append(fp, instantiate.c_str);
+                    }
+                    /*se este cara for vazio nao precisaria fazer nada remover chamada*/
+                    StrBuilder_Destroy(&strtemp);
+                    StrBuilder_Destroy(&instantiate);
+                }
+                else
+                {
+                    //wrong number of argument
+                }
+            }
+            else
+            {
+                bool bHandled = false;
+                struct TypeName* pTypeName = NULL;
+                if (p->ArgumentExpressionList.size == 1)
+                {
+                    pTypeName = Expression_GetTypeName(p->ArgumentExpressionList.data[0]->pExpression);
+                    if (pTypeName)
+                    {
+                        struct StructUnionSpecifier* pStructUnionSpecifier =
+                            (struct StructUnionSpecifier*)
+                            DeclarationSpecifiers_GetMainSpecifier((struct DeclarationSpecifiers*)&pTypeName->SpecifierQualifierList, StructUnionSpecifier_ID);
+                        if (pStructUnionSpecifier)
+                        {
+                            if (pStructUnionSpecifier->Tag)
+                            {
+                                pStructUnionSpecifier = FindStructUnionSpecifierByName(pSyntaxTree, pStructUnionSpecifier->Tag);
+                            }
+                            if (pStructUnionSpecifier->UnionSet.pHead != NULL)
+                            {
+                                bHandled = true;
+                                //imprimir espacos na frente
+                                TExpression_CodePrintSpaces(pSyntaxTree, options, p->pExpressionLeft, fp);
+                                //se nao tem nome vou gerar um nome com todos
+                                char structTagName[1000] = { 0 };
+                                GetOrGenerateStructTagName(pStructUnionSpecifier, structTagName, sizeof(structTagName));
+                                //nome da funcao
+                                Output_Append(fp, options, structTagName);
+                                Output_Append(fp, options, "_");
+                                Output_Append(fp, options, funcName);
+                                UnionTypeDefault(pSyntaxTree,
+                                                 options,
+                                                 pStructUnionSpecifier,
+                                                 NULL,
+                                                 "p",
+                                                 funcName,
+                                                 &options->sbInstantiations,
+                                                 &options->sbPreDeclaration);
+                            }
+                        }
+                        else
+                        {
+                            if (pTypeName->Declarator.pDirectDeclarator &&
+                                pTypeName->Declarator.pDirectDeclarator->DeclaratorType == TDirectDeclaratorTypeAutoArray &&
+                                (funcName != NULL && strcmp(funcName, "push") == 0))
+                            {
+                                //auto array
+                                bHandled = true;
+                                struct Declarator* pDeclarator = 0;
+                                struct Declaration* pDecl = GetDeclaration(p->pExpressionRight, &pDeclarator);
+                                struct StrBuilder strtemp = STRBUILDER_INIT;
+                                struct StrBuilder instantiate = STRBUILDER_INIT;
+                                TExpression_CodePrint(pSyntaxTree, options, p->pExpressionRight, &strtemp);
+                                //TDeclarationSpecifiers_PrintNameMangling(&pDecl->Specifiers, &instantiate);
+                                InstanciateVectorPush(pSyntaxTree,
+                                                      options,
+                                                      &pDecl->Specifiers,
+                                                      &instantiate);
+                                /*
+                                InstanciateDestroy(pSyntaxTree,
+                                                   options,
+                                                   0,
+                                                   (struct TSpecifierQualifierList*)(&pDecl->Specifiers),
+                                                   pDeclarator,
+                                                   strtemp.c_str,
+                                                   false,
+                                                   &instantiate);
+                                                   */
+                                                   //imprimir espacos na frente
+                                TExpression_CodePrintSpaces(pSyntaxTree, options, p->pExpressionLeft, fp);
+                                if (instantiate.size > 0)
+                                {
+                                    StrBuilder_Append(fp, instantiate.c_str);
+                                    //StrBuilder_Append(fp, "&");
+                                }
+                                /*se este cara for vazio nao precisaria fazer nada remover chamada*/
+                                StrBuilder_Destroy(&strtemp);
+                                StrBuilder_Destroy(&instantiate);
+                            }
+                        }
+                    }
+                }
+                if (p->pExpressionLeft && !bHandled)
+                {
+                    TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
+                }
+                //Do lado esquerdo vem o nome da funcao p->pExpressionLeft
+                TNodeClueList_CodePrint(options, &p->ClueList0, fp);
+                Output_Append(fp, options, "(");
+                ArgumentExpressionList_CodePrint(pSyntaxTree, options, &p->ArgumentExpressionList, fp);
+                TNodeClueList_CodePrint(options, &p->ClueList1, fp);
+                Output_Append(fp, options, ")");
+            }
         }
-        TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-        Output_Append(fp, options, "++");
         break;
-    case TK_MINUSMINUS:
-        if (p->pExpressionLeft)
-        {
-            TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
-        }
-        TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-        Output_Append(fp, options, "--");
-        break;
-    default:
-        //assert(false);
-        break;
+        case TK_PLUSPLUS:
+            if (p->pExpressionLeft)
+            {
+                TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
+            }
+            TNodeClueList_CodePrint(options, &p->ClueList0, fp);
+            Output_Append(fp, options, "++");
+            break;
+        case TK_MINUSMINUS:
+            if (p->pExpressionLeft)
+            {
+                TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
+            }
+            TNodeClueList_CodePrint(options, &p->ClueList0, fp);
+            Output_Append(fp, options, "--");
+            break;
+        default:
+            //assert(false);
+            break;
     }
     if (p->pNext)
     {
@@ -8168,64 +8439,64 @@ void TExpression_CodePrintSpaces(struct SyntaxTree* pSyntaxTree,
     }
     switch (p->Type)
     {
-    case BinaryExpression_ID:
-    {
-        struct BinaryExpression* pBinaryExpression = (struct BinaryExpression*)p;
-        TExpression_CodePrintSpaces(pSyntaxTree, options, pBinaryExpression->pExpressionLeft, fp);
-    }
-    break;
-    case TernaryExpression_ID:
-    {
-        struct TernaryExpression* pTernaryExpression =
-            (struct TernaryExpression*)p;
-        TExpression_CodePrintSpaces(pSyntaxTree, options, pTernaryExpression->pExpressionLeft, fp);
-    }
-    break;
-    case PrimaryExpressionLiteral_ID:
-    {
-        struct PrimaryExpressionLiteral* pPrimaryExpressionLiteral
-            = (struct PrimaryExpressionLiteral*)p;
-        for (struct PrimaryExpressionLiteralItem* pItem = (&pPrimaryExpressionLiteral->List)->pHead; pItem != NULL; pItem = pItem->pNext)
+        case BinaryExpression_ID:
         {
-            TNodeClueList_CodePrint(options, &pItem->ClueList0, fp);
+            struct BinaryExpression* pBinaryExpression = (struct BinaryExpression*)p;
+            TExpression_CodePrintSpaces(pSyntaxTree, options, pBinaryExpression->pExpressionLeft, fp);
         }
-    }
-    break;
-    case PrimaryExpressionValue_ID:
-    {
-        struct PrimaryExpressionValue* pPrimaryExpressionValue =
-            (struct PrimaryExpressionValue*)p;
-        TNodeClueList_CodePrint(options, &pPrimaryExpressionValue->ClueList0, fp);
-    }
-        ///true;
-    break;
-    case PrimaryExpressionLambda_ID:
-    {
-        assert(false);
-    }
-    break;
-    case PostfixExpression_ID:
-    {
-        assert(false);
-    }
-    break;
-    case UnaryExpressionOperator_ID:
-    {
-        struct UnaryExpressionOperator* pTUnaryExpressionOperator =
-            (struct UnaryExpressionOperator*)p;
-        TNodeClueList_CodePrint(options, &pTUnaryExpressionOperator->ClueList0, fp);
-    }
-    break;
-    case CastExpressionType_ID:
-    {
-        struct CastExpressionType* pCastExpressionType =
-            (struct CastExpressionType*)p;
-        TNodeClueList_CodePrint(options, &pCastExpressionType->ClueList0, fp);
-    }
-    break;
-    default:
-        //assert(false);
         break;
+        case TernaryExpression_ID:
+        {
+            struct TernaryExpression* pTernaryExpression =
+                (struct TernaryExpression*)p;
+            TExpression_CodePrintSpaces(pSyntaxTree, options, pTernaryExpression->pExpressionLeft, fp);
+        }
+        break;
+        case PrimaryExpressionLiteral_ID:
+        {
+            struct PrimaryExpressionLiteral* pPrimaryExpressionLiteral
+                = (struct PrimaryExpressionLiteral*)p;
+            for (struct PrimaryExpressionLiteralItem* pItem = (&pPrimaryExpressionLiteral->List)->pHead; pItem != NULL; pItem = pItem->pNext)
+            {
+                TNodeClueList_CodePrint(options, &pItem->ClueList0, fp);
+            }
+        }
+        break;
+        case PrimaryExpressionValue_ID:
+        {
+            struct PrimaryExpressionValue* pPrimaryExpressionValue =
+                (struct PrimaryExpressionValue*)p;
+            TNodeClueList_CodePrint(options, &pPrimaryExpressionValue->ClueList0, fp);
+        }
+        ///true;
+        break;
+        case PrimaryExpressionLambda_ID:
+        {
+            assert(false);
+        }
+        break;
+        case PostfixExpression_ID:
+        {
+            assert(false);
+        }
+        break;
+        case UnaryExpressionOperator_ID:
+        {
+            struct UnaryExpressionOperator* pTUnaryExpressionOperator =
+                (struct UnaryExpressionOperator*)p;
+            TNodeClueList_CodePrint(options, &pTUnaryExpressionOperator->ClueList0, fp);
+        }
+        break;
+        case CastExpressionType_ID:
+        {
+            struct CastExpressionType* pCastExpressionType =
+                (struct CastExpressionType*)p;
+            TNodeClueList_CodePrint(options, &pCastExpressionType->ClueList0, fp);
+        }
+        break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -8249,118 +8520,118 @@ static void TExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
     }
     switch (p->Type)
     {
-    case BinaryExpression_ID:
-    {
-        struct BinaryExpression* pBinaryExpression = (struct BinaryExpression*)p;
-        TExpression_CodePrint(pSyntaxTree, options, pBinaryExpression->pExpressionLeft, fp);
-        TNodeClueList_CodePrint(options, &pBinaryExpression->ClueList0, fp);
-        Output_Append(fp, options, TokenToString(pBinaryExpression->token));
-        TExpression_CodePrint(pSyntaxTree, options, ((struct BinaryExpression*)p)->pExpressionRight, fp);
-    }
-    break;
-    case TernaryExpression_ID:
-    {
-        struct TernaryExpression* pTernaryExpression =
-            (struct TernaryExpression*)p;
-        TExpression_CodePrint(pSyntaxTree, options, pTernaryExpression->pExpressionLeft, fp);
-        TNodeClueList_CodePrint(options, &pTernaryExpression->ClueList0, fp);
-        Output_Append(fp, options, "?");
-        TExpression_CodePrint(pSyntaxTree, options, pTernaryExpression->pExpressionMiddle, fp);
-        TNodeClueList_CodePrint(options, &pTernaryExpression->ClueList1, fp);
-        Output_Append(fp, options, ":");
-        TExpression_CodePrint(pSyntaxTree, options, pTernaryExpression->pExpressionRight, fp);
-    }
-    break;
-    case PrimaryExpressionLiteral_ID:
-    {
-        struct PrimaryExpressionLiteral* pPrimaryExpressionLiteral
-            = (struct PrimaryExpressionLiteral*)p;
-        for (struct PrimaryExpressionLiteralItem* pItem = (&pPrimaryExpressionLiteral->List)->pHead; pItem != NULL; pItem = pItem->pNext)
+        case BinaryExpression_ID:
         {
-            TNodeClueList_CodePrint(options, &pItem->ClueList0, fp);
-            Output_Append(fp, options, pItem->lexeme);
+            struct BinaryExpression* pBinaryExpression = (struct BinaryExpression*)p;
+            TExpression_CodePrint(pSyntaxTree, options, pBinaryExpression->pExpressionLeft, fp);
+            TNodeClueList_CodePrint(options, &pBinaryExpression->ClueList0, fp);
+            Output_Append(fp, options, TokenToString(pBinaryExpression->token));
+            TExpression_CodePrint(pSyntaxTree, options, ((struct BinaryExpression*)p)->pExpressionRight, fp);
         }
-    }
-    break;
-    case PrimaryExpressionValue_ID:
-    {
-        struct PrimaryExpressionValue* pPrimaryExpressionValue =
-            (struct PrimaryExpressionValue*)p;
-        if (pPrimaryExpressionValue->pExpressionOpt != NULL)
+        break;
+        case TernaryExpression_ID:
         {
-            TNodeClueList_CodePrint(options, &pPrimaryExpressionValue->ClueList0, fp);
-            Output_Append(fp, options, "(");
-            TExpression_CodePrint(pSyntaxTree, options, pPrimaryExpressionValue->pExpressionOpt, fp);
-            TNodeClueList_CodePrint(options, &pPrimaryExpressionValue->ClueList1, fp);
-            Output_Append(fp, options, ")");
+            struct TernaryExpression* pTernaryExpression =
+                (struct TernaryExpression*)p;
+            TExpression_CodePrint(pSyntaxTree, options, pTernaryExpression->pExpressionLeft, fp);
+            TNodeClueList_CodePrint(options, &pTernaryExpression->ClueList0, fp);
+            Output_Append(fp, options, "?");
+            TExpression_CodePrint(pSyntaxTree, options, pTernaryExpression->pExpressionMiddle, fp);
+            TNodeClueList_CodePrint(options, &pTernaryExpression->ClueList1, fp);
+            Output_Append(fp, options, ":");
+            TExpression_CodePrint(pSyntaxTree, options, pTernaryExpression->pExpressionRight, fp);
         }
-        else
+        break;
+        case PrimaryExpressionLiteral_ID:
         {
-            TNodeClueList_CodePrint(options, &pPrimaryExpressionValue->ClueList0, fp);
-            Output_Append(fp, options, pPrimaryExpressionValue->lexeme);
-        }
-    }
-        ///true;
-    break;
-    case PrimaryExpressionLambda_ID:
-    {
-        struct PrimaryExpressionLambda* pPostfixExpressionCore =
-            (struct PrimaryExpressionLambda*)p;
-        TPrimaryExpressionLambda_CodePrint(pSyntaxTree, options, pPostfixExpressionCore, fp);
-    }
-    break;
-    case PostfixExpression_ID:
-    {
-        struct PostfixExpression* pPostfixExpressionCore =
-            (struct PostfixExpression*)p;
-        TPostfixExpression_CodePrint(pSyntaxTree, options, pPostfixExpressionCore, fp);
-    }
-    break;
-    case UnaryExpressionOperator_ID:
-    {
-        struct UnaryExpressionOperator* pTUnaryExpressionOperator =
-            (struct UnaryExpressionOperator*)p;
-        TNodeClueList_CodePrint(options, &pTUnaryExpressionOperator->ClueList0, fp);
-        if (pTUnaryExpressionOperator->token == TK_SIZEOF)
-        {
-            if (pTUnaryExpressionOperator->TypeName.SpecifierQualifierList.Size > 0)
+            struct PrimaryExpressionLiteral* pPrimaryExpressionLiteral
+                = (struct PrimaryExpressionLiteral*)p;
+            for (struct PrimaryExpressionLiteralItem* pItem = (&pPrimaryExpressionLiteral->List)->pHead; pItem != NULL; pItem = pItem->pNext)
             {
-                Output_Append(fp, options, "sizeof");
-                TNodeClueList_CodePrint(options, &pTUnaryExpressionOperator->ClueList1, fp);
+                TNodeClueList_CodePrint(options, &pItem->ClueList0, fp);
+                Output_Append(fp, options, pItem->lexeme);
+            }
+        }
+        break;
+        case PrimaryExpressionValue_ID:
+        {
+            struct PrimaryExpressionValue* pPrimaryExpressionValue =
+                (struct PrimaryExpressionValue*)p;
+            if (pPrimaryExpressionValue->pExpressionOpt != NULL)
+            {
+                TNodeClueList_CodePrint(options, &pPrimaryExpressionValue->ClueList0, fp);
                 Output_Append(fp, options, "(");
-                TTypeName_CodePrint(pSyntaxTree, options, &pTUnaryExpressionOperator->TypeName, fp);
-                TNodeClueList_CodePrint(options, &pTUnaryExpressionOperator->ClueList2, fp);
+                TExpression_CodePrint(pSyntaxTree, options, pPrimaryExpressionValue->pExpressionOpt, fp);
+                TNodeClueList_CodePrint(options, &pPrimaryExpressionValue->ClueList1, fp);
                 Output_Append(fp, options, ")");
             }
             else
             {
-                Output_Append(fp, options, "sizeof");
-                TExpression_CodePrint(pSyntaxTree, options, pTUnaryExpressionOperator->pExpressionRight, fp);
-                Output_Append(fp, options, "");
+                TNodeClueList_CodePrint(options, &pPrimaryExpressionValue->ClueList0, fp);
+                Output_Append(fp, options, pPrimaryExpressionValue->lexeme);
             }
         }
-        else
-        {
-            Output_Append(fp, options, TokenToString(((struct BinaryExpression*)p)->token));
-            TExpression_CodePrint(pSyntaxTree, options, pTUnaryExpressionOperator->pExpressionRight, fp);
-        }
-    }
-    break;
-    case CastExpressionType_ID:
-    {
-        struct CastExpressionType* pCastExpressionType =
-            (struct CastExpressionType*)p;
-        TNodeClueList_CodePrint(options, &pCastExpressionType->ClueList0, fp);
-        Output_Append(fp, options, "(");
-        TTypeName_CodePrint(pSyntaxTree, options, &pCastExpressionType->TypeName, fp);
-        TNodeClueList_CodePrint(options, &pCastExpressionType->ClueList1, fp);
-        Output_Append(fp, options, ")");
-        TExpression_CodePrint(pSyntaxTree, options, pCastExpressionType->pExpression, fp);
-    }
-    break;
-    default:
-        //assert(false);
+        ///true;
         break;
+        case PrimaryExpressionLambda_ID:
+        {
+            struct PrimaryExpressionLambda* pPostfixExpressionCore =
+                (struct PrimaryExpressionLambda*)p;
+            TPrimaryExpressionLambda_CodePrint(pSyntaxTree, options, pPostfixExpressionCore, fp);
+        }
+        break;
+        case PostfixExpression_ID:
+        {
+            struct PostfixExpression* pPostfixExpressionCore =
+                (struct PostfixExpression*)p;
+            TPostfixExpression_CodePrint(pSyntaxTree, options, pPostfixExpressionCore, fp);
+        }
+        break;
+        case UnaryExpressionOperator_ID:
+        {
+            struct UnaryExpressionOperator* pTUnaryExpressionOperator =
+                (struct UnaryExpressionOperator*)p;
+            TNodeClueList_CodePrint(options, &pTUnaryExpressionOperator->ClueList0, fp);
+            if (pTUnaryExpressionOperator->token == TK_SIZEOF)
+            {
+                if (pTUnaryExpressionOperator->TypeName.SpecifierQualifierList.Size > 0)
+                {
+                    Output_Append(fp, options, "sizeof");
+                    TNodeClueList_CodePrint(options, &pTUnaryExpressionOperator->ClueList1, fp);
+                    Output_Append(fp, options, "(");
+                    TTypeName_CodePrint(pSyntaxTree, options, &pTUnaryExpressionOperator->TypeName, fp);
+                    TNodeClueList_CodePrint(options, &pTUnaryExpressionOperator->ClueList2, fp);
+                    Output_Append(fp, options, ")");
+                }
+                else
+                {
+                    Output_Append(fp, options, "sizeof");
+                    TExpression_CodePrint(pSyntaxTree, options, pTUnaryExpressionOperator->pExpressionRight, fp);
+                    Output_Append(fp, options, "");
+                }
+            }
+            else
+            {
+                Output_Append(fp, options, TokenToString(((struct BinaryExpression*)p)->token));
+                TExpression_CodePrint(pSyntaxTree, options, pTUnaryExpressionOperator->pExpressionRight, fp);
+            }
+        }
+        break;
+        case CastExpressionType_ID:
+        {
+            struct CastExpressionType* pCastExpressionType =
+                (struct CastExpressionType*)p;
+            TNodeClueList_CodePrint(options, &pCastExpressionType->ClueList0, fp);
+            Output_Append(fp, options, "(");
+            TTypeName_CodePrint(pSyntaxTree, options, &pCastExpressionType->TypeName, fp);
+            TNodeClueList_CodePrint(options, &pCastExpressionType->ClueList1, fp);
+            Output_Append(fp, options, ")");
+            TExpression_CodePrint(pSyntaxTree, options, pCastExpressionType->pExpression, fp);
+        }
+        break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -8622,8 +8893,8 @@ static void TInitializerList_CodePrint(struct SyntaxTree* pSyntaxTree,
                                        struct StrBuilder* fp)
 {
     if (List_HasOneItem(p) &&
-            List_Back(p)->pInitializer == NULL/* &&
-          pSpecifierQualifierList != NULL*/)
+        List_Back(p)->pInitializer == NULL/* &&
+      pSpecifierQualifierList != NULL*/)
     {
         //a partir de {} e um tipo consegue gerar o final
         struct StrBuilder sb = STRBUILDER_INIT;
@@ -8694,11 +8965,11 @@ static char* strcatupper(char* dest, const char* src)
 }
 
 static void TInitializerListType_CodePrint(struct SyntaxTree* pSyntaxTree,
-        struct PrintCodeOptions* options,
-        struct Declarator* pDeclarator,
-        struct DeclarationSpecifiers* pDeclarationSpecifiers,
-        struct InitializerListType* p,
-        struct StrBuilder* fp)
+                                           struct PrintCodeOptions* options,
+                                           struct Declarator* pDeclarator,
+                                           struct DeclarationSpecifiers* pDeclarationSpecifiers,
+                                           struct InitializerListType* p,
+                                           struct StrBuilder* fp)
 {
     /*
     default { ... }
@@ -8947,10 +9218,10 @@ void TStructDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
 }
 
 static void TStructDeclaratorList_CodePrint(struct SyntaxTree* pSyntaxTree,
-        struct PrintCodeOptions* options,
-        struct SpecifierQualifierList* pSpecifierQualifierList,
-        struct StructDeclaratorList* p,
-        struct StrBuilder* fp)
+                                            struct PrintCodeOptions* options,
+                                            struct SpecifierQualifierList* pSpecifierQualifierList,
+                                            struct StructDeclaratorList* p,
+                                            struct StrBuilder* fp)
 {
     for (struct InitDeclarator* pItem = (p)->pHead; pItem != NULL; pItem = pItem->pNext)
     {
@@ -8964,9 +9235,9 @@ static void TStructDeclaratorList_CodePrint(struct SyntaxTree* pSyntaxTree,
 }
 
 static void TStructDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree,
-        struct PrintCodeOptions* options,
-        struct StructDeclaration* p,
-        struct StrBuilder* fp)
+                                         struct PrintCodeOptions* options,
+                                         struct StructDeclaration* p,
+                                         struct StrBuilder* fp)
 {
     TSpecifierQualifierList_CodePrint(pSyntaxTree, options, &p->SpecifierQualifierList, fp);
     TStructDeclaratorList_CodePrint(pSyntaxTree,
@@ -8981,12 +9252,12 @@ static void TAnyStructDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree, stru
 {
     switch (p->Type)
     {
-    case StructDeclaration_ID:
-        TStructDeclaration_CodePrint(pSyntaxTree, options, (struct StructDeclaration*)p, fp);
-        break;
-    default:
-        //assert(false);
-        break;
+        case StructDeclaration_ID:
+            TStructDeclaration_CodePrint(pSyntaxTree, options, (struct StructDeclaration*)p, fp);
+            break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -9069,30 +9340,30 @@ void TSpecifierQualifierList_CodePrint(struct SyntaxTree* pSyntaxTree,
         struct SpecifierQualifier* pItem = pDeclarationSpecifiers->pData[i];
         switch (pItem->Type)
         {
-        case SingleTypeSpecifier_ID:
-            TSingleTypeSpecifier_CodePrint(options, (struct SingleTypeSpecifier*)pItem, fp);
-            break;
-        case StorageSpecifier_ID:
-            StorageSpecifier_CodePrint(options, (struct StorageSpecifier*)pItem, fp);
-            break;
-        case TypeQualifier_ID:
-            TTypeQualifier_CodePrint(options, (struct TypeQualifier*)pItem, fp);
-            break;
-        case FunctionSpecifier_ID:
-            TFunctionSpecifier_CodePrint(options, (struct FunctionSpecifier*)pItem, fp);
-            break;
-        //case TAlignmentSpecifier_ID:
-        ///TAlignmentSpecifier_CodePrint(pSyntaxTree, options, (struct TAlignmentSpecifier*)pItem,  fp);
-        //break;
-        case StructUnionSpecifier_ID:
-            TStructUnionSpecifier_CodePrint(pSyntaxTree, options, (struct StructUnionSpecifier*)pItem, fp);
-            break;
-        case EnumSpecifier_ID:
-            TEnumSpecifier_CodePrint(pSyntaxTree, options, (struct EnumSpecifier*)pItem, fp);
-            break;
-        default:
-            //assert(false);
-            break;
+            case SingleTypeSpecifier_ID:
+                TSingleTypeSpecifier_CodePrint(options, (struct SingleTypeSpecifier*)pItem, fp);
+                break;
+            case StorageSpecifier_ID:
+                StorageSpecifier_CodePrint(options, (struct StorageSpecifier*)pItem, fp);
+                break;
+            case TypeQualifier_ID:
+                TTypeQualifier_CodePrint(options, (struct TypeQualifier*)pItem, fp);
+                break;
+            case FunctionSpecifier_ID:
+                TFunctionSpecifier_CodePrint(options, (struct FunctionSpecifier*)pItem, fp);
+                break;
+                //case TAlignmentSpecifier_ID:
+                ///TAlignmentSpecifier_CodePrint(pSyntaxTree, options, (struct TAlignmentSpecifier*)pItem,  fp);
+                //break;
+            case StructUnionSpecifier_ID:
+                TStructUnionSpecifier_CodePrint(pSyntaxTree, options, (struct StructUnionSpecifier*)pItem, fp);
+                break;
+            case EnumSpecifier_ID:
+                TEnumSpecifier_CodePrint(pSyntaxTree, options, (struct EnumSpecifier*)pItem, fp);
+                break;
+            default:
+                //assert(false);
+                break;
         }
     }
 }
@@ -9106,30 +9377,30 @@ void TDeclarationSpecifiers_CodePrint(struct SyntaxTree* pSyntaxTree, struct Pri
         struct DeclarationSpecifier* pItem = pDeclarationSpecifiers->pData[i];
         switch (pItem->Type)
         {
-        case SingleTypeSpecifier_ID:
-            TSingleTypeSpecifier_CodePrint(options, (struct SingleTypeSpecifier*)pItem, fp);
-            break;
-        case StructUnionSpecifier_ID:
-            TStructUnionSpecifier_CodePrint(pSyntaxTree, options, (struct StructUnionSpecifier*)pItem, fp);
-            break;
-        case EnumSpecifier_ID:
-            TEnumSpecifier_CodePrint(pSyntaxTree, options, (struct EnumSpecifier*)pItem, fp);
-            break;
-        case StorageSpecifier_ID:
-            StorageSpecifier_CodePrint(options, (struct StorageSpecifier*)pItem, fp);
-            break;
-        case TypeQualifier_ID:
-            TTypeQualifier_CodePrint(options, (struct TypeQualifier*)pItem, fp);
-            break;
-        case FunctionSpecifier_ID:
-            TFunctionSpecifier_CodePrint(options, (struct FunctionSpecifier*)pItem, fp);
-            break;
-        //case TAlignmentSpecifier_ID:
-        ///TAlignmentSpecifier_CodePrint(pSyntaxTree, options, (struct TAlignmentSpecifier*)pItem,  fp);
-        //break;
-        default:
-            //assert(false);
-            break;
+            case SingleTypeSpecifier_ID:
+                TSingleTypeSpecifier_CodePrint(options, (struct SingleTypeSpecifier*)pItem, fp);
+                break;
+            case StructUnionSpecifier_ID:
+                TStructUnionSpecifier_CodePrint(pSyntaxTree, options, (struct StructUnionSpecifier*)pItem, fp);
+                break;
+            case EnumSpecifier_ID:
+                TEnumSpecifier_CodePrint(pSyntaxTree, options, (struct EnumSpecifier*)pItem, fp);
+                break;
+            case StorageSpecifier_ID:
+                StorageSpecifier_CodePrint(options, (struct StorageSpecifier*)pItem, fp);
+                break;
+            case TypeQualifier_ID:
+                TTypeQualifier_CodePrint(options, (struct TypeQualifier*)pItem, fp);
+                break;
+            case FunctionSpecifier_ID:
+                TFunctionSpecifier_CodePrint(options, (struct FunctionSpecifier*)pItem, fp);
+                break;
+                //case TAlignmentSpecifier_ID:
+                ///TAlignmentSpecifier_CodePrint(pSyntaxTree, options, (struct TAlignmentSpecifier*)pItem,  fp);
+                //break;
+            default:
+                //assert(false);
+                break;
         }
     }
 }
@@ -9204,7 +9475,7 @@ const char* FindValue(const char* name, int namesize, struct TemplateVar* args, 
     for (int i = 0; i < argssize; i++)
     {
         if (namesize == (int)strlen(args[i].Name) &&
-                strncmp(name, args[i].Name, namesize) == 0)
+            strncmp(name, args[i].Name, namesize) == 0)
         {
             return args[i].Value;
         }
@@ -9241,17 +9512,17 @@ void StrBuilder_Template(struct StrBuilder* p,
             const char* name = pch;
             int namesize = 0;
             if (*pch &&
-                    ((*pch >= 'a' && *pch <= 'z') ||
-                     (*pch >= 'A' && *pch <= 'Z') ||
-                     (*pch >= '_')))
+                ((*pch >= 'a' && *pch <= 'z') ||
+                (*pch >= 'A' && *pch <= 'Z') ||
+                (*pch >= '_')))
             {
                 pch++;
                 namesize++;
                 while (*pch &&
-                        ((*pch >= 'a' && *pch <= 'z') ||
-                         (*pch >= 'A' && *pch <= 'Z') ||
-                         (*pch >= '0' && *pch <= '9') ||
-                         (*pch >= '_'))) //$X_X
+                       ((*pch >= 'a' && *pch <= 'z') ||
+                       (*pch >= 'A' && *pch <= 'Z') ||
+                       (*pch >= '0' && *pch <= '9') ||
+                       (*pch >= '_'))) //$X_X
                 {
                     pch++;
                     namesize++;
@@ -9349,7 +9620,7 @@ static int FindRuntimeID(struct SyntaxTree* pSyntaxTree,
             if (pStructDeclaration)
             {
                 struct InitDeclarator* pStructDeclarator =
-                        pStructDeclaration->DeclaratorList.pHead;
+                    pStructDeclaration->DeclaratorList.pHead;
                 //o primeiro item tem que ser o ID
                 if (pStructDeclarator)
                 {
@@ -9413,7 +9684,7 @@ static int FindIDValue(struct SyntaxTree* pSyntaxTree,
             if (pStructDeclaration)
             {
                 struct InitDeclarator* pStructDeclarator =
-                        pStructDeclaration->DeclaratorList.pHead;
+                    pStructDeclaration->DeclaratorList.pHead;
                 //o primeiro item tem que ser o ID
                 if (pStructDeclarator)
                 {
@@ -9435,7 +9706,7 @@ static int FindIDValue(struct SyntaxTree* pSyntaxTree,
 }
 
 struct StructUnionSpecifier* FindStructUnionSpecifierByName(struct SyntaxTree* pSyntaxTree,
-        const char* structTagNameOrTypedef)
+    const char* structTagNameOrTypedef)
 {
     struct StructUnionSpecifier* p = SymbolMap_FindCompleteStructUnionSpecifier(&pSyntaxTree->GlobalScope, structTagNameOrTypedef);
     if (p != NULL)
@@ -9470,10 +9741,10 @@ void FindUnionSetOf(struct SyntaxTree* pSyntaxTree,
         pStructUnionSpecifier = SymbolMap_FindCompleteStructUnionSpecifier(&pSyntaxTree->GlobalScope, pStructUnionSpecifier->Tag);
     }
     if (pStructUnionSpecifier &&
-            pStructUnionSpecifier->UnionSet.pHead != NULL)
+        pStructUnionSpecifier->UnionSet.pHead != NULL)
     {
         struct UnionSetItem* pCurrent =
-                pStructUnionSpecifier->UnionSet.pHead;
+            pStructUnionSpecifier->UnionSet.pHead;
         while (pCurrent)
         {
             struct StructUnionSpecifier* pStructUnionSpecifier2 =
@@ -9555,7 +9826,7 @@ static void TDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree,
         //TODO storagte nao vai
         TDeclarationSpecifiers_CodePrint(pSyntaxTree, options, &p->Specifiers, &options->returnType);
         if (p->InitDeclaratorList.pHead &&
-                p->InitDeclaratorList.pHead->pDeclarator)
+            p->InitDeclaratorList.pHead->pDeclarator)
         {
             TPointerList_CodePrint(options, &p->InitDeclaratorList.pHead->pDeclarator->PointerList, &options->returnType);
         }
@@ -9648,10 +9919,10 @@ static void TEofDeclaration_CodePrint(struct PrintCodeOptions* options,
 }
 
 static void TStaticAssertDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree,
-        struct PrintCodeOptions* options,
-        struct StaticAssertDeclaration* p,
+                                               struct PrintCodeOptions* options,
+                                               struct StaticAssertDeclaration* p,
 
-        struct StrBuilder* fp)
+                                               struct StrBuilder* fp)
 {
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
     Output_Append(fp, options, "_StaticAssert");
@@ -9672,18 +9943,18 @@ static void TAnyDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree, struct Pri
 {
     switch (pDeclaration->Type)
     {
-    case EofDeclaration_ID:
-        TEofDeclaration_CodePrint(options, (struct EofDeclaration*)pDeclaration, fp);
-        break;
-    case StaticAssertDeclaration_ID:
-        TStaticAssertDeclaration_CodePrint(pSyntaxTree, options, (struct StaticAssertDeclaration*)pDeclaration, fp);
-        break;
-    case Declaration_ID:
-        TDeclaration_CodePrint(pSyntaxTree, options, (struct Declaration*)pDeclaration, fp);
-        break;
-    default:
-        //assert(false);
-        break;
+        case EofDeclaration_ID:
+            TEofDeclaration_CodePrint(options, (struct EofDeclaration*)pDeclaration, fp);
+            break;
+        case StaticAssertDeclaration_ID:
+            TStaticAssertDeclaration_CodePrint(pSyntaxTree, options, (struct StaticAssertDeclaration*)pDeclaration, fp);
+            break;
+        case Declaration_ID:
+            TDeclaration_CodePrint(pSyntaxTree, options, (struct Declaration*)pDeclaration, fp);
+            break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -9701,12 +9972,12 @@ static void TDesignatorList_CodePrint(struct SyntaxTree* pSyntaxTree, struct Pri
 
 
 static void TInitializerListItem_CodePrint(struct SyntaxTree* pSyntaxTree,
-        struct PrintCodeOptions* options,
-        struct Declarator* pDeclarator,
-        struct DeclarationSpecifiers* pDeclarationSpecifiers,
-        struct InitializerListItem* p,
+                                           struct PrintCodeOptions* options,
+                                           struct Declarator* pDeclarator,
+                                           struct DeclarationSpecifiers* pDeclarationSpecifiers,
+                                           struct InitializerListItem* p,
 
-        struct StrBuilder* fp)
+                                           struct StrBuilder* fp)
 {
     if (p->DesignatorList.pHead != NULL)
     {
@@ -9806,10 +10077,10 @@ static const char* GetNullStr(struct SyntaxTree* pSyntaxTree)
 
 
 void InstantiateDestroyForPolymorphicType(struct SyntaxTree* pSyntaxTree,
-        struct PrintCodeOptions* options,
-        struct StructUnionSpecifier* pTStructUnionSpecifier,
-        struct ParameterTypeList* pArgsOpt, //parametros
-        struct StrBuilder* fp)
+                                          struct PrintCodeOptions* options,
+                                          struct StructUnionSpecifier* pTStructUnionSpecifier,
+                                          struct ParameterTypeList* pArgsOpt, //parametros
+                                          struct StrBuilder* fp)
 {
     if (!IsActive(options))
         return;
@@ -10031,7 +10302,7 @@ struct StructUnionSpecifier* GetStructSpecifier(struct SyntaxTree* pSyntaxTree, 
     if (pTStructUnionSpecifier == NULL)
     {
         if (pSingleTypeSpecifier != NULL &&
-                pSingleTypeSpecifier->Token2 == TK_IDENTIFIER)
+            pSingleTypeSpecifier->Token2 == TK_IDENTIFIER)
         {
             const char* typedefName = pSingleTypeSpecifier->TypedefName;
             struct Declaration* pDeclaration = SyntaxTree_GetFinalTypeDeclaration(pSyntaxTree, typedefName);
@@ -10047,7 +10318,7 @@ struct StructUnionSpecifier* GetStructSpecifier(struct SyntaxTree* pSyntaxTree, 
     }
     //Procura pela definicao completa da struct
     if (pTStructUnionSpecifier &&
-            pTStructUnionSpecifier->Tag != NULL)
+        pTStructUnionSpecifier->Tag != NULL)
     {
         pTStructUnionSpecifier =
             SymbolMap_FindCompleteStructUnionSpecifier(&pSyntaxTree->GlobalScope, pTStructUnionSpecifier->Tag);
@@ -10137,7 +10408,7 @@ void InstanciateInit(struct SyntaxTree* pSyntaxTree,
             if (!bComplete) //se for para entrar na struct
             {
                 if (pSingleTypeSpecifier &&
-                        pSingleTypeSpecifier->TypedefName != NULL)
+                    pSingleTypeSpecifier->TypedefName != NULL)
                 {
                     //se nao eh completa tenta achar
                     //vou procurar a definicao completa da struct
@@ -10148,9 +10419,9 @@ void InstanciateInit(struct SyntaxTree* pSyntaxTree,
                 //DAQUI para baixo o codigo eh todo igual ao da struct
                 //COMPARTILHAR
                 bool bIsUnionTypes = pStructUnionSpecifier &&
-                                     pStructUnionSpecifier->UnionSet.pHead != NULL;
+                    pStructUnionSpecifier->UnionSet.pHead != NULL;
                 if (pStructUnionSpecifier &&
-                        pStructUnionSpecifier->StructDeclarationList.Size > 0)
+                    pStructUnionSpecifier->StructDeclarationList.Size > 0)
                 {
                     StrBuilder_AppendIdent(fp, 4 * options->IdentationLevel, "{");
                     if (bIsUnionTypes)
@@ -10163,13 +10434,13 @@ void InstanciateInit(struct SyntaxTree* pSyntaxTree,
                         for (int i = 0; i < pStructUnionSpecifier->StructDeclarationList.Size; i++)
                         {
                             struct AnyStructDeclaration* pAnyStructDeclaration =
-                                    pStructUnionSpecifier->StructDeclarationList.pItems[i];
+                                pStructUnionSpecifier->StructDeclarationList.pItems[i];
                             struct StructDeclaration* pStructDeclaration =
                                 AnyStructDeclaration_As_StructDeclaration(pAnyStructDeclaration);
                             if (pStructDeclaration != NULL)
                             {
                                 struct InitDeclarator* pStructDeclarator =
-                                        pStructDeclaration->DeclaratorList.pHead;
+                                    pStructDeclaration->DeclaratorList.pHead;
                                 struct StrBuilder strVariableName = STRBUILDER_INIT;
                                 struct StrBuilder strPonterSizeExpr = STRBUILDER_INIT;
                                 while (pStructDeclarator)
@@ -10181,7 +10452,7 @@ void InstanciateInit(struct SyntaxTree* pSyntaxTree,
                                     variableCount++;
                                     //O padrao eh ser o inicializador do tipo
                                     struct Initializer* pStructMemberInitializer =
-                                            pStructDeclarator->pInitializer;
+                                        pStructDeclarator->pInitializer;
                                     struct PrimaryExpressionValue initializerExpression = PRIMARYEXPRESSIONVALUE_INIT;
                                     StrBuilder_Clear(&strVariableName);
                                     StrBuilder_Clear(&strPonterSizeExpr);
@@ -10447,10 +10718,10 @@ struct Declaration* FindOverloadedFunction(struct SymbolMap* pMap, const char* n
                     pDeclaration =
                         (struct Declaration*)pKeyValue->pValue;
                     struct InitDeclarator* pInitDeclarator =
-                            pDeclaration->InitDeclaratorList.pHead;
+                        pDeclaration->InitDeclaratorList.pHead;
                     if (pInitDeclarator &&
-                            pInitDeclarator->pDeclarator &&
-                            pInitDeclarator->pDeclarator->pDirectDeclarator)
+                        pInitDeclarator->pDeclarator &&
+                        pInitDeclarator->pDeclarator->pDirectDeclarator)
                     {
                         if (strcmp(pInitDeclarator->pDeclarator->pDirectDeclarator->NameMangling, nameMangling) == 0)
                         {
@@ -10501,7 +10772,7 @@ bool InstantiateDestroyForStruct(struct SyntaxTree* pSyntaxTree,
     }
     /**/
     bool bIsUnionTypes = pStructUnionSpecifier &&
-                         pStructUnionSpecifier->UnionSet.pHead != NULL;
+        pStructUnionSpecifier->UnionSet.pHead != NULL;
     if (bIsUnionTypes)
     {
         struct  StrBuilder sbLocal = STRBUILDER_INIT;
@@ -10542,13 +10813,13 @@ bool InstantiateDestroyForStruct(struct SyntaxTree* pSyntaxTree,
         for (int i = 0; i < pStructUnionSpecifier->StructDeclarationList.Size; i++)
         {
             struct AnyStructDeclaration* pAnyStructDeclaration =
-                    pStructUnionSpecifier->StructDeclarationList.pItems[i];
+                pStructUnionSpecifier->StructDeclarationList.pItems[i];
             struct StructDeclaration* pStructDeclaration =
                 AnyStructDeclaration_As_StructDeclaration(pAnyStructDeclaration);
             if (pStructDeclaration != NULL)
             {
                 struct InitDeclarator* pStructDeclarator =
-                        pStructDeclaration->DeclaratorList.pHead;
+                    pStructDeclaration->DeclaratorList.pHead;
                 struct StrBuilder strVariableName = STRBUILDER_INIT;
                 while (pStructDeclarator)
                 {
@@ -10643,7 +10914,7 @@ bool InstantiateInitForStruct(struct SyntaxTree* pSyntaxTree,
                               struct StrBuilder* strInstantiations)
 {
     if (pStructUnionSpecifier &&
-            pStructUnionSpecifier->Tag != NULL)
+        pStructUnionSpecifier->Tag != NULL)
     {
         /*procura definicao completa da struct*/
         pStructUnionSpecifier =
@@ -10693,13 +10964,13 @@ bool InstantiateInitForStruct(struct SyntaxTree* pSyntaxTree,
             for (int i = 0; i < pStructUnionSpecifier->StructDeclarationList.Size; i++)
             {
                 struct AnyStructDeclaration* pAnyStructDeclaration =
-                        pStructUnionSpecifier->StructDeclarationList.pItems[i];
+                    pStructUnionSpecifier->StructDeclarationList.pItems[i];
                 struct StructDeclaration* pStructDeclaration =
                     AnyStructDeclaration_As_StructDeclaration(pAnyStructDeclaration);
                 if (pStructDeclaration != NULL)
                 {
                     struct InitDeclarator* pStructDeclarator =
-                            pStructDeclaration->DeclaratorList.pHead;
+                        pStructDeclaration->DeclaratorList.pHead;
                     struct StrBuilder strVariableName = STRBUILDER_INIT;
                     struct StrBuilder strPonterSizeExpr = STRBUILDER_INIT;
                     while (pStructDeclarator)
@@ -10711,7 +10982,7 @@ bool InstantiateInitForStruct(struct SyntaxTree* pSyntaxTree,
                         variableCount++;
                         //O padrao eh ser o inicializador do tipo
                         struct Initializer* pStructMemberInitializer =
-                                pStructDeclarator->pInitializer;
+                            pStructDeclarator->pInitializer;
                         struct PrimaryExpressionValue initializerExpression = PRIMARYEXPRESSIONVALUE_INIT;
                         StrBuilder_Clear(&strVariableName);
                         StrBuilder_Clear(&strPonterSizeExpr);
@@ -11101,6 +11372,7 @@ static struct TkPair keywords[] =
     {"register", TK_REGISTER},
     {"restrict", TK_RESTRICT},
     {"return", TK_RETURN},
+    {"throw", TK_THROW},
     {"short", TK_SHORT},
     {"signed", TK_SIGNED},
     {"sizeof", TK_SIZEOF},
@@ -11114,6 +11386,7 @@ static struct TkPair keywords[] =
     {"void", TK_VOID},
     {"volatile", TK_VOLATILE},
     {"while", TK_WHILE},
+    {"catch", TK_CATCH},
     {"_Alignas", TK__ALIGNAS},
     {"_Alignof", TK__ALINGOF},
     {"_Atomic", TK__ATOMIC},
@@ -11153,7 +11426,7 @@ bool BasicScanner_MatchToken(struct BasicScanner* scanner, enum TokenType token)
 void BasicScanner_Next(struct BasicScanner* scanner)
 {
     if (scanner->token == TK_MACRO_EOF ||
-            scanner->token == TK_FILE_EOF)
+        scanner->token == TK_FILE_EOF)
     {
         scanner->token = TK_EOF;
         return;
@@ -11184,7 +11457,7 @@ void BasicScanner_Next(struct BasicScanner* scanner)
     for (int i = 0; i < sizeof(doubleoperators) / sizeof(doubleoperators[0]); i++)
     {
         if (doubleoperators[i].lexeme[0] == ch &&
-                doubleoperators[i].lexeme[1] == ch1)
+            doubleoperators[i].lexeme[1] == ch1)
         {
             scanner->token = doubleoperators[i].token;
             BasicScanner_MatchChar(scanner);
@@ -11217,7 +11490,7 @@ void BasicScanner_Next(struct BasicScanner* scanner)
     //Devido ao L' tem que vir antes do identificador
     //literal char
     if (ch == L'"' ||
-            (ch == L'L' && ch1 == L'"'))
+        (ch == L'L' && ch1 == L'"'))
     {
         if (ch == 'L')
         {
@@ -11255,7 +11528,7 @@ void BasicScanner_Next(struct BasicScanner* scanner)
     //Devido ao L' tem que vir antes do identificador
     //literal
     if (ch == L'\'' ||
-            (ch == L'L' && ch1 == L'\''))
+        (ch == L'L' && ch1 == L'\''))
     {
         if (ch == 'L')
         {
@@ -11279,15 +11552,15 @@ void BasicScanner_Next(struct BasicScanner* scanner)
     }
     //Identificador
     if ((ch >= 'a' && ch <= 'z') ||
-            (ch >= 'A' && ch <= 'Z') ||
-            ch == '_')
+        (ch >= 'A' && ch <= 'Z') ||
+        ch == '_')
     {
         scanner->token = TK_IDENTIFIER;
         ch = BasicScanner_MatchChar(scanner);
         while ((ch >= 'a' && ch <= 'z') ||
-                (ch >= 'A' && ch <= 'Z') ||
-                (ch >= '0' && ch <= '9') ||
-                ch == '_')
+               (ch >= 'A' && ch <= 'Z') ||
+               (ch >= '0' && ch <= '9') ||
+               ch == '_')
         {
             ch = BasicScanner_MatchChar(scanner);
         }
@@ -11307,10 +11580,10 @@ void BasicScanner_Next(struct BasicScanner* scanner)
     }
     //TODO binarios
     if (ch == '0' &&
-            (
-                (ch1 == 'x' || ch1 == 'X') || //hex
-                (ch1 >= '0' && ch1 <= '9')) //octal
-       )
+        (
+        (ch1 == 'x' || ch1 == 'X') || //hex
+        (ch1 >= '0' && ch1 <= '9')) //octal
+        )
     {
         ch = BasicScanner_MatchChar(scanner);
         if (ch == 'x' || ch == 'X')
@@ -11327,8 +11600,8 @@ void BasicScanner_Next(struct BasicScanner* scanner)
         }
         ch = BasicScanner_MatchChar(scanner);
         while ((ch >= '0' && ch <= '9') ||
-                (ch >= 'A' && ch <= 'F') ||
-                (ch >= 'a' && ch <= 'f'))
+               (ch >= 'A' && ch <= 'F') ||
+               (ch >= 'a' && ch <= 'f'))
         {
             ch = BasicScanner_MatchChar(scanner);
         }
@@ -11485,11 +11758,11 @@ void BasicScanner_Next(struct BasicScanner* scanner)
                 }
             }
             if (scanner->stream.Character == 'e' ||
-                    scanner->stream.Character == 'E')
+                scanner->stream.Character == 'E')
             {
                 ch = BasicScanner_MatchChar(scanner);
                 if (ch == '-' ||
-                        ch == '+')
+                    ch == '+')
                 {
                     ch = BasicScanner_MatchChar(scanner);
                 }
@@ -11585,8 +11858,8 @@ void BasicScanner_Next(struct BasicScanner* scanner)
             ch = BasicScanner_MatchChar(scanner);
             ch = BasicScanner_MatchChar(scanner);
             while (ch != '\r' &&
-                    ch != '\n' &&
-                    ch != '\0')
+                   ch != '\n' &&
+                   ch != '\0')
             {
                 ch = BasicScanner_MatchChar(scanner);
             }
@@ -11648,7 +11921,7 @@ void BasicScanner_Next(struct BasicScanner* scanner)
     }
     //junta linha
     if (ch == L'\\' &&
-            (ch1 == L'\n' || ch1 == L'\r'))
+        (ch1 == L'\n' || ch1 == L'\r'))
     {
         //1) Whenever backslash appears at the end of
         //a line(immediately followed by the newline character), both
@@ -11964,6 +12237,25 @@ void DoStatement_Delete(struct DoStatement* p)
     }
 }
 
+void TryBlockStatement_Delete(struct TryBlockStatement* p)
+{
+    if (p != NULL)
+    {
+
+        Parameter_Delete(p->pParameter);
+        CompoundStatement_Delete(p->pCompoundStatement);
+        CompoundStatement_Delete(p->pCompoundCatchStatement);
+
+        TokenList_Destroy(&p->ClueListTry);
+        TokenList_Destroy(&p->ClueListCatch);
+        TokenList_Destroy(&p->ClueListLeftPar);
+        TokenList_Destroy(&p->ClueListRightPar);
+        
+        free((void*)p);
+    }
+}
+
+
 void ExpressionStatement_Delete(struct ExpressionStatement* p)
 {
     if (p != NULL)
@@ -12000,7 +12292,7 @@ void SwitchStatement_Delete(struct SwitchStatement* p)
 {
     if (p != NULL)
     {
-        Expression_Delete(p->pConditionExpression);        
+        Expression_Delete(p->pConditionExpression);
         Statement_Delete(p->pExpression);
         TokenList_Destroy(&p->ClueList0);
         TokenList_Destroy(&p->ClueList1);
@@ -12028,44 +12320,70 @@ void IfStatement_Delete(struct IfStatement* p)
     }
 }
 
+void TryStatement_Delete(struct TryStatement* p)
+{
+    if (p != NULL)
+    {
+        Expression_Delete(p->pInitialExpression);
+        Expression_Delete(p->pConditionExpression);
+        Statement_Delete(p->pStatement);
+        
+        TokenList_Destroy(&p->ClueList0);
+        TokenList_Destroy(&p->ClueList1);
+        TokenList_Destroy(&p->ClueList2);
+        TokenList_Destroy(&p->ClueList3);
+        TokenList_Destroy(&p->ClueList4);
+        TokenList_Destroy(&p->ClueList5);
+        TokenList_Destroy(&p->ClueList6);
+        free((void*)p);
+    }
+}
+
+
 void Statement_Delete(struct Statement* p)
 {
     if (p != NULL)
     {
         switch (p->Type)
         {
-        case ForStatement_ID:
-            ForStatement_Delete((struct ForStatement*)p);
-            break;
-        case JumpStatement_ID:
-            JumpStatement_Delete((struct JumpStatement*)p);
-            break;
-        case ExpressionStatement_ID:
-            ExpressionStatement_Delete((struct ExpressionStatement*)p);
-            break;
-        case IfStatement_ID:
-            IfStatement_Delete((struct IfStatement*)p);
-            break;
-        case WhileStatement_ID:
-            WhileStatement_Delete((struct WhileStatement*)p);
-            break;
-        case SwitchStatement_ID:
-            SwitchStatement_Delete((struct SwitchStatement*)p);
-            break;
-        case AsmStatement_ID:
-            AsmStatement_Delete((struct AsmStatement*)p);
-            break;
-        case DoStatement_ID:
-            DoStatement_Delete((struct DoStatement*)p);
-            break;
-        case LabeledStatement_ID:
-            LabeledStatement_Delete((struct LabeledStatement*)p);
-            break;
-        case CompoundStatement_ID:
-            CompoundStatement_Delete((struct CompoundStatement*)p);
-            break;
-        default:
-            break;
+            case ForStatement_ID:
+                ForStatement_Delete((struct ForStatement*)p);
+                break;
+            case JumpStatement_ID:
+                JumpStatement_Delete((struct JumpStatement*)p);
+                break;
+            case ExpressionStatement_ID:
+                ExpressionStatement_Delete((struct ExpressionStatement*)p);
+                break;
+            case IfStatement_ID:
+                IfStatement_Delete((struct IfStatement*)p);
+                break;
+            case TryStatement_ID:
+                TryStatement_Delete((struct TryStatement*)p);
+                break;
+            case TryBlockStatement_ID:
+                TryBlockStatement_Delete((struct TryBlockStatement*)p);
+                break;
+            case WhileStatement_ID:
+                WhileStatement_Delete((struct WhileStatement*)p);
+                break;
+            case SwitchStatement_ID:
+                SwitchStatement_Delete((struct SwitchStatement*)p);
+                break;
+            case AsmStatement_ID:
+                AsmStatement_Delete((struct AsmStatement*)p);
+                break;
+            case DoStatement_ID:
+                DoStatement_Delete((struct DoStatement*)p);
+                break;
+            case LabeledStatement_ID:
+                LabeledStatement_Delete((struct LabeledStatement*)p);
+                break;
+            case CompoundStatement_ID:
+                CompoundStatement_Delete((struct CompoundStatement*)p);
+                break;
+            default:
+                break;
         }
     }
 }
@@ -12076,41 +12394,47 @@ void BlockItem_Delete(struct BlockItem* p)
     {
         switch (p->Type)
         {
-        case ForStatement_ID:
-            ForStatement_Delete((struct ForStatement*)p);
-            break;
-        case JumpStatement_ID:
-            JumpStatement_Delete((struct JumpStatement*)p);
-            break;
-        case ExpressionStatement_ID:
-            ExpressionStatement_Delete((struct ExpressionStatement*)p);
-            break;
-        case Declaration_ID:
-            Declaration_Delete((struct Declaration*)p);
-            break;
-        case IfStatement_ID:
-            IfStatement_Delete((struct IfStatement*)p);
-            break;
-        case WhileStatement_ID:
-            WhileStatement_Delete((struct WhileStatement*)p);
-            break;
-        case SwitchStatement_ID:
-            SwitchStatement_Delete((struct SwitchStatement*)p);
-            break;
-        case AsmStatement_ID:
-            AsmStatement_Delete((struct AsmStatement*)p);
-            break;
-        case DoStatement_ID:
-            DoStatement_Delete((struct DoStatement*)p);
-            break;
-        case LabeledStatement_ID:
-            LabeledStatement_Delete((struct LabeledStatement*)p);
-            break;
-        case CompoundStatement_ID:
-            CompoundStatement_Delete((struct CompoundStatement*)p);
-            break;
-        default:
-            break;
+            case ForStatement_ID:
+                ForStatement_Delete((struct ForStatement*)p);
+                break;
+            case JumpStatement_ID:
+                JumpStatement_Delete((struct JumpStatement*)p);
+                break;
+            case ExpressionStatement_ID:
+                ExpressionStatement_Delete((struct ExpressionStatement*)p);
+                break;
+            case Declaration_ID:
+                Declaration_Delete((struct Declaration*)p);
+                break;
+            case IfStatement_ID:
+                IfStatement_Delete((struct IfStatement*)p);
+                break;
+            case TryStatement_ID:
+                TryStatement_Delete((struct TryStatement*)p);
+                break;
+            case TryBlockStatement_ID:
+                TryBlockStatement_Delete((struct TryBlockStatement*)p);
+                break;
+            case WhileStatement_ID:
+                WhileStatement_Delete((struct WhileStatement*)p);
+                break;
+            case SwitchStatement_ID:
+                SwitchStatement_Delete((struct SwitchStatement*)p);
+                break;
+            case AsmStatement_ID:
+                AsmStatement_Delete((struct AsmStatement*)p);
+                break;
+            case DoStatement_ID:
+                DoStatement_Delete((struct DoStatement*)p);
+                break;
+            case LabeledStatement_ID:
+                LabeledStatement_Delete((struct LabeledStatement*)p);
+                break;
+            case CompoundStatement_ID:
+                CompoundStatement_Delete((struct CompoundStatement*)p);
+                break;
+            default:
+                break;
         }
     }
 }
@@ -12284,25 +12608,25 @@ struct TypeName* Expression_GetTypeName(struct Expression* p)
 {
     switch (p->Type)
     {
-    case BinaryExpression_ID:
-        return &((struct BinaryExpression*)p)->TypeName;
-    case PrimaryExpressionLambda_ID:
-        return &((struct PrimaryExpressionLambda*)p)->TypeName;
-    case UnaryExpressionOperator_ID:
-        return &((struct UnaryExpressionOperator*)p)->TypeName;
-    case CastExpressionType_ID:
-        return &((struct CastExpressionType*)p)->TypeName;
-    case PrimaryExpressionValue_ID:
-        return &((struct PrimaryExpressionValue*)p)->TypeName;
-    case PostfixExpression_ID:
-        return &((struct PostfixExpression*)p)->TypeName;
-    case PrimaryExpressionLiteral_ID:
-        return &((struct PrimaryExpressionLiteral*)p)->TypeName;
-    case TernaryExpression_ID:
-        return &((struct TernaryExpression*)p)->TypeName;
-    default:
-        assert(false);
-        break;
+        case BinaryExpression_ID:
+            return &((struct BinaryExpression*)p)->TypeName;
+        case PrimaryExpressionLambda_ID:
+            return &((struct PrimaryExpressionLambda*)p)->TypeName;
+        case UnaryExpressionOperator_ID:
+            return &((struct UnaryExpressionOperator*)p)->TypeName;
+        case CastExpressionType_ID:
+            return &((struct CastExpressionType*)p)->TypeName;
+        case PrimaryExpressionValue_ID:
+            return &((struct PrimaryExpressionValue*)p)->TypeName;
+        case PostfixExpression_ID:
+            return &((struct PostfixExpression*)p)->TypeName;
+        case PrimaryExpressionLiteral_ID:
+            return &((struct PrimaryExpressionLiteral*)p)->TypeName;
+        case TernaryExpression_ID:
+            return &((struct TernaryExpression*)p)->TypeName;
+        default:
+            assert(false);
+            break;
     }
     return NULL;
 }
@@ -12314,32 +12638,32 @@ void Expression_Delete(struct Expression* p)
     {
         switch (p->Type)
         {
-        case BinaryExpression_ID:
-            BinaryExpression_Delete((struct BinaryExpression*)p);
-            break;
-        case PrimaryExpressionLambda_ID:
-            PrimaryExpressionLambda_Delete((struct PrimaryExpressionLambda*)p);
-            break;
-        case UnaryExpressionOperator_ID:
-            UnaryExpressionOperator_Delete((struct UnaryExpressionOperator*)p);
-            break;
-        case CastExpressionType_ID:
-            CastExpressionType_Delete((struct CastExpressionType*)p);
-            break;
-        case PrimaryExpressionValue_ID:
-            PrimaryExpressionValue_Delete((struct PrimaryExpressionValue*)p);
-            break;
-        case PostfixExpression_ID:
-            PostfixExpression_Delete((struct PostfixExpression*)p);
-            break;
-        case PrimaryExpressionLiteral_ID:
-            PrimaryExpressionLiteral_Delete((struct PrimaryExpressionLiteral*)p);
-            break;
-        case TernaryExpression_ID:
-            TernaryExpression_Delete((struct TernaryExpression*)p);
-            break;
-        default:
-            break;
+            case BinaryExpression_ID:
+                BinaryExpression_Delete((struct BinaryExpression*)p);
+                break;
+            case PrimaryExpressionLambda_ID:
+                PrimaryExpressionLambda_Delete((struct PrimaryExpressionLambda*)p);
+                break;
+            case UnaryExpressionOperator_ID:
+                UnaryExpressionOperator_Delete((struct UnaryExpressionOperator*)p);
+                break;
+            case CastExpressionType_ID:
+                CastExpressionType_Delete((struct CastExpressionType*)p);
+                break;
+            case PrimaryExpressionValue_ID:
+                PrimaryExpressionValue_Delete((struct PrimaryExpressionValue*)p);
+                break;
+            case PostfixExpression_ID:
+                PostfixExpression_Delete((struct PostfixExpression*)p);
+                break;
+            case PrimaryExpressionLiteral_ID:
+                PrimaryExpressionLiteral_Delete((struct PrimaryExpressionLiteral*)p);
+                break;
+            case TernaryExpression_ID:
+                TernaryExpression_Delete((struct TernaryExpression*)p);
+                break;
+            default:
+                break;
         }
     }
 }
@@ -12599,7 +12923,7 @@ bool SingleTypeSpecifier_Compare(struct SingleTypeSpecifier* p1, struct SingleTy
     if (p1->Token2 == p2->Token2)
     {
         if (p1->TypedefName &&
-                p2->TypedefName)
+            p2->TypedefName)
         {
             if (strcmp(p1->TypedefName, p2->TypedefName) == 0)
             {
@@ -12633,20 +12957,20 @@ bool TypeSpecifier_Compare(struct TypeSpecifier* p1, struct TypeSpecifier* p2)
     }
     switch (p1->Type)
     {
-    case StructUnionSpecifier_ID:
-        result = TStructUnionSpecifier_CompareTagName((struct StructUnionSpecifier*)p1, (struct StructUnionSpecifier*)p2);
-        break;
-    case AtomicTypeSpecifier_ID:
-        result = AtomicTypeSpecifier_Compare((struct AtomicTypeSpecifier*)p1, (struct AtomicTypeSpecifier*)p2);
-        break;
-    case SingleTypeSpecifier_ID:
-        result = SingleTypeSpecifier_Compare((struct SingleTypeSpecifier*)p1, (struct SingleTypeSpecifier*)p2);
-        break;
-    case EnumSpecifier_ID:
-        result = EnumSpecifier_IsSameTag((struct EnumSpecifier*)p1, (struct EnumSpecifier*)p2);
-        break;
-    default:
-        break;
+        case StructUnionSpecifier_ID:
+            result = TStructUnionSpecifier_CompareTagName((struct StructUnionSpecifier*)p1, (struct StructUnionSpecifier*)p2);
+            break;
+        case AtomicTypeSpecifier_ID:
+            result = AtomicTypeSpecifier_Compare((struct AtomicTypeSpecifier*)p1, (struct AtomicTypeSpecifier*)p2);
+            break;
+        case SingleTypeSpecifier_ID:
+            result = SingleTypeSpecifier_Compare((struct SingleTypeSpecifier*)p1, (struct SingleTypeSpecifier*)p2);
+            break;
+        case EnumSpecifier_ID:
+            result = EnumSpecifier_IsSameTag((struct EnumSpecifier*)p1, (struct EnumSpecifier*)p2);
+            break;
+        default:
+            break;
     }
     return result;
 }
@@ -12657,20 +12981,20 @@ void TTypeSpecifier_Delete(struct TypeSpecifier* p)
     {
         switch (p->Type)
         {
-        case StructUnionSpecifier_ID:
-            StructUnionSpecifier_Delete((struct StructUnionSpecifier*)p);
-            break;
-        case AtomicTypeSpecifier_ID:
-            AtomicTypeSpecifier_Delete((struct AtomicTypeSpecifier*)p);
-            break;
-        case SingleTypeSpecifier_ID:
-            SingleTypeSpecifier_Delete((struct SingleTypeSpecifier*)p);
-            break;
-        case EnumSpecifier_ID:
-            EnumSpecifier_Delete((struct EnumSpecifier*)p);
-            break;
-        default:
-            break;
+            case StructUnionSpecifier_ID:
+                StructUnionSpecifier_Delete((struct StructUnionSpecifier*)p);
+                break;
+            case AtomicTypeSpecifier_ID:
+                AtomicTypeSpecifier_Delete((struct AtomicTypeSpecifier*)p);
+                break;
+            case SingleTypeSpecifier_ID:
+                SingleTypeSpecifier_Delete((struct SingleTypeSpecifier*)p);
+                break;
+            case EnumSpecifier_ID:
+                EnumSpecifier_Delete((struct EnumSpecifier*)p);
+                break;
+            default:
+                break;
         }
     }
 }
@@ -12685,7 +13009,7 @@ void Declarator_Destroy(struct Declarator* p)
 bool Declarator_IsAutoArray(struct Declarator* pDeclarator)
 {
     return pDeclarator->pDirectDeclarator &&
-           pDeclarator->pDirectDeclarator->DeclaratorType == TDirectDeclaratorTypeAutoArray;
+        pDeclarator->pDirectDeclarator->DeclaratorType == TDirectDeclaratorTypeAutoArray;
 }
 
 void Declarator_Swap(struct Declarator* a, struct Declarator* b)
@@ -12835,8 +13159,8 @@ void ParameterTypeList_GetArgsString(struct ParameterTypeList* p, struct StrBuil
     {
         int index = 0;
         for (struct Parameter* pParameter = p->ParameterList.pHead;
-                pParameter != NULL;
-                pParameter = pParameter->pNext)
+             pParameter != NULL;
+             pParameter = pParameter->pNext)
         {
             const char* parameterName = Parameter_GetName(pParameter);
             if (parameterName)
@@ -12863,7 +13187,7 @@ struct Parameter* ParameterTypeList_GetParameterByIndex(struct ParameterTypeList
         if (p->ParameterList.pHead)
         {
             if (p->ParameterList.pHead->Specifiers.Size == 1 &&
-                    p->ParameterList.pHead->Specifiers.pData[0]->Type == SingleTypeSpecifier_ID)
+                p->ParameterList.pHead->Specifiers.pData[0]->Type == SingleTypeSpecifier_ID)
             {
                 struct SingleTypeSpecifier* pSingleTypeSpecifier =
                     (struct SingleTypeSpecifier*)p->ParameterList.pHead->Specifiers.pData[0];
@@ -12899,8 +13223,8 @@ struct Parameter* ParameterTypeList_FindParameterByName(struct ParameterTypeList
     if (name)
     {
         for (struct Parameter* pParameter = p->ParameterList.pHead;
-                pParameter != NULL;
-                pParameter = pParameter->pNext)
+             pParameter != NULL;
+             pParameter = pParameter->pNext)
         {
             //F(void) neste caso nao tem nome
             const char* parameterName = Parameter_GetName(pParameter);
@@ -12918,7 +13242,7 @@ const char* ParameterTypeList_GetSecondParameterName(struct ParameterTypeList* p
 {
     const char* name = "";
     if (p->ParameterList.pHead &&
-            p->ParameterList.pHead->pNext)
+        p->ParameterList.pHead->pNext)
     {
         name = Declarator_GetName(&p->ParameterList.pHead->pNext->Declarator);
     }
@@ -12954,24 +13278,24 @@ struct DeclarationSpecifier* DeclarationSpecifier_Clone(struct DeclarationSpecif
 {
     switch (pItem->Type)
     {
-    case TypeQualifier_ID:
-        return (struct DeclarationSpecifier*)TTypeQualifier_Clone((struct TypeQualifier*)pItem);
-    case StructUnionSpecifier_ID:
-        return (struct DeclarationSpecifier*)StructUnionSpecifier_Clone((struct StructUnionSpecifier*)pItem);
-    case StorageSpecifier_ID:
-        return (struct DeclarationSpecifier*)StorageSpecifier_Clone((struct StorageSpecifier*)pItem);
-    case AtomicTypeSpecifier_ID:
-        return (struct DeclarationSpecifier*)AtomicTypeSpecifier_Clone((struct AtomicTypeSpecifier*)pItem);
-    case SingleTypeSpecifier_ID:
-        return (struct DeclarationSpecifier*)SingleTypeSpecifier_Clone((struct SingleTypeSpecifier*)pItem);
-    case AlignmentSpecifier_ID:
-        return (struct DeclarationSpecifier*)AlignmentSpecifier_Clone((struct AlignmentSpecifier*)pItem);
-    case FunctionSpecifier_ID:
-        return (struct DeclarationSpecifier*)FunctionSpecifier_Clone((struct FunctionSpecifier*)pItem);
-    case EnumSpecifier_ID:
-        return (struct DeclarationSpecifier*)EnumSpecifier_Clone((struct EnumSpecifier*)pItem);
-    default:
-        break;
+        case TypeQualifier_ID:
+            return (struct DeclarationSpecifier*)TTypeQualifier_Clone((struct TypeQualifier*)pItem);
+        case StructUnionSpecifier_ID:
+            return (struct DeclarationSpecifier*)StructUnionSpecifier_Clone((struct StructUnionSpecifier*)pItem);
+        case StorageSpecifier_ID:
+            return (struct DeclarationSpecifier*)StorageSpecifier_Clone((struct StorageSpecifier*)pItem);
+        case AtomicTypeSpecifier_ID:
+            return (struct DeclarationSpecifier*)AtomicTypeSpecifier_Clone((struct AtomicTypeSpecifier*)pItem);
+        case SingleTypeSpecifier_ID:
+            return (struct DeclarationSpecifier*)SingleTypeSpecifier_Clone((struct SingleTypeSpecifier*)pItem);
+        case AlignmentSpecifier_ID:
+            return (struct DeclarationSpecifier*)AlignmentSpecifier_Clone((struct AlignmentSpecifier*)pItem);
+        case FunctionSpecifier_ID:
+            return (struct DeclarationSpecifier*)FunctionSpecifier_Clone((struct FunctionSpecifier*)pItem);
+        case EnumSpecifier_ID:
+            return (struct DeclarationSpecifier*)EnumSpecifier_Clone((struct EnumSpecifier*)pItem);
+        default:
+            break;
     }
     assert(false);
     return NULL;
@@ -12988,8 +13312,8 @@ struct DeclarationSpecifier* SpecifierQualifierList_GetMainSpecifier(struct Spec
     {
         struct SpecifierQualifier* pSpecifierQualifier = p->pData[i];
         if (pSpecifierQualifier->Type == SingleTypeSpecifier_ID ||
-                pSpecifierQualifier->Type == StructUnionSpecifier_ID ||
-                pSpecifierQualifier->Type == EnumSpecifier_ID)
+            pSpecifierQualifier->Type == StructUnionSpecifier_ID ||
+            pSpecifierQualifier->Type == EnumSpecifier_ID)
         {
             //ATENCAO
             pSpecifier = (struct DeclarationSpecifier*)pSpecifierQualifier;
@@ -13008,7 +13332,7 @@ const char* SpecifierQualifierList_GetTypedefName(struct SpecifierQualifierList*
         struct SingleTypeSpecifier* pSingleTypeSpecifier =
             SpecifierQualifier_As_SingleTypeSpecifier(pSpecifierQualifier);
         if (pSingleTypeSpecifier &&
-                pSingleTypeSpecifier->Token2 == TK_IDENTIFIER)
+            pSingleTypeSpecifier->Token2 == TK_IDENTIFIER)
         {
             typedefName = pSingleTypeSpecifier->TypedefName;
             break;
@@ -13030,51 +13354,51 @@ bool SpecifierQualifierList_Compare(struct SpecifierQualifierList* p1, struct Sp
         {
             switch (p1->pData[i]->Type)
             {
-            case SingleTypeSpecifier_ID:
-                if (!SingleTypeSpecifier_Compare((struct SingleTypeSpecifier*)p1->pData[i],
-                                                 (struct SingleTypeSpecifier*)p2->pData[i]))
-                {
-                    return false;
-                }
-                break;
-            case StorageSpecifier_ID:
-                if (!StorageSpecifier_Compare((struct StorageSpecifier*)p1->pData[i],
-                                              (struct StorageSpecifier*)p2->pData[i]))
-                {
-                    return false;
-                }
-                break;
-            case TypeQualifier_ID:
-                if (!TypeQualifier_Compare((struct TypeQualifier*)p1->pData[i],
-                                           (struct TypeQualifier*)p2->pData[i]))
-                {
-                    return false;
-                }
-                break;
-            case FunctionSpecifier_ID:
-                if (!FunctionSpecifier_Compare((struct FunctionSpecifier*)p1->pData[i],
-                                               (struct FunctionSpecifier*)p2->pData[i]))
-                {
-                    return false;
-                }
-                break;
-            case StructUnionSpecifier_ID:
-                if (!TStructUnionSpecifier_CompareTagName((struct StructUnionSpecifier*)p1->pData[i],
+                case SingleTypeSpecifier_ID:
+                    if (!SingleTypeSpecifier_Compare((struct SingleTypeSpecifier*)p1->pData[i],
+                        (struct SingleTypeSpecifier*)p2->pData[i]))
+                    {
+                        return false;
+                    }
+                    break;
+                case StorageSpecifier_ID:
+                    if (!StorageSpecifier_Compare((struct StorageSpecifier*)p1->pData[i],
+                        (struct StorageSpecifier*)p2->pData[i]))
+                    {
+                        return false;
+                    }
+                    break;
+                case TypeQualifier_ID:
+                    if (!TypeQualifier_Compare((struct TypeQualifier*)p1->pData[i],
+                        (struct TypeQualifier*)p2->pData[i]))
+                    {
+                        return false;
+                    }
+                    break;
+                case FunctionSpecifier_ID:
+                    if (!FunctionSpecifier_Compare((struct FunctionSpecifier*)p1->pData[i],
+                        (struct FunctionSpecifier*)p2->pData[i]))
+                    {
+                        return false;
+                    }
+                    break;
+                case StructUnionSpecifier_ID:
+                    if (!TStructUnionSpecifier_CompareTagName((struct StructUnionSpecifier*)p1->pData[i],
                         (struct StructUnionSpecifier*)p2->pData[i]))
-                {
-                    return false;
-                }
-                break;
-            case EnumSpecifier_ID:
-                if (!EnumSpecifier_IsSameTag((struct EnumSpecifier*)p1->pData[i],
-                                             (struct EnumSpecifier*)p2->pData[i]))
-                {
-                    return false;
-                }
-                break;
-            default:
-                //assert(false);
-                break;
+                    {
+                        return false;
+                    }
+                    break;
+                case EnumSpecifier_ID:
+                    if (!EnumSpecifier_IsSameTag((struct EnumSpecifier*)p1->pData[i],
+                        (struct EnumSpecifier*)p2->pData[i]))
+                    {
+                        return false;
+                    }
+                    break;
+                default:
+                    //assert(false);
+                    break;
             }
         }
         else
@@ -13094,7 +13418,7 @@ bool SpecifierQualifierList_IsTypedefQualifier(struct SpecifierQualifierList* p)
         struct StorageSpecifier* pStorageSpecifier =
             SpecifierQualifier_As_StorageSpecifier(pSpecifierQualifier);
         if (pStorageSpecifier &&
-                pStorageSpecifier->Token == TK_TYPEDEF)
+            pStorageSpecifier->Token == TK_TYPEDEF)
         {
             bResult = true;
             break;
@@ -13112,7 +13436,7 @@ bool SpecifierQualifierList_IsChar(struct SpecifierQualifierList* p)
         struct SingleTypeSpecifier* pSingleTypeSpecifier =
             SpecifierQualifier_As_SingleTypeSpecifier(pSpecifierQualifier);
         if (pSingleTypeSpecifier &&
-                pSingleTypeSpecifier->Token2 == TK_CHAR)
+            pSingleTypeSpecifier->Token2 == TK_CHAR)
         {
             bResult = true;
             break;
@@ -13131,16 +13455,16 @@ bool SpecifierQualifierList_IsAnyInteger(struct SpecifierQualifierList* p)
         struct SingleTypeSpecifier* pSingleTypeSpecifier =
             SpecifierQualifier_As_SingleTypeSpecifier(pSpecifierQualifier);
         if (pSingleTypeSpecifier &&
-                (pSingleTypeSpecifier->Token2 == TK_INT ||
-                 pSingleTypeSpecifier->Token2 == TK_SHORT ||
-                 pSingleTypeSpecifier->Token2 == TK_SIGNED ||
-                 pSingleTypeSpecifier->Token2 == TK_UNSIGNED ||
-                 pSingleTypeSpecifier->Token2 == TK__INT8 ||
-                 pSingleTypeSpecifier->Token2 == TK__INT16 ||
-                 pSingleTypeSpecifier->Token2 == TK__INT32 ||
-                 pSingleTypeSpecifier->Token2 == TK__INT64 ||
-                 pSingleTypeSpecifier->Token2 == TK__WCHAR_T)
-           )
+            (pSingleTypeSpecifier->Token2 == TK_INT ||
+            pSingleTypeSpecifier->Token2 == TK_SHORT ||
+            pSingleTypeSpecifier->Token2 == TK_SIGNED ||
+            pSingleTypeSpecifier->Token2 == TK_UNSIGNED ||
+            pSingleTypeSpecifier->Token2 == TK__INT8 ||
+            pSingleTypeSpecifier->Token2 == TK__INT16 ||
+            pSingleTypeSpecifier->Token2 == TK__INT32 ||
+            pSingleTypeSpecifier->Token2 == TK__INT64 ||
+            pSingleTypeSpecifier->Token2 == TK__WCHAR_T)
+            )
         {
             bResult = true;
             break;
@@ -13159,8 +13483,8 @@ bool SpecifierQualifierList_IsAnyFloat(struct SpecifierQualifierList* p)
         struct SingleTypeSpecifier* pSingleTypeSpecifier =
             SpecifierQualifier_As_SingleTypeSpecifier(pSpecifierQualifier);
         if (pSingleTypeSpecifier &&
-                (pSingleTypeSpecifier->Token2 == TK_DOUBLE ||
-                 pSingleTypeSpecifier->Token2 == TK_FLOAT))
+            (pSingleTypeSpecifier->Token2 == TK_DOUBLE ||
+            pSingleTypeSpecifier->Token2 == TK_FLOAT))
         {
             bResult = true;
             break;
@@ -13178,7 +13502,7 @@ bool SpecifierQualifierList_IsBool(struct SpecifierQualifierList* p)
         struct SingleTypeSpecifier* pSingleTypeSpecifier =
             SpecifierQualifier_As_SingleTypeSpecifier(pSpecifierQualifier);
         if (pSingleTypeSpecifier &&
-                pSingleTypeSpecifier->Token2 == TK__BOOL)
+            pSingleTypeSpecifier->Token2 == TK__BOOL)
         {
             bResult = true;
             break;
@@ -13197,7 +13521,7 @@ const char* Declarator_GetName(struct Declarator* p)
     while (pDirectDeclarator != NULL)
     {
         if (pDirectDeclarator->Identifier != NULL &&
-                pDirectDeclarator->Identifier[0] != 0)
+            pDirectDeclarator->Identifier[0] != 0)
         {
             return pDirectDeclarator->Identifier;
         }
@@ -13311,14 +13635,14 @@ void AnyStructDeclaration_Delete(struct AnyStructDeclaration* p)
     {
         switch (p->Type)
         {
-        case StaticAssertDeclaration_ID:
-            StaticAssertDeclaration_Delete((struct StaticAssertDeclaration*)p);
-            break;
-        case StructDeclaration_ID:
-            StructDeclaration_Delete((struct StructDeclaration*)p);
-            break;
-        default:
-            break;
+            case StaticAssertDeclaration_ID:
+                StaticAssertDeclaration_Delete((struct StaticAssertDeclaration*)p);
+                break;
+            case StructDeclaration_ID:
+                StructDeclaration_Delete((struct StructDeclaration*)p);
+                break;
+            default:
+                break;
         }
     }
 }
@@ -13451,8 +13775,8 @@ bool PointerList_IsPointerN(struct PointerList* pPointerlist, int n)
     if (pPointerlist)
     {
         for (struct Pointer* pItem = pPointerlist->pHead;
-                pItem != NULL;
-                pItem = pItem->pNext)
+             pItem != NULL;
+             pItem = pItem->pNext)
         {
             k++;
         }
@@ -13506,12 +13830,12 @@ bool PointerList_IsAutoPointerSizeToObject(struct PointerList* pPointerlist)
     if (pPointer != NULL)
     {
         if (pPointer->Qualifier.Size == 2 &&
-                pPointer->pNext == NULL)
+            pPointer->pNext == NULL)
         {
             bResult = (IsAutoToken(pPointer->Qualifier.Data[0]->Token) &&
                        IsSizeToken(pPointer->Qualifier.Data[1]->Token)) ||
-                      (IsSizeToken(pPointer->Qualifier.Data[0]->Token) &&
-                       IsAutoToken(pPointer->Qualifier.Data[0]->Token));
+                (IsSizeToken(pPointer->Qualifier.Data[0]->Token) &&
+                 IsAutoToken(pPointer->Qualifier.Data[0]->Token));
         }
     }
     return bResult;
@@ -13524,7 +13848,7 @@ bool PointerList_IsAutoPointerToPointer(struct PointerList* pPointerlist)
     if (pPointer != NULL)
     {
         if (pPointer->Qualifier.Size == 1 &&
-                IsAutoToken(pPointer->Qualifier.Data[0]->Token))
+            IsAutoToken(pPointer->Qualifier.Data[0]->Token))
         {
             pPointer = pPointer->pNext;
             if (pPointer != NULL)
@@ -13547,13 +13871,13 @@ bool PointerList_IsAutoPointerToAutoPointer(struct PointerList* pPointerlist)
     if (pPointer != NULL)
     {
         if (pPointer->Qualifier.Size == 1 &&
-                IsAutoToken(pPointer->Qualifier.Data[0]->Token))
+            IsAutoToken(pPointer->Qualifier.Data[0]->Token))
         {
             pPointer = pPointer->pNext;
             if (pPointer != NULL)
             {
                 if (pPointer->Qualifier.Size == 1 &&
-                        IsAutoToken(pPointer->Qualifier.Data[0]->Token))
+                    IsAutoToken(pPointer->Qualifier.Data[0]->Token))
                 {
                     bResult = true;
                 }
@@ -13562,7 +13886,7 @@ bool PointerList_IsAutoPointerToAutoPointer(struct PointerList* pPointerlist)
                     //auto _size()
                     // _size() auto
                     bResult = IsAutoToken(pPointer->Qualifier.Data[0]->Token) ||
-                              IsAutoToken(pPointer->Qualifier.Data[1]->Token);
+                        IsAutoToken(pPointer->Qualifier.Data[1]->Token);
                 }
             }
         }
@@ -13755,43 +14079,43 @@ bool SpecifierQualifierList_CanAdd(struct SpecifierQualifierList* p, enum TokenT
         struct SpecifierQualifier* pSpecifier = p->pData[i];
         switch (pSpecifier->Type)
         {
-        case SingleTypeSpecifier_ID:
-        {
-            struct SingleTypeSpecifier* pTSingleTypeSpecifier =
-                (struct SingleTypeSpecifier*)pSpecifier;
-            switch (pTSingleTypeSpecifier->Token2)
+            case SingleTypeSpecifier_ID:
             {
-            case TK_INT:
-                bInt = true;
+                struct SingleTypeSpecifier* pTSingleTypeSpecifier =
+                    (struct SingleTypeSpecifier*)pSpecifier;
+                switch (pTSingleTypeSpecifier->Token2)
+                {
+                    case TK_INT:
+                        bInt = true;
+                        break;
+                    case TK_DOUBLE:
+                        break;
+                    case TK_IDENTIFIER:
+                        bTypeDef = true;
+                        break;
+                    default:
+                        //assert(false);
+                        break;
+                }
+            }
+            break;
+            case StructUnionSpecifier_ID:
+                //bStruct = true;
                 break;
-            case TK_DOUBLE:
+            case EnumSpecifier_ID:
+                //bEnum = true;
                 break;
-            case TK_IDENTIFIER:
-                bTypeDef = true;
+            case StorageSpecifier_ID:
+                break;
+            case TypeQualifier_ID:
+                break;
+            case FunctionSpecifier_ID:
+                break;
+            case AlignmentSpecifier_ID:
                 break;
             default:
                 //assert(false);
                 break;
-            }
-        }
-        break;
-        case StructUnionSpecifier_ID:
-            //bStruct = true;
-            break;
-        case EnumSpecifier_ID:
-            //bEnum = true;
-            break;
-        case StorageSpecifier_ID:
-            break;
-        case TypeQualifier_ID:
-            break;
-        case FunctionSpecifier_ID:
-            break;
-        case AlignmentSpecifier_ID:
-            break;
-        default:
-            //assert(false);
-            break;
         }
     }
     if (token == TK_IDENTIFIER)
@@ -13831,8 +14155,8 @@ struct DeclarationSpecifier* DeclarationSpecifiers_GetMainSpecifier(struct Decla
 }
 
 bool DeclarationSpecifiers_CanAddSpeficier(struct DeclarationSpecifiers* pDeclarationSpecifiers,
-        enum TokenType token,
-        const char* lexeme)
+                                           enum TokenType token,
+                                           const char* lexeme)
 {
     bool bResult = false;
     //bool bStruct = false;
@@ -13846,47 +14170,47 @@ bool DeclarationSpecifiers_CanAddSpeficier(struct DeclarationSpecifiers* pDeclar
         struct DeclarationSpecifier* pSpecifier = pDeclarationSpecifiers->pData[i];
         switch (pSpecifier->Type)
         {
-        case SingleTypeSpecifier_ID:
-        {
-            struct SingleTypeSpecifier* pTSingleTypeSpecifier =
-                (struct SingleTypeSpecifier*)pSpecifier;
-            switch (pTSingleTypeSpecifier->Token2)
+            case SingleTypeSpecifier_ID:
             {
-            //case TK_INT:
-            //case TK_DOUBLE:
-            //..etc...
-            //bOther = true;
-            //break;
-            case TK_IDENTIFIER:
-                bTypeDef = true;
+                struct SingleTypeSpecifier* pTSingleTypeSpecifier =
+                    (struct SingleTypeSpecifier*)pSpecifier;
+                switch (pTSingleTypeSpecifier->Token2)
+                {
+                    //case TK_INT:
+                    //case TK_DOUBLE:
+                    //..etc...
+                    //bOther = true;
+                    //break;
+                    case TK_IDENTIFIER:
+                        bTypeDef = true;
+                        break;
+                    default:
+                        bOther = true;
+                        break;
+                        ////assert(false);
+                        break;
+                }
+            }
+            break;
+            case StructUnionSpecifier_ID:
+                //bStruct = true;
+                pTStructUnionSpecifier = (struct StructUnionSpecifier*)pSpecifier;
+                break;
+            case EnumSpecifier_ID:
+                //bEnum = true;
+                pEnumSpecifier = (struct EnumSpecifier*)pSpecifier;
+                break;
+            case StorageSpecifier_ID:
+                break;
+            case TypeQualifier_ID:
+                break;
+            case FunctionSpecifier_ID:
+                break;
+            case AlignmentSpecifier_ID:
                 break;
             default:
-                bOther = true;
+                //assert(false);
                 break;
-                ////assert(false);
-                break;
-            }
-        }
-        break;
-        case StructUnionSpecifier_ID:
-            //bStruct = true;
-            pTStructUnionSpecifier = (struct StructUnionSpecifier*)pSpecifier;
-            break;
-        case EnumSpecifier_ID:
-            //bEnum = true;
-            pEnumSpecifier = (struct EnumSpecifier*)pSpecifier;
-            break;
-        case StorageSpecifier_ID:
-            break;
-        case TypeQualifier_ID:
-            break;
-        case FunctionSpecifier_ID:
-            break;
-        case AlignmentSpecifier_ID:
-            break;
-        default:
-            //assert(false);
-            break;
         }
     }
     if (token == TK_IDENTIFIER)
@@ -13895,7 +14219,7 @@ bool DeclarationSpecifiers_CanAddSpeficier(struct DeclarationSpecifiers* pDeclar
         {
             //ja tem uma struct
             if (pTStructUnionSpecifier->Tag &&
-                    strcmp(pTStructUnionSpecifier->Tag, lexeme) == 0)
+                strcmp(pTStructUnionSpecifier->Tag, lexeme) == 0)
             {
                 //typedef struct X X;
             }
@@ -13908,7 +14232,7 @@ bool DeclarationSpecifiers_CanAddSpeficier(struct DeclarationSpecifiers* pDeclar
         {
             //ja tem uma struct
             if (pEnumSpecifier->Tag &&
-                    strcmp(pEnumSpecifier->Tag, lexeme) == 0)
+                strcmp(pEnumSpecifier->Tag, lexeme) == 0)
             {
                 //typedef enum X X;
             }
@@ -13935,7 +14259,7 @@ bool DeclarationSpecifiers_CanAddSpeficier(struct DeclarationSpecifiers* pDeclar
 }
 
 struct StructUnionSpecifier* TDeclarationSpecifiers_GetCompleteStructUnionSpecifier(struct SymbolMap* pSymbolMap,
-        struct DeclarationSpecifiers* pDeclarationSpecifiers)
+    struct DeclarationSpecifiers* pDeclarationSpecifiers)
 {
     struct StructUnionSpecifier* pStructUnionSpecifier = NULL;
     struct DeclarationSpecifier* pFirstArgSpecifier =
@@ -13968,10 +14292,10 @@ struct StructUnionSpecifier* TDeclarationSpecifiers_GetCompleteStructUnionSpecif
                     if (p2)
                     {
                         pStructUnionSpecifier = (struct StructUnionSpecifier*)
-                                                DeclarationSpecifiers_GetMainSpecifier(p2, StructUnionSpecifier_ID);
+                            DeclarationSpecifiers_GetMainSpecifier(p2, StructUnionSpecifier_ID);
                         if (pStructUnionSpecifier &&
-                                pStructUnionSpecifier->StructDeclarationList.Size == 0 &&
-                                pStructUnionSpecifier->Tag != NULL)
+                            pStructUnionSpecifier->StructDeclarationList.Size == 0 &&
+                            pStructUnionSpecifier->Tag != NULL)
                         {
                             pStructUnionSpecifier =
                                 SymbolMap_FindCompleteStructUnionSpecifier(pSymbolMap, pStructUnionSpecifier->Tag);
@@ -14012,18 +14336,18 @@ struct SpecifierQualifier* SpecifierQualifier_Clone(struct SpecifierQualifier* p
 {
     switch (pItem->Type)
     {
-    case TypeQualifier_ID:
-        return (struct SpecifierQualifier*)TTypeQualifier_Clone((struct TypeQualifier*)pItem);
-    case StructUnionSpecifier_ID:
-        return (struct SpecifierQualifier*)StructUnionSpecifier_Clone((struct StructUnionSpecifier*)pItem);
-    case AtomicTypeSpecifier_ID:
-        return (struct SpecifierQualifier*)AtomicTypeSpecifier_Clone((struct AtomicTypeSpecifier*)pItem);
-    case SingleTypeSpecifier_ID:
-        return (struct SpecifierQualifier*)SingleTypeSpecifier_Clone((struct SingleTypeSpecifier*)pItem);
-    case EnumSpecifier_ID:
-        return (struct SpecifierQualifier*)EnumSpecifier_Clone((struct EnumSpecifier*)pItem);
-    default:
-        break;
+        case TypeQualifier_ID:
+            return (struct SpecifierQualifier*)TTypeQualifier_Clone((struct TypeQualifier*)pItem);
+        case StructUnionSpecifier_ID:
+            return (struct SpecifierQualifier*)StructUnionSpecifier_Clone((struct StructUnionSpecifier*)pItem);
+        case AtomicTypeSpecifier_ID:
+            return (struct SpecifierQualifier*)AtomicTypeSpecifier_Clone((struct AtomicTypeSpecifier*)pItem);
+        case SingleTypeSpecifier_ID:
+            return (struct SpecifierQualifier*)SingleTypeSpecifier_Clone((struct SingleTypeSpecifier*)pItem);
+        case EnumSpecifier_ID:
+            return (struct SpecifierQualifier*)EnumSpecifier_Clone((struct EnumSpecifier*)pItem);
+        default:
+            break;
     }
     assert(false);
     return NULL;
@@ -14035,23 +14359,23 @@ void SpecifierQualifier_Delete(struct SpecifierQualifier* pItem)
     {
         switch (pItem->Type)
         {
-        case TypeQualifier_ID:
-            TypeQualifier_Delete((struct TypeQualifier*)pItem);
-            break;
-        case StructUnionSpecifier_ID:
-            StructUnionSpecifier_Delete((struct StructUnionSpecifier*)pItem);
-            break;
-        case AtomicTypeSpecifier_ID:
-            AtomicTypeSpecifier_Delete((struct AtomicTypeSpecifier*)pItem);
-            break;
-        case SingleTypeSpecifier_ID:
-            SingleTypeSpecifier_Delete((struct SingleTypeSpecifier*)pItem);
-            break;
-        case EnumSpecifier_ID:
-            EnumSpecifier_Delete((struct EnumSpecifier*)pItem);
-            break;
-        default:
-            break;
+            case TypeQualifier_ID:
+                TypeQualifier_Delete((struct TypeQualifier*)pItem);
+                break;
+            case StructUnionSpecifier_ID:
+                StructUnionSpecifier_Delete((struct StructUnionSpecifier*)pItem);
+                break;
+            case AtomicTypeSpecifier_ID:
+                AtomicTypeSpecifier_Delete((struct AtomicTypeSpecifier*)pItem);
+                break;
+            case SingleTypeSpecifier_ID:
+                SingleTypeSpecifier_Delete((struct SingleTypeSpecifier*)pItem);
+                break;
+            case EnumSpecifier_ID:
+                EnumSpecifier_Delete((struct EnumSpecifier*)pItem);
+                break;
+            default:
+                break;
         }
     }
 }
@@ -14062,32 +14386,32 @@ void TDeclarationSpecifier_Delete(struct DeclarationSpecifier* pItem)
     {
         switch (pItem->Type)
         {
-        case TypeQualifier_ID:
-            TypeQualifier_Delete((struct TypeQualifier*)pItem);
-            break;
-        case StructUnionSpecifier_ID:
-            StructUnionSpecifier_Delete((struct StructUnionSpecifier*)pItem);
-            break;
-        case StorageSpecifier_ID:
-            StorageSpecifier_Delete((struct StorageSpecifier*)pItem);
-            break;
-        case AtomicTypeSpecifier_ID:
-            AtomicTypeSpecifier_Delete((struct AtomicTypeSpecifier*)pItem);
-            break;
-        case SingleTypeSpecifier_ID:
-            SingleTypeSpecifier_Delete((struct SingleTypeSpecifier*)pItem);
-            break;
-        case AlignmentSpecifier_ID:
-            AlignmentSpecifier_Delete((struct AlignmentSpecifier*)pItem);
-            break;
-        case FunctionSpecifier_ID:
-            FunctionSpecifier_Delete((struct FunctionSpecifier*)pItem);
-            break;
-        case EnumSpecifier_ID:
-            EnumSpecifier_Delete((struct EnumSpecifier*)pItem);
-            break;
-        default:
-            break;
+            case TypeQualifier_ID:
+                TypeQualifier_Delete((struct TypeQualifier*)pItem);
+                break;
+            case StructUnionSpecifier_ID:
+                StructUnionSpecifier_Delete((struct StructUnionSpecifier*)pItem);
+                break;
+            case StorageSpecifier_ID:
+                StorageSpecifier_Delete((struct StorageSpecifier*)pItem);
+                break;
+            case AtomicTypeSpecifier_ID:
+                AtomicTypeSpecifier_Delete((struct AtomicTypeSpecifier*)pItem);
+                break;
+            case SingleTypeSpecifier_ID:
+                SingleTypeSpecifier_Delete((struct SingleTypeSpecifier*)pItem);
+                break;
+            case AlignmentSpecifier_ID:
+                AlignmentSpecifier_Delete((struct AlignmentSpecifier*)pItem);
+                break;
+            case FunctionSpecifier_ID:
+                FunctionSpecifier_Delete((struct FunctionSpecifier*)pItem);
+                break;
+            case EnumSpecifier_ID:
+                EnumSpecifier_Delete((struct EnumSpecifier*)pItem);
+                break;
+            default:
+                break;
         }
     }
 }
@@ -14103,7 +14427,7 @@ void DeclarationSpecifiers_CopyTo(struct DeclarationSpecifiers* from,
 }
 
 void DeclarationSpecifiers_CopyTo_SpecifierQualifierList(struct DeclarationSpecifiers* from,
-        struct SpecifierQualifierList* to)
+                                                         struct SpecifierQualifierList* to)
 {
     for (int i = 0; i < from->Size; i++)
     {
@@ -14111,16 +14435,16 @@ void DeclarationSpecifiers_CopyTo_SpecifierQualifierList(struct DeclarationSpeci
         enum Type type = pItem->Type;
         switch (type)
         {
-        /*copy only type qualifiers and type specifiers*/
-        case TypeQualifier_ID:
-        case StructUnionSpecifier_ID:
-        case AtomicTypeSpecifier_ID:
-        case SingleTypeSpecifier_ID:
-        case EnumSpecifier_ID:
-            SpecifierQualifierList_PushBack(to, (struct SpecifierQualifier*)DeclarationSpecifier_Clone(pItem));
-            break;
-        default:
-            break;
+            /*copy only type qualifiers and type specifiers*/
+            case TypeQualifier_ID:
+            case StructUnionSpecifier_ID:
+            case AtomicTypeSpecifier_ID:
+            case SingleTypeSpecifier_ID:
+            case EnumSpecifier_ID:
+                SpecifierQualifierList_PushBack(to, (struct SpecifierQualifier*)DeclarationSpecifier_Clone(pItem));
+                break;
+            default:
+                break;
         }
     }
 }
@@ -14172,12 +14496,12 @@ struct Declarator* Declaration_FindDeclarator(struct Declaration* p, const char*
     }
     struct Declarator* pResult = NULL;
     for (struct InitDeclarator* pInitDeclarator = p->InitDeclaratorList.pHead;
-            pInitDeclarator != NULL;
-            pInitDeclarator = pInitDeclarator->pNext)
+         pInitDeclarator != NULL;
+         pInitDeclarator = pInitDeclarator->pNext)
     {
         if (pInitDeclarator->pDeclarator &&
-                pInitDeclarator->pDeclarator->pDirectDeclarator &&
-                pInitDeclarator->pDeclarator->pDirectDeclarator->Identifier)
+            pInitDeclarator->pDeclarator->pDirectDeclarator &&
+            pInitDeclarator->pDeclarator->pDirectDeclarator->Identifier)
         {
             if (strcmp(pInitDeclarator->pDeclarator->pDirectDeclarator->Identifier, name) == 0)
             {
@@ -14273,7 +14597,7 @@ const char* TDeclarationSpecifier_GetTypedefName(struct DeclarationSpecifiers* p
         struct SingleTypeSpecifier* pSingleTypeSpecifier =
             DeclarationSpecifier_As_SingleTypeSpecifier(pSpecifier);
         if (pSingleTypeSpecifier &&
-                pSingleTypeSpecifier->Token2 == TK_IDENTIFIER)
+            pSingleTypeSpecifier->Token2 == TK_IDENTIFIER)
         {
             typedefName = pSingleTypeSpecifier->TypedefName;
         }
@@ -14302,8 +14626,8 @@ bool TDeclarator_IsDirectPointer(struct Declarator* p)
 {
     int n = 0;
     for (struct Pointer* pPointer = p->PointerList.pHead;
-            pPointer != NULL;
-            pPointer = pPointer->pNext)
+         pPointer != NULL;
+         pPointer = pPointer->pNext)
     {
         n++;
         if (n > 1)
@@ -14368,19 +14692,19 @@ bool TDeclarationSpecifiers_IsStatic(struct DeclarationSpecifiers* pDeclarationS
         struct DeclarationSpecifier* pItem = pDeclarationSpecifiers->pData[i];
         switch (pItem->Type)
         {
-        case StorageSpecifier_ID:
-        {
-            struct StorageSpecifier* pStorageSpecifier =
-                (struct StorageSpecifier*)pItem;
-            if (pStorageSpecifier->Token == TK_STATIC)
+            case StorageSpecifier_ID:
             {
-                bResult = true;
+                struct StorageSpecifier* pStorageSpecifier =
+                    (struct StorageSpecifier*)pItem;
+                if (pStorageSpecifier->Token == TK_STATIC)
+                {
+                    bResult = true;
+                }
             }
-        }
-        break;
-        default:
-            //assert(false);
             break;
+            default:
+                //assert(false);
+                break;
         }
         if (bResult)
         {
@@ -14398,19 +14722,19 @@ bool DeclarationSpecifiers_IsTypedef(struct DeclarationSpecifiers* pDeclarationS
         struct DeclarationSpecifier* pItem = pDeclarationSpecifiers->pData[i];
         switch (pItem->Type)
         {
-        case StorageSpecifier_ID:
-        {
-            struct StorageSpecifier* pStorageSpecifier =
-                (struct StorageSpecifier*)pItem;
-            if (pStorageSpecifier->Token == TK_TYPEDEF)
+            case StorageSpecifier_ID:
             {
-                bResult = true;
+                struct StorageSpecifier* pStorageSpecifier =
+                    (struct StorageSpecifier*)pItem;
+                if (pStorageSpecifier->Token == TK_TYPEDEF)
+                {
+                    bResult = true;
+                }
             }
-        }
-        break;
-        default:
-            //assert(false);
             break;
+            default:
+                //assert(false);
+                break;
         }
         if (bResult)
         {
@@ -14425,15 +14749,15 @@ bool AnyDeclaration_IsTypedef(struct AnyDeclaration* pDeclaration)
     bool bResult = false;
     switch (pDeclaration->Type)
     {
-    case Declaration_ID:
-    {
-        struct Declaration* p = (struct Declaration*)pDeclaration;
-        bResult = DeclarationSpecifiers_IsTypedef(&p->Specifiers);
-    }
-    break;
-    default:
-        //assert(false);
+        case Declaration_ID:
+        {
+            struct Declaration* p = (struct Declaration*)pDeclaration;
+            bResult = DeclarationSpecifiers_IsTypedef(&p->Specifiers);
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
     return bResult;
 }
@@ -14443,14 +14767,14 @@ int AnyDeclaration_GetFileIndex(struct AnyDeclaration* pDeclaration)
     int result = -1;
     switch (pDeclaration->Type)
     {
-    case Declaration_ID:
-        result = ((struct Declaration*)pDeclaration)->FileIndex;
-        break;
-    case StaticAssertDeclaration_ID:
-        break;
-    default:
-        //assert(false);
-        break;
+        case Declaration_ID:
+            result = ((struct Declaration*)pDeclaration)->FileIndex;
+            break;
+        case StaticAssertDeclaration_ID:
+            break;
+        default:
+            //assert(false);
+            break;
     }
     return result;
 }
@@ -14462,17 +14786,17 @@ void AnyDeclaration_Delete(struct AnyDeclaration* pDeclaration)
     {
         switch (pDeclaration->Type)
         {
-        case StaticAssertDeclaration_ID:
-            StaticAssertDeclaration_Delete((struct StaticAssertDeclaration*)pDeclaration);
-            break;
-        case Declaration_ID:
-            Declaration_Delete((struct Declaration*)pDeclaration);
-            break;
-        case EofDeclaration_ID:
-            EofDeclaration_Delete((struct EofDeclaration*)pDeclaration);
-            break;
-        default:
-            break;
+            case StaticAssertDeclaration_ID:
+                StaticAssertDeclaration_Delete((struct StaticAssertDeclaration*)pDeclaration);
+                break;
+            case Declaration_ID:
+                Declaration_Delete((struct Declaration*)pDeclaration);
+                break;
+            case EofDeclaration_ID:
+                EofDeclaration_Delete((struct EofDeclaration*)pDeclaration);
+                break;
+            default:
+                break;
         }
     }
 }
@@ -14528,35 +14852,35 @@ void Initializer_Delete(struct Initializer* p)
     {
         switch (p->Type)
         {
-        case BinaryExpression_ID:
-            BinaryExpression_Delete((struct BinaryExpression*)p);
-            break;
-        case PrimaryExpressionLambda_ID:
-            PrimaryExpressionLambda_Delete((struct PrimaryExpressionLambda*)p);
-            break;
-        case UnaryExpressionOperator_ID:
-            UnaryExpressionOperator_Delete((struct UnaryExpressionOperator*)p);
-            break;
-        case CastExpressionType_ID:
-            CastExpressionType_Delete((struct CastExpressionType*)p);
-            break;
-        case InitializerListType_ID:
-            InitializerListType_Delete((struct InitializerListType*)p);
-            break;
-        case PrimaryExpressionValue_ID:
-            PrimaryExpressionValue_Delete((struct PrimaryExpressionValue*)p);
-            break;
-        case PostfixExpression_ID:
-            PostfixExpression_Delete((struct PostfixExpression*)p);
-            break;
-        case PrimaryExpressionLiteral_ID:
-            PrimaryExpressionLiteral_Delete((struct PrimaryExpressionLiteral*)p);
-            break;
-        case TernaryExpression_ID:
-            TernaryExpression_Delete((struct TernaryExpression*)p);
-            break;
-        default:
-            break;
+            case BinaryExpression_ID:
+                BinaryExpression_Delete((struct BinaryExpression*)p);
+                break;
+            case PrimaryExpressionLambda_ID:
+                PrimaryExpressionLambda_Delete((struct PrimaryExpressionLambda*)p);
+                break;
+            case UnaryExpressionOperator_ID:
+                UnaryExpressionOperator_Delete((struct UnaryExpressionOperator*)p);
+                break;
+            case CastExpressionType_ID:
+                CastExpressionType_Delete((struct CastExpressionType*)p);
+                break;
+            case InitializerListType_ID:
+                InitializerListType_Delete((struct InitializerListType*)p);
+                break;
+            case PrimaryExpressionValue_ID:
+                PrimaryExpressionValue_Delete((struct PrimaryExpressionValue*)p);
+                break;
+            case PostfixExpression_ID:
+                PostfixExpression_Delete((struct PostfixExpression*)p);
+                break;
+            case PrimaryExpressionLiteral_ID:
+                PrimaryExpressionLiteral_Delete((struct PrimaryExpressionLiteral*)p);
+                break;
+            case TernaryExpression_ID:
+                TernaryExpression_Delete((struct TernaryExpression*)p);
+                break;
+            default:
+                break;
         }
     }
 }
@@ -14605,7 +14929,7 @@ struct Declaration* SyntaxTree_FindDeclaration(struct SyntaxTree* p, const char*
 {
     struct TypePointer* pt = SymbolMap_Find(&p->GlobalScope, name);
     if (pt != NULL &&
-            pt->Type == Declaration_ID)
+        pt->Type == Declaration_ID)
     {
         return (struct Declaration*)pt;
     }
@@ -14616,7 +14940,7 @@ struct Declaration* SyntaxTree_FindFunctionDeclaration(struct SyntaxTree* p, con
 {
     struct TypePointer* pt = SymbolMap_Find(&p->GlobalScope, name);
     if (pt != NULL &&
-            pt->Type == Declaration_ID)
+        pt->Type == Declaration_ID)
     {
         return (struct Declaration*)pt;
     }
@@ -14640,7 +14964,7 @@ void SyntaxTree_Destroy(struct SyntaxTree* p)
 ///////////////////////////////////////////
 
 static bool TPostfixExpressionCore_Evaluate(struct PostfixExpression* p,
-        int* pResult)
+                                            int* pResult)
 {
     int result = *pResult;
     if (p->pExpressionLeft)
@@ -14656,38 +14980,38 @@ static bool TPostfixExpressionCore_Evaluate(struct PostfixExpression* p,
     }
     switch (p->token)
     {
-    case TK_FULL_STOP:
-        //fprintf(fp, ".%s", p->Identifier);
-        //assert(false);
+        case TK_FULL_STOP:
+            //fprintf(fp, ".%s", p->Identifier);
+            //assert(false);
+            break;
+        case TK_ARROW:
+            //fprintf(fp, "->%s", p->Identifier);
+            //b = true;
+            //assert(false);
+            break;
+        case TK_LEFT_SQUARE_BRACKET:
+        {
+            int index;
+            //fprintf(fp, "[");
+            EvaluateConstantExpression(p->pExpressionRight, &index);
+            //fprintf(fp, "]");
+            //assert(false);
+        }
         break;
-    case TK_ARROW:
-        //fprintf(fp, "->%s", p->Identifier);
-        //b = true;
-        //assert(false);
+        case TK_LEFT_PARENTHESIS:
+        {
+            EvaluateConstantExpression(p->pExpressionRight, &result);
+        }
         break;
-    case TK_LEFT_SQUARE_BRACKET:
-    {
-        int index;
-        //fprintf(fp, "[");
-        EvaluateConstantExpression(p->pExpressionRight, &index);
-        //fprintf(fp, "]");
-        //assert(false);
-    }
-    break;
-    case TK_LEFT_PARENTHESIS:
-    {
-        EvaluateConstantExpression(p->pExpressionRight, &result);
-    }
-    break;
-    case TK_PLUSPLUS:
-        //assert(false);
-        break;
-    case TK_MINUSMINUS:
-        //assert(false);
-        break;
-    default:
-        //assert(false);
-        break;
+        case TK_PLUSPLUS:
+            //assert(false);
+            break;
+        case TK_MINUSMINUS:
+            //assert(false);
+            break;
+        default:
+            //assert(false);
+            break;
     }
     if (p->pNext)
     {
@@ -14710,210 +15034,210 @@ bool EvaluateConstantExpression(struct Expression* p, int* pResult)
     bool b = false;
     switch (p->Type)
     {
-    case BinaryExpression_ID:
-    {
-        struct BinaryExpression* pBinaryExpression =
-            (struct BinaryExpression*)p;
-        int left;
-        b = EvaluateConstantExpression(pBinaryExpression->pExpressionLeft, &left);
-        int right;
-        b = EvaluateConstantExpression(pBinaryExpression->pExpressionRight, &right);
-        switch (pBinaryExpression->token)
+        case BinaryExpression_ID:
         {
-        case TK_ASTERISK:
-            result = (left * right);
-            b = true;
-            break;
-        case TK_PLUS_SIGN:
-            result = (left + right);
-            b = true;
-            break;
-        case TK_HYPHEN_MINUS:
-            result = (left - right);
-            b = true;
-            break;
-        case TK_ANDAND:
-            result = (left && right);
-            b = true;
-            break;
-        case TK_OROR:
-            result = (left || right);
-            b = true;
-            break;
-        case TK_NOTEQUAL:
-            result = (left != right);
-            b = true;
-            break;
-        case TK_EQUALEQUAL:
-            result = (left == right);
-            b = true;
-            break;
-        case TK_GREATEREQUAL:
-            result = (left >= right);
-            b = true;
-            break;
-        case TK_LESSEQUAL:
-            result = (left <= right);
-            b = true;
-            break;
-        case TK_GREATER_THAN_SIGN:
-            result = (left > right);
-            b = true;
-            break;
-        case TK_LESS_THAN_SIGN:
-            result = (left < right);
-            b = true;
-            break;
-        case TK_AMPERSAND:
-            result = (left & right);
-            b = true;
-            break;
-        case TK_GREATERGREATER:
-            result = (left >> right);
-            b = true;
-            break;
-        case TK_LESSLESS:
-            result = (left << right);
-            b = true;
-            break;
-        case TK_VERTICAL_LINE:
-            result = (left | right);
-            b = true;
-            break;
-        case TK_SOLIDUS:
-            if (right != 0)
+            struct BinaryExpression* pBinaryExpression =
+                (struct BinaryExpression*)p;
+            int left;
+            b = EvaluateConstantExpression(pBinaryExpression->pExpressionLeft, &left);
+            int right;
+            b = EvaluateConstantExpression(pBinaryExpression->pExpressionRight, &right);
+            switch (pBinaryExpression->token)
             {
-                result = (left / right);
-                b = true;
+                case TK_ASTERISK:
+                    result = (left * right);
+                    b = true;
+                    break;
+                case TK_PLUS_SIGN:
+                    result = (left + right);
+                    b = true;
+                    break;
+                case TK_HYPHEN_MINUS:
+                    result = (left - right);
+                    b = true;
+                    break;
+                case TK_ANDAND:
+                    result = (left && right);
+                    b = true;
+                    break;
+                case TK_OROR:
+                    result = (left || right);
+                    b = true;
+                    break;
+                case TK_NOTEQUAL:
+                    result = (left != right);
+                    b = true;
+                    break;
+                case TK_EQUALEQUAL:
+                    result = (left == right);
+                    b = true;
+                    break;
+                case TK_GREATEREQUAL:
+                    result = (left >= right);
+                    b = true;
+                    break;
+                case TK_LESSEQUAL:
+                    result = (left <= right);
+                    b = true;
+                    break;
+                case TK_GREATER_THAN_SIGN:
+                    result = (left > right);
+                    b = true;
+                    break;
+                case TK_LESS_THAN_SIGN:
+                    result = (left < right);
+                    b = true;
+                    break;
+                case TK_AMPERSAND:
+                    result = (left & right);
+                    b = true;
+                    break;
+                case TK_GREATERGREATER:
+                    result = (left >> right);
+                    b = true;
+                    break;
+                case TK_LESSLESS:
+                    result = (left << right);
+                    b = true;
+                    break;
+                case TK_VERTICAL_LINE:
+                    result = (left | right);
+                    b = true;
+                    break;
+                case TK_SOLIDUS:
+                    if (right != 0)
+                    {
+                        result = (left / right);
+                        b = true;
+                    }
+                    else
+                    {
+                        b = false;
+                        //SetError
+                    }
+                    break;
+                default:
+                    //TODO ADD THE OPERADOR?
+                    //assert(false);
+                    b = false;
+                    break;
+            }
+            //if (pBinaryExpression->)
+        }
+        break;
+        case TernaryExpression_ID:
+        {
+            int e1, e2, e3;
+            b = EvaluateConstantExpression(((struct TernaryExpression*)p)->pExpressionLeft, &e1);
+            b = EvaluateConstantExpression(((struct TernaryExpression*)p)->pExpressionMiddle, &e2);
+            b = EvaluateConstantExpression(((struct TernaryExpression*)p)->pExpressionRight, &e3);
+            //assert(false);
+        }
+        break;
+        case PrimaryExpressionValue_ID:
+        {
+            struct PrimaryExpressionValue* pPrimaryExpressionValue =
+                (struct PrimaryExpressionValue*)p;
+            if (pPrimaryExpressionValue->pExpressionOpt != NULL)
+            {
+                b = EvaluateConstantExpression(pPrimaryExpressionValue->pExpressionOpt, &result);
             }
             else
             {
-                b = false;
-                //SetError
-            }
-            break;
-        default:
-            //TODO ADD THE OPERADOR?
-            //assert(false);
-            b = false;
-            break;
-        }
-        //if (pBinaryExpression->)
-    }
-    break;
-    case TernaryExpression_ID:
-    {
-        int e1, e2, e3;
-        b = EvaluateConstantExpression(((struct TernaryExpression*)p)->pExpressionLeft, &e1);
-        b = EvaluateConstantExpression(((struct TernaryExpression*)p)->pExpressionMiddle, &e2);
-        b = EvaluateConstantExpression(((struct TernaryExpression*)p)->pExpressionRight, &e3);
-        //assert(false);
-    }
-    break;
-    case PrimaryExpressionValue_ID:
-    {
-        struct PrimaryExpressionValue* pPrimaryExpressionValue =
-            (struct PrimaryExpressionValue*)p;
-        if (pPrimaryExpressionValue->pExpressionOpt != NULL)
-        {
-            b = EvaluateConstantExpression(pPrimaryExpressionValue->pExpressionOpt, &result);
-        }
-        else
-        {
-            switch (pPrimaryExpressionValue->token)
-            {
-            case TK_IDENTIFIER:
-                result = 0; //para macro
-                b = true;
-                break;
-            case TK_DECIMAL_INTEGER:
-                result = atoi(pPrimaryExpressionValue->lexeme);
-                b = true;
-                break;
-            case TK_HEX_INTEGER:
-                result = (int)strtol(pPrimaryExpressionValue->lexeme, NULL, 16);
-                b = true;
-                break;
-            case TK_CHAR_LITERAL:
-                if (pPrimaryExpressionValue->lexeme != NULL)
+                switch (pPrimaryExpressionValue->token)
                 {
-                    //vem com 'A'
-                    result = pPrimaryExpressionValue->lexeme[1];
-                    b = true;
+                    case TK_IDENTIFIER:
+                        result = 0; //para macro
+                        b = true;
+                        break;
+                    case TK_DECIMAL_INTEGER:
+                        result = atoi(pPrimaryExpressionValue->lexeme);
+                        b = true;
+                        break;
+                    case TK_HEX_INTEGER:
+                        result = (int)strtol(pPrimaryExpressionValue->lexeme, NULL, 16);
+                        b = true;
+                        break;
+                    case TK_CHAR_LITERAL:
+                        if (pPrimaryExpressionValue->lexeme != NULL)
+                        {
+                            //vem com 'A'
+                            result = pPrimaryExpressionValue->lexeme[1];
+                            b = true;
+                        }
+                        else
+                        {
+                            result = 0;
+                        }
+                        break;
+                    default:
+                        b = false;
+                        //assert(0);
+                        break;
                 }
-                else
-                {
-                    result = 0;
-                }
-                break;
-            default:
-                b = false;
-                //assert(0);
-                break;
             }
         }
-    }
-    break;
-    case PostfixExpression_ID:
-    {
-        struct PostfixExpression* pPostfixExpressionCore =
-            (struct PostfixExpression*)p;
-        b = TPostfixExpressionCore_Evaluate(pPostfixExpressionCore, &result);
-        //assert(false);
-    }
-    break;
-    case UnaryExpressionOperator_ID:
-    {
-        struct UnaryExpressionOperator* pTUnaryExpressionOperator =
-            (struct UnaryExpressionOperator*)p;
-        if (pTUnaryExpressionOperator->token == TK_SIZEOF)
-        {
-            //if (TDeclarationSpecifiers_IsTypedef(pTUnaryExpressionOperator->TypeName.SpecifierQualifierList))
-            {
-                //b = TTypeQualifier_CodePrint2(&pTUnaryExpressionOperator->TypeName.qualifiers, fp);
-                //b = TTypeSpecifier_CodePrint2(pTUnaryExpressionOperator->TypeName.pTypeSpecifier, b, fp);
-                // b = TDeclarator_CodePrint(&pTUnaryExpressionOperator->TypeName.declarator, b, fp);
-            }
-            //else
-            {
-                b = EvaluateConstantExpression(pTUnaryExpressionOperator->pExpressionRight, &result);
-            }
-        }
-        else
-        {
-            int localResult;
-            b = EvaluateConstantExpression(pTUnaryExpressionOperator->pExpressionRight, &localResult);
-            switch (pTUnaryExpressionOperator->token)
-            {
-            case TK_EXCLAMATION_MARK:
-                result = !localResult;
-                b = true;
-                break;
-            case TK_HYPHEN_MINUS:
-                result = -localResult;
-                b = true;
-                break;
-            default:
-                //assert(false);
-                break;
-            }
-        }
-    }
-    break;
-    case CastExpressionType_ID:
-    {
-        struct CastExpressionType* pCastExpressionType =
-            (struct CastExpressionType*)p;
-        //b = TTypeQualifier_CodePrint2(&pCastExpressionType->TypeName.qualifiers, fp);
-        //b = TTypeSpecifier_CodePrint2(pCastExpressionType->TypeName.pTypeSpecifier, b, fp);
-        //b = TDeclarator_CodePrint(&pCastExpressionType->TypeName.declarator, b, fp);
-        b = EvaluateConstantExpression(pCastExpressionType->pExpression, &result);
-        //assert(false);
-    }
-    break;
-    default:
-        //assert(false);
         break;
+        case PostfixExpression_ID:
+        {
+            struct PostfixExpression* pPostfixExpressionCore =
+                (struct PostfixExpression*)p;
+            b = TPostfixExpressionCore_Evaluate(pPostfixExpressionCore, &result);
+            //assert(false);
+        }
+        break;
+        case UnaryExpressionOperator_ID:
+        {
+            struct UnaryExpressionOperator* pTUnaryExpressionOperator =
+                (struct UnaryExpressionOperator*)p;
+            if (pTUnaryExpressionOperator->token == TK_SIZEOF)
+            {
+                //if (TDeclarationSpecifiers_IsTypedef(pTUnaryExpressionOperator->TypeName.SpecifierQualifierList))
+                {
+                    //b = TTypeQualifier_CodePrint2(&pTUnaryExpressionOperator->TypeName.qualifiers, fp);
+                    //b = TTypeSpecifier_CodePrint2(pTUnaryExpressionOperator->TypeName.pTypeSpecifier, b, fp);
+                    // b = TDeclarator_CodePrint(&pTUnaryExpressionOperator->TypeName.declarator, b, fp);
+                }
+                //else
+                {
+                    b = EvaluateConstantExpression(pTUnaryExpressionOperator->pExpressionRight, &result);
+                }
+            }
+            else
+            {
+                int localResult;
+                b = EvaluateConstantExpression(pTUnaryExpressionOperator->pExpressionRight, &localResult);
+                switch (pTUnaryExpressionOperator->token)
+                {
+                    case TK_EXCLAMATION_MARK:
+                        result = !localResult;
+                        b = true;
+                        break;
+                    case TK_HYPHEN_MINUS:
+                        result = -localResult;
+                        b = true;
+                        break;
+                    default:
+                        //assert(false);
+                        break;
+                }
+            }
+        }
+        break;
+        case CastExpressionType_ID:
+        {
+            struct CastExpressionType* pCastExpressionType =
+                (struct CastExpressionType*)p;
+            //b = TTypeQualifier_CodePrint2(&pCastExpressionType->TypeName.qualifiers, fp);
+            //b = TTypeSpecifier_CodePrint2(pCastExpressionType->TypeName.pTypeSpecifier, b, fp);
+            //b = TDeclarator_CodePrint(&pCastExpressionType->TypeName.declarator, b, fp);
+            b = EvaluateConstantExpression(pCastExpressionType->pExpression, &result);
+            //assert(false);
+        }
+        break;
+        default:
+            //assert(false);
+            break;
     }
     //assert(result != -987654321);
     *pResult = result;
@@ -15126,7 +15450,7 @@ void TypeName_Delete(struct TypeName* p)
 }
 
 static void TSingleTypeSpecifier_PrintNameMangling(struct SingleTypeSpecifier* p,
-        struct StrBuilder* fp)
+                                                   struct StrBuilder* fp)
 {
     if (p->Token2 == TK_IDENTIFIER)
     {
@@ -15143,7 +15467,7 @@ static void TPointer_PrintNameMangling(struct Pointer* pPointer,
                                        struct StrBuilder* fp);
 
 static void TPointerList_PrintNameMangling(struct PointerList* p,
-        struct StrBuilder* fp)
+                                           struct StrBuilder* fp)
 {
     for (struct Pointer* pItem = (p)->pHead; pItem != NULL; pItem = pItem->pNext)
     {
@@ -15161,7 +15485,7 @@ void ParameterList_PrintNameMangling(struct ParameterList* p,
 }
 
 static void TDirectDeclarator_PrintNameMangling(struct DirectDeclarator* pDirectDeclarator,
-        struct StrBuilder* fp)
+                                                struct StrBuilder* fp)
 {
     if (pDirectDeclarator == NULL)
     {
@@ -15219,7 +15543,7 @@ static void TDirectDeclarator_PrintNameMangling(struct DirectDeclarator* pDirect
 
 
 static void TDeclarator_PrintNameMangling(struct Declarator* p,
-        struct StrBuilder* fp)
+                                          struct StrBuilder* fp)
 {
     TPointerList_PrintNameMangling(&p->PointerList, fp);
     TDirectDeclarator_PrintNameMangling(p->pDirectDeclarator, fp);
@@ -15227,7 +15551,7 @@ static void TDeclarator_PrintNameMangling(struct Declarator* p,
 
 
 static void TTypeQualifier_PrintNameMangling(struct TypeQualifier* p,
-        struct StrBuilder* fp)
+                                             struct StrBuilder* fp)
 {
     if (p->Token == TK_AUTO)
     {
@@ -15245,7 +15569,7 @@ static void TTypeQualifier_PrintNameMangling(struct TypeQualifier* p,
 
 
 static void TTypeQualifierList_PrintNameMangling(struct TypeQualifierList* p,
-        struct StrBuilder* fp)
+                                                 struct StrBuilder* fp)
 {
     for (int i = 0; i < p->Size; i++)
     {
@@ -15262,35 +15586,35 @@ static void TPointer_PrintNameMangling(struct Pointer* pPointer,
 }
 
 void DeclarationSpecifiers_PrintNameMangling(struct DeclarationSpecifiers* pDeclarationSpecifiers,
-        struct StrBuilder* fp)
+                                             struct StrBuilder* fp)
 {
     for (int i = 0; i < pDeclarationSpecifiers->Size; i++)
     {
         struct DeclarationSpecifier* pItem = pDeclarationSpecifiers->pData[i];
         switch (pItem->Type)
         {
-        case SingleTypeSpecifier_ID:
-            TSingleTypeSpecifier_PrintNameMangling((struct SingleTypeSpecifier*)pItem, fp);
+            case SingleTypeSpecifier_ID:
+                TSingleTypeSpecifier_PrintNameMangling((struct SingleTypeSpecifier*)pItem, fp);
+                break;
+            case StructUnionSpecifier_ID:
+            {
+                struct StructUnionSpecifier* pStructUnionSpecifier = (struct StructUnionSpecifier*)pItem;
+                StrBuilder_Append(fp, "_struct");
+                StrBuilder_Append(fp, "_");
+                StrBuilder_Append(fp, pStructUnionSpecifier->Tag);
+            }
             break;
-        case StructUnionSpecifier_ID:
-        {
-            struct StructUnionSpecifier* pStructUnionSpecifier = (struct StructUnionSpecifier*)pItem;
-            StrBuilder_Append(fp, "_struct");
-            StrBuilder_Append(fp, "_");
-            StrBuilder_Append(fp, pStructUnionSpecifier->Tag);
-        }
-        break;
-        case EnumSpecifier_ID:
-            break;
-        case StorageSpecifier_ID:
-            break;
-        case TypeQualifier_ID:
-            break;
-        case FunctionSpecifier_ID:
-            break;
-        default:
-            //assert(false);
-            break;
+            case EnumSpecifier_ID:
+                break;
+            case StorageSpecifier_ID:
+                break;
+            case TypeQualifier_ID:
+                break;
+            case FunctionSpecifier_ID:
+                break;
+            default:
+                //assert(false);
+                break;
         }
     }
 }
@@ -15337,7 +15661,7 @@ void Declarator(struct Parser* ctx, bool bAbstract, struct Declarator** ppTDecla
 
 enum TokenType Parser_Match(struct Parser* parser, struct TokenList* listOpt);
 enum TokenType Parser_MatchToken(struct Parser* parser,
-                                 enum TokenType tk,
+    enum TokenType tk,
                                  struct TokenList* listOpt);
 bool TTypeSpecifier_IsFirst(struct Parser* ctx, enum TokenType token, const char* lexeme);
 void Specifier_Qualifier_List(struct Parser* ctx, struct SpecifierQualifierList* pSpecifierQualifierList);
@@ -15510,10 +15834,10 @@ static void GetPosition(struct Parser* ctx, struct FilePos* pPosition)
 
 //TODO MOVER P SCANNER
 enum TokenType Parser_LookAheadToken(struct Parser* parser)
-/*
- le o token adiante relativo a phase de parser, ou seja,
- vai ignorando os tokens das fases anteriores
-*/
+    /*
+     le o token adiante relativo a phase de parser, ou seja,
+     vai ignorando os tokens das fases anteriores
+    */
 {
     enum TokenType token = TK_ERROR;
     if (!Parser_HasError(parser))
@@ -15580,7 +15904,7 @@ enum TokenType Parser_Match(struct Parser* parser, struct TokenList* listOpt)
 }
 
 enum TokenType Parser_MatchToken(struct Parser* parser,
-                                 enum TokenType tk,
+    enum TokenType tk,
                                  struct TokenList* listOpt)
 {
     if (Parser_HasError(parser))
@@ -15626,7 +15950,7 @@ const char* Lexeme(struct Parser* parser)
 bool ErrorOrEof(struct Parser* parser)
 {
     return Parser_HasError(parser) ||
-           Parser_CurrentTokenType(parser) == TK_EOF;
+        Parser_CurrentTokenType(parser) == TK_EOF;
 }
 
 void Expression(struct Parser* ctx, struct Expression**);
@@ -15643,23 +15967,23 @@ bool IsFirstOfPrimaryExpression(enum TokenType token)
     bool bResult = false;
     switch (token)
     {
-    case TK_IDENTIFIER:
-    case TK_STRING_LITERAL:
-    case TK_CHAR_LITERAL:
-    case TK_DECIMAL_INTEGER:
-    case TK_HEX_INTEGER:
-    case TK_FLOAT_NUMBER:
-    case TK_LEFT_PARENTHESIS:
-    //////////
-    //extensions
-    case TK_LEFT_SQUARE_BRACKET: //lambda-expression
-    /////////
-    //desde que nao seja cast
-    case TK__GENERIC:
-        bResult = true;
-        break;
-    default:
-        break;
+        case TK_IDENTIFIER:
+        case TK_STRING_LITERAL:
+        case TK_CHAR_LITERAL:
+        case TK_DECIMAL_INTEGER:
+        case TK_HEX_INTEGER:
+        case TK_FLOAT_NUMBER:
+        case TK_LEFT_PARENTHESIS:
+            //////////
+            //extensions
+        case TK_LEFT_SQUARE_BRACKET: //lambda-expression
+        /////////
+        //desde que nao seja cast
+        case TK__GENERIC:
+            bResult = true;
+            break;
+        default:
+            break;
     }
     return bResult;
 }
@@ -15782,95 +16106,95 @@ void PrimaryExpression(struct Parser* ctx, struct Expression** ppPrimaryExpressi
     }
     switch (token)
     {
-    case TK_LEFT_SQUARE_BRACKET:
-        LambdaExpression(ctx, ppPrimaryExpression);
-        break;
-    case TK_STRING_LITERAL:
-        PrimaryExpressionLiteral(ctx, ppPrimaryExpression);
-        break;
-    case TK_IDENTIFIER:
-    {
-        struct TypePointer* pTypePointer = SymbolMap_Find(ctx->pCurrentScope, lexeme);
-        if (pTypePointer == NULL)
+        case TK_LEFT_SQUARE_BRACKET:
+            LambdaExpression(ctx, ppPrimaryExpression);
+            break;
+        case TK_STRING_LITERAL:
+            PrimaryExpressionLiteral(ctx, ppPrimaryExpression);
+            break;
+        case TK_IDENTIFIER:
         {
-            if (!ctx->bPreprocessorEvalFlag)
+            struct TypePointer* pTypePointer = SymbolMap_Find(ctx->pCurrentScope, lexeme);
+            if (pTypePointer == NULL)
             {
-                /*built in*/
-                if (strcmp(lexeme, "__FUNCTION__") == 0 ||
+                if (!ctx->bPreprocessorEvalFlag)
+                {
+                    /*built in*/
+                    if (strcmp(lexeme, "__FUNCTION__") == 0 ||
                         strcmp(lexeme, "destroy") == 0)
-                {
-                }
-                else
-                {
-                    SetWarning(ctx, "Warning: '%s': undeclared identifier\n", lexeme);
+                    {
+                    }
+                    else
+                    {
+                        SetWarning(ctx, "Warning: '%s': undeclared identifier\n", lexeme);
+                    }
                 }
             }
+            struct PrimaryExpressionValue* pPrimaryExpressionValue
+                = NEW((struct PrimaryExpressionValue)PRIMARYEXPRESSIONVALUE_INIT);
+            pPrimaryExpressionValue->token = token;
+            pPrimaryExpressionValue->lexeme = strdup(lexeme);
+            if (pTypePointer && pTypePointer->Type == Declaration_ID)
+            {
+                //eh uma variavel que aponta para uma declaracao
+                pPrimaryExpressionValue->pDeclaration = (struct Declaration*)pTypePointer;
+                /*todo se for typedef achar o tipo certo*/
+                struct Declarator* pDeclaratorFrom = Declaration_FindDeclarator(pPrimaryExpressionValue->pDeclaration, lexeme);
+                Declarator_CopyToAbstractDeclarator(pDeclaratorFrom, &pPrimaryExpressionValue->TypeName.Declarator);
+                //Tem que apagar o nome do declator
+                DeclarationSpecifiers_CopyTo_SpecifierQualifierList(&pPrimaryExpressionValue->pDeclaration->Specifiers,
+                                                                    &pPrimaryExpressionValue->TypeName.SpecifierQualifierList);
+            }
+            if (pTypePointer && pTypePointer->Type == Parameter_ID)
+            {
+                //eh uma variavel que aponta para um  parametro
+                pPrimaryExpressionValue->pParameter = (struct Parameter*)pTypePointer;
+                Declarator_CopyToAbstractDeclarator(&pPrimaryExpressionValue->pParameter->Declarator, &pPrimaryExpressionValue->TypeName.Declarator);
+                DeclarationSpecifiers_CopyTo_SpecifierQualifierList(&pPrimaryExpressionValue->pParameter->Specifiers,
+                                                                    &pPrimaryExpressionValue->TypeName.SpecifierQualifierList);
+            }
+            Parser_Match(ctx,
+                         &pPrimaryExpressionValue->ClueList0);
+            *ppPrimaryExpression = (struct Expression*)pPrimaryExpressionValue;
         }
-        struct PrimaryExpressionValue* pPrimaryExpressionValue
-            = NEW((struct PrimaryExpressionValue)PRIMARYEXPRESSIONVALUE_INIT);
-        pPrimaryExpressionValue->token = token;
-        pPrimaryExpressionValue->lexeme = strdup(lexeme);
-        if (pTypePointer && pTypePointer->Type == Declaration_ID)
-        {
-            //eh uma variavel que aponta para uma declaracao
-            pPrimaryExpressionValue->pDeclaration = (struct Declaration*)pTypePointer;
-            /*todo se for typedef achar o tipo certo*/
-            struct Declarator* pDeclaratorFrom = Declaration_FindDeclarator(pPrimaryExpressionValue->pDeclaration, lexeme);
-            Declarator_CopyToAbstractDeclarator(pDeclaratorFrom, &pPrimaryExpressionValue->TypeName.Declarator);
-            //Tem que apagar o nome do declator
-            DeclarationSpecifiers_CopyTo_SpecifierQualifierList(&pPrimaryExpressionValue->pDeclaration->Specifiers,
-                    &pPrimaryExpressionValue->TypeName.SpecifierQualifierList);
-        }
-        if (pTypePointer && pTypePointer->Type == Parameter_ID)
-        {
-            //eh uma variavel que aponta para um  parametro
-            pPrimaryExpressionValue->pParameter = (struct Parameter*)pTypePointer;
-            Declarator_CopyToAbstractDeclarator(&pPrimaryExpressionValue->pParameter->Declarator, &pPrimaryExpressionValue->TypeName.Declarator);
-            DeclarationSpecifiers_CopyTo_SpecifierQualifierList(&pPrimaryExpressionValue->pParameter->Specifiers,
-                    &pPrimaryExpressionValue->TypeName.SpecifierQualifierList);
-        }
-        Parser_Match(ctx,
-                     &pPrimaryExpressionValue->ClueList0);
-        *ppPrimaryExpression = (struct Expression*)pPrimaryExpressionValue;
-    }
-    break;
-    case TK_CHAR_LITERAL:
-    case TK_DECIMAL_INTEGER:
-    case TK_HEX_INTEGER:
-    case TK_FLOAT_NUMBER:
-    {
-        struct PrimaryExpressionValue* pPrimaryExpressionValue
-            = NEW((struct PrimaryExpressionValue)PRIMARYEXPRESSIONVALUE_INIT);
-        pPrimaryExpressionValue->token = token;
-        pPrimaryExpressionValue->lexeme = strdup(Lexeme(ctx));
-        Parser_Match(ctx,
-                     &pPrimaryExpressionValue->ClueList0);
-        *ppPrimaryExpression = (struct Expression*)pPrimaryExpressionValue;
-    }
-    break;
-    case TK_LEFT_PARENTHESIS:
-    {
-        struct PrimaryExpressionValue* pPrimaryExpressionValue
-            = NEW((struct PrimaryExpressionValue)PRIMARYEXPRESSIONVALUE_INIT);
-        Parser_Match(ctx,
-                     &pPrimaryExpressionValue->ClueList0);
-        struct Expression* pExpression;
-        Expression(ctx, &pExpression);
-        //    //TNodeClueList_MoveToEnd(&pPrimaryExpressionValue->ClueList, &ctx->Scanner.ClueList);
-        Parser_MatchToken(ctx,
-                          TK_RIGHT_PARENTHESIS,
-                          &pPrimaryExpressionValue->ClueList1);
-        pPrimaryExpressionValue->token = token;
-        pPrimaryExpressionValue->lexeme = strdup(Lexeme(ctx));
-        pPrimaryExpressionValue->pExpressionOpt = pExpression;
-        *ppPrimaryExpression = (struct Expression*)pPrimaryExpressionValue;
-    }
-    break;
-    case TK__GENERIC:
-        GenericSelection(ctx);
         break;
-    default:
-        SetError(ctx, "unexpected error");
+        case TK_CHAR_LITERAL:
+        case TK_DECIMAL_INTEGER:
+        case TK_HEX_INTEGER:
+        case TK_FLOAT_NUMBER:
+        {
+            struct PrimaryExpressionValue* pPrimaryExpressionValue
+                = NEW((struct PrimaryExpressionValue)PRIMARYEXPRESSIONVALUE_INIT);
+            pPrimaryExpressionValue->token = token;
+            pPrimaryExpressionValue->lexeme = strdup(Lexeme(ctx));
+            Parser_Match(ctx,
+                         &pPrimaryExpressionValue->ClueList0);
+            *ppPrimaryExpression = (struct Expression*)pPrimaryExpressionValue;
+        }
+        break;
+        case TK_LEFT_PARENTHESIS:
+        {
+            struct PrimaryExpressionValue* pPrimaryExpressionValue
+                = NEW((struct PrimaryExpressionValue)PRIMARYEXPRESSIONVALUE_INIT);
+            Parser_Match(ctx,
+                         &pPrimaryExpressionValue->ClueList0);
+            struct Expression* pExpression;
+            Expression(ctx, &pExpression);
+            //    //TNodeClueList_MoveToEnd(&pPrimaryExpressionValue->ClueList, &ctx->Scanner.ClueList);
+            Parser_MatchToken(ctx,
+                              TK_RIGHT_PARENTHESIS,
+                              &pPrimaryExpressionValue->ClueList1);
+            pPrimaryExpressionValue->token = token;
+            pPrimaryExpressionValue->lexeme = strdup(Lexeme(ctx));
+            pPrimaryExpressionValue->pExpressionOpt = pExpression;
+            *ppPrimaryExpression = (struct Expression*)pPrimaryExpressionValue;
+        }
+        break;
+        case TK__GENERIC:
+            GenericSelection(ctx);
+            break;
+        default:
+            SetError(ctx, "unexpected error");
     }
     if (*ppPrimaryExpression == NULL)
     {
@@ -15940,13 +16264,13 @@ bool HasPostfixExpressionContinuation(enum TokenType token)
     */
     switch (token)
     {
-    case TK_LEFT_PARENTHESIS:
-    case TK_LEFT_SQUARE_BRACKET:
-    case TK_FULL_STOP:
-    case TK_ARROW:
-    case TK_PLUSPLUS:
-    case TK_MINUSMINUS:
-        return true;
+        case TK_LEFT_PARENTHESIS:
+        case TK_LEFT_SQUARE_BRACKET:
+        case TK_FULL_STOP:
+        case TK_ARROW:
+        case TK_PLUSPLUS:
+        case TK_MINUSMINUS:
+            return true;
     }
     return false;
 }
@@ -16065,98 +16389,98 @@ void PostfixExpression(struct Parser* ctx, struct Expression** ppExpression)
     {
         switch (token2)
         {
-        case TK_LEFT_PARENTHESIS:
-        {
-            assert(pTPostfixExpressionBase);
-            pTPostfixExpressionBase->token = token2;
-            //  postfix-expression ( argument-expression-listopt )
-            token2 = Parser_Match(ctx,
-                                  &pTPostfixExpressionBase->ClueList0);
-            if (token2 != TK_RIGHT_PARENTHESIS)
+            case TK_LEFT_PARENTHESIS:
             {
-                ArgumentExpressionList(ctx, &pTPostfixExpressionBase->ArgumentExpressionList);
-            }
-            /*verificacao dos parametros da funcao*/
-            struct TypeName* pTypeName = Expression_GetTypeName(pTPostfixExpressionBase->pExpressionLeft);
-            if (pTypeName && pTypeName->Declarator.pDirectDeclarator)
-            {
-                bool bVariadicArgs = pTypeName->Declarator.pDirectDeclarator->Parameters.bVariadicArgs;
-                bool bIsVoid = pTypeName->Declarator.pDirectDeclarator->Parameters.bIsVoid;
-                bool bIsEmpty = pTypeName->Declarator.pDirectDeclarator->Parameters.ParameterList.pHead == NULL;
-                int sz = pTPostfixExpressionBase->ArgumentExpressionList.size;
-                int argcount = 0;
-                if (!bIsVoid)
+                assert(pTPostfixExpressionBase);
+                pTPostfixExpressionBase->token = token2;
+                //  postfix-expression ( argument-expression-listopt )
+                token2 = Parser_Match(ctx,
+                                      &pTPostfixExpressionBase->ClueList0);
+                if (token2 != TK_RIGHT_PARENTHESIS)
                 {
-                    for (struct Parameter* pParameter = pTypeName->Declarator.pDirectDeclarator->Parameters.ParameterList.pHead;
-                            pParameter;
-                            pParameter = pParameter->pNext)
+                    ArgumentExpressionList(ctx, &pTPostfixExpressionBase->ArgumentExpressionList);
+                }
+                /*verificacao dos parametros da funcao*/
+                struct TypeName* pTypeName = Expression_GetTypeName(pTPostfixExpressionBase->pExpressionLeft);
+                if (pTypeName && pTypeName->Declarator.pDirectDeclarator)
+                {
+                    bool bVariadicArgs = pTypeName->Declarator.pDirectDeclarator->Parameters.bVariadicArgs;
+                    bool bIsVoid = pTypeName->Declarator.pDirectDeclarator->Parameters.bIsVoid;
+                    bool bIsEmpty = pTypeName->Declarator.pDirectDeclarator->Parameters.ParameterList.pHead == NULL;
+                    int sz = pTPostfixExpressionBase->ArgumentExpressionList.size;
+                    int argcount = 0;
+                    if (!bIsVoid)
                     {
-                        argcount++;
-                        if (argcount > sz)
+                        for (struct Parameter* pParameter = pTypeName->Declarator.pDirectDeclarator->Parameters.ParameterList.pHead;
+                             pParameter;
+                             pParameter = pParameter->pNext)
                         {
-                            SetError(ctx, "too few arguments for call");
-                            break;
+                            argcount++;
+                            if (argcount > sz)
+                            {
+                                SetError(ctx, "too few arguments for call");
+                                break;
+                            }
                         }
+                    }
+                    else
+                    {
+                        argcount = 0;
+                    }
+                    if (!bIsEmpty && !bVariadicArgs && pTPostfixExpressionBase->ArgumentExpressionList.size > argcount)
+                    {
+                        SetError(ctx, "too many actual parameters");
                     }
                 }
                 else
                 {
-                    argcount = 0;
+                    //destroy ainda nao foi declarado por ex
+                    //assert(false);
+                    //SetWarning(ctx, "function cannot be verified");
                 }
-                if (!bIsEmpty && !bVariadicArgs && pTPostfixExpressionBase->ArgumentExpressionList.size > argcount)
-                {
-                    SetError(ctx, "too many actual parameters");
-                }
+                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS,
+                                  &pTPostfixExpressionBase->ClueList1);
             }
-            else
-            {
-                //destroy ainda nao foi declarado por ex
-                //assert(false);
-                //SetWarning(ctx, "function cannot be verified");
-            }
-            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS,
-                              &pTPostfixExpressionBase->ClueList1);
-        }
-        break;
-        case TK_LEFT_SQUARE_BRACKET:
-        {
-            assert(pTPostfixExpressionBase);
-            pTPostfixExpressionBase->token = token2;
-            // postfix-expression [ expression ]
-            Parser_MatchToken(ctx, TK_LEFT_SQUARE_BRACKET,
-                              &pTPostfixExpressionBase->ClueList0);
-            Expression(ctx, &pTPostfixExpressionBase->pExpressionRight);
-            Parser_MatchToken(ctx, TK_RIGHT_SQUARE_BRACKET, &pTPostfixExpressionBase->ClueList1);
-        }
-        break;
-        case TK_FULL_STOP:
-        {
-            // postfix-expression . identifier
-            pTPostfixExpressionBase->token = token2;
-            Parser_Match(ctx, &pTPostfixExpressionBase->ClueList0);
-            pTPostfixExpressionBase->Identifier = strdup(Lexeme(ctx));
-            Parser_MatchToken(ctx, TK_IDENTIFIER, &pTPostfixExpressionBase->ClueList1);
-        }
-        break;
-        case TK_ARROW:
-        {
-            assert(pTPostfixExpressionBase);
-            pTPostfixExpressionBase->token = token2;
-            Parser_Match(ctx, &pTPostfixExpressionBase->ClueList0);
-            pTPostfixExpressionBase->Identifier = strdup(Lexeme(ctx));
-            Parser_MatchToken(ctx, TK_IDENTIFIER, &pTPostfixExpressionBase->ClueList1);
-        }
-        break;
-        case TK_MINUSMINUS:
-        case TK_PLUSPLUS:
-        {
-            assert(pTPostfixExpressionBase);
-            pTPostfixExpressionBase->token = token2;
-            Parser_Match(ctx, &pTPostfixExpressionBase->ClueList0);
-        }
-        break;
-        default:
             break;
+            case TK_LEFT_SQUARE_BRACKET:
+            {
+                assert(pTPostfixExpressionBase);
+                pTPostfixExpressionBase->token = token2;
+                // postfix-expression [ expression ]
+                Parser_MatchToken(ctx, TK_LEFT_SQUARE_BRACKET,
+                                  &pTPostfixExpressionBase->ClueList0);
+                Expression(ctx, &pTPostfixExpressionBase->pExpressionRight);
+                Parser_MatchToken(ctx, TK_RIGHT_SQUARE_BRACKET, &pTPostfixExpressionBase->ClueList1);
+            }
+            break;
+            case TK_FULL_STOP:
+            {
+                // postfix-expression . identifier
+                pTPostfixExpressionBase->token = token2;
+                Parser_Match(ctx, &pTPostfixExpressionBase->ClueList0);
+                pTPostfixExpressionBase->Identifier = strdup(Lexeme(ctx));
+                Parser_MatchToken(ctx, TK_IDENTIFIER, &pTPostfixExpressionBase->ClueList1);
+            }
+            break;
+            case TK_ARROW:
+            {
+                assert(pTPostfixExpressionBase);
+                pTPostfixExpressionBase->token = token2;
+                Parser_Match(ctx, &pTPostfixExpressionBase->ClueList0);
+                pTPostfixExpressionBase->Identifier = strdup(Lexeme(ctx));
+                Parser_MatchToken(ctx, TK_IDENTIFIER, &pTPostfixExpressionBase->ClueList1);
+            }
+            break;
+            case TK_MINUSMINUS:
+            case TK_PLUSPLUS:
+            {
+                assert(pTPostfixExpressionBase);
+                pTPostfixExpressionBase->token = token2;
+                Parser_Match(ctx, &pTPostfixExpressionBase->ClueList0);
+            }
+            break;
+            default:
+                break;
         }
         token2 = Parser_CurrentTokenType(ctx);
         if (HasPostfixExpressionContinuation(token2))
@@ -16201,23 +16525,23 @@ static bool IsTypeQualifierToken(enum TokenType token)
     bool bResult = false;
     switch (token)
     {
-    //type-qualifier
-    case TK_CONST:
-    case TK_RESTRICT:
-    case TK_VOLATILE:
-    case TK__ATOMIC:
-        //
-        bResult = true;
-        break;
+        //type-qualifier
+        case TK_CONST:
+        case TK_RESTRICT:
+        case TK_VOLATILE:
+        case TK__ATOMIC:
+            //
+            bResult = true;
+            break;
 #ifdef LANGUAGE_EXTENSIONS
-    //type-qualifier-extensions
-    case TK_AUTO:
-        bResult = true;
-        break;
+            //type-qualifier-extensions
+        case TK_AUTO:
+            bResult = true;
+            break;
 #endif
-    default:
-        //assert(false);
-        break;
+        default:
+            //assert(false);
+            break;
     }
     return bResult;
 }
@@ -16231,46 +16555,46 @@ int IsTypeName(struct Parser* ctx, enum TokenType token, const char* lexeme)
     }
     switch (token)
     {
-    case TK_IDENTIFIER:
-        bResult = SymbolMap_IsTypeName(ctx->pCurrentScope, lexeme);
-        //        bResult = DeclarationsMap_IsTypeDef(&ctx->Symbols, lexeme);
-        break;
-    //type-qualifier
-    case TK_CONST:
-    case TK_RESTRICT:
-    case TK_VOLATILE:
-    case TK__ATOMIC:
+        case TK_IDENTIFIER:
+            bResult = SymbolMap_IsTypeName(ctx->pCurrentScope, lexeme);
+            //        bResult = DeclarationsMap_IsTypeDef(&ctx->Symbols, lexeme);
+            break;
+            //type-qualifier
+        case TK_CONST:
+        case TK_RESTRICT:
+        case TK_VOLATILE:
+        case TK__ATOMIC:
 #ifdef LANGUAGE_EXTENSIONS
-    case TK_AUTO:
+        case TK_AUTO:
 #endif
-    //type-specifier
-    case TK_VOID:
-    case TK_CHAR:
-    case TK_SHORT:
-    case TK_INT:
-    case TK_LONG:
-    //microsoft
-    case TK__INT8:
-    case TK__INT16:
-    case TK__INT32:
-    case TK__INT64:
-    case TK___DECLSPEC:
-    case TK__WCHAR_T:
-    //
-    case TK_FLOAT:
-    case TK_DOUBLE:
-    case TK_SIGNED:
-    case TK_UNSIGNED:
-    case TK__BOOL:
-    case TK__COMPLEX:
-    case TK_STRUCT:
-    case TK_UNION:
-    case TK_ENUM:
-        bResult = true;
-        break;
-    default:
-        //assert(false);
-        break;
+            //type-specifier
+        case TK_VOID:
+        case TK_CHAR:
+        case TK_SHORT:
+        case TK_INT:
+        case TK_LONG:
+            //microsoft
+        case TK__INT8:
+        case TK__INT16:
+        case TK__INT32:
+        case TK__INT64:
+        case TK___DECLSPEC:
+        case TK__WCHAR_T:
+            //
+        case TK_FLOAT:
+        case TK_DOUBLE:
+        case TK_SIGNED:
+        case TK_UNSIGNED:
+        case TK__BOOL:
+        case TK__COMPLEX:
+        case TK_STRUCT:
+        case TK_UNION:
+        case TK_ENUM:
+            bResult = true;
+            break;
+        default:
+            //assert(false);
+            break;
     }
     return bResult;
 }
@@ -16311,104 +16635,104 @@ void UnaryExpression(struct Parser* ctx, struct Expression** ppExpression)
     }
     switch (token0)
     {
-    case TK_PLUSPLUS:
-    case TK_MINUSMINUS:
-    {
-        struct UnaryExpressionOperator* pUnaryExpressionOperator =
-            NEW((struct UnaryExpressionOperator)UNARYEXPRESSIONOPERATOR_INIT);
-        Parser_Match(ctx, &pUnaryExpressionOperator->ClueList0);
-        struct Expression* pUnaryExpression;
-        UnaryExpression(ctx, &pUnaryExpression);
-        pUnaryExpressionOperator->token = token0;
-        pUnaryExpressionOperator->pExpressionRight = pUnaryExpression;
-        *ppExpression = (struct Expression*)pUnaryExpressionOperator;
-    }
-    break;
-    //unary-operator cast-expression
-    case TK_AMPERSAND:
-    case TK_ASTERISK:
-    case TK_PLUS_SIGN:
-    case TK_HYPHEN_MINUS:
-    case TK_TILDE:
-    case TK_EXCLAMATION_MARK:
-    {
-        struct UnaryExpressionOperator* pUnaryExpressionOperator =
-            NEW((struct UnaryExpressionOperator)UNARYEXPRESSIONOPERATOR_INIT);
-        Parser_Match(ctx, &pUnaryExpressionOperator->ClueList0);
-        struct Expression* pCastExpression;
-        CastExpression(ctx, &pCastExpression);
-        pUnaryExpressionOperator->token = token0;
-        pUnaryExpressionOperator->pExpressionRight = pCastExpression;
-        *ppExpression = (struct Expression*)pUnaryExpressionOperator;
-        if (token0 == TK_AMPERSAND)
+        case TK_PLUSPLUS:
+        case TK_MINUSMINUS:
         {
-            TypeName_CopyTo(Expression_GetTypeName(pCastExpression), &pUnaryExpressionOperator->TypeName);
-            struct Pointer* pPointer = NEW((struct Pointer)POINTER_INIT);
-            //adicionar no inicio ou fim?
-            PointerList_PushBack(&pUnaryExpressionOperator->TypeName.Declarator.PointerList, pPointer);
+            struct UnaryExpressionOperator* pUnaryExpressionOperator =
+                NEW((struct UnaryExpressionOperator)UNARYEXPRESSIONOPERATOR_INIT);
+            Parser_Match(ctx, &pUnaryExpressionOperator->ClueList0);
+            struct Expression* pUnaryExpression;
+            UnaryExpression(ctx, &pUnaryExpression);
+            pUnaryExpressionOperator->token = token0;
+            pUnaryExpressionOperator->pExpressionRight = pUnaryExpression;
+            *ppExpression = (struct Expression*)pUnaryExpressionOperator;
         }
-        else if (token0 == TK_ASTERISK)
+        break;
+        //unary-operator cast-expression
+        case TK_AMPERSAND:
+        case TK_ASTERISK:
+        case TK_PLUS_SIGN:
+        case TK_HYPHEN_MINUS:
+        case TK_TILDE:
+        case TK_EXCLAMATION_MARK:
         {
-            //remover ponteiro
-            TypeName_CopyTo(Expression_GetTypeName(pCastExpression), &pUnaryExpressionOperator->TypeName);
-            PointerList_PopFront(&pUnaryExpressionOperator->TypeName.Declarator.PointerList);
-        }
-        else
-        {
-            TypeName_CopyTo(Expression_GetTypeName(pCastExpression), &pUnaryExpressionOperator->TypeName);
-            //TODO
-            // assert(false);
-        }
-    }
-    break;
-    //////////////
-    case TK_SIZEOF:
-    {
-        struct UnaryExpressionOperator* pUnaryExpressionOperator =
-            NEW((struct UnaryExpressionOperator)UNARYEXPRESSIONOPERATOR_INIT);
-        *ppExpression = (struct Expression*)pUnaryExpressionOperator;
-        pUnaryExpressionOperator->token = token0;
-        Parser_MatchToken(ctx, TK_SIZEOF, &pUnaryExpressionOperator->ClueList0);
-        if (Parser_CurrentTokenType(ctx) == TK_LEFT_PARENTHESIS)
-        {
-            const char* lookAheadlexeme = Parser_LookAheadLexeme(ctx);
-            enum TokenType lookAheadToken = Parser_LookAheadToken(ctx);
-            if (IsTypeName(ctx, lookAheadToken, lookAheadlexeme))
+            struct UnaryExpressionOperator* pUnaryExpressionOperator =
+                NEW((struct UnaryExpressionOperator)UNARYEXPRESSIONOPERATOR_INIT);
+            Parser_Match(ctx, &pUnaryExpressionOperator->ClueList0);
+            struct Expression* pCastExpression;
+            CastExpression(ctx, &pCastExpression);
+            pUnaryExpressionOperator->token = token0;
+            pUnaryExpressionOperator->pExpressionRight = pCastExpression;
+            *ppExpression = (struct Expression*)pUnaryExpressionOperator;
+            if (token0 == TK_AMPERSAND)
             {
-                //sizeof(type-name)
-                Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pUnaryExpressionOperator->ClueList1);
-                TypeName(ctx, &pUnaryExpressionOperator->TypeName);
-                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pUnaryExpressionOperator->ClueList2);
+                TypeName_CopyTo(Expression_GetTypeName(pCastExpression), &pUnaryExpressionOperator->TypeName);
+                struct Pointer* pPointer = NEW((struct Pointer)POINTER_INIT);
+                //adicionar no inicio ou fim?
+                PointerList_PushBack(&pUnaryExpressionOperator->TypeName.Declarator.PointerList, pPointer);
+            }
+            else if (token0 == TK_ASTERISK)
+            {
+                //remover ponteiro
+                TypeName_CopyTo(Expression_GetTypeName(pCastExpression), &pUnaryExpressionOperator->TypeName);
+                PointerList_PopFront(&pUnaryExpressionOperator->TypeName.Declarator.PointerList);
             }
             else
             {
-                //sizeof unary-expression
+                TypeName_CopyTo(Expression_GetTypeName(pCastExpression), &pUnaryExpressionOperator->TypeName);
+                //TODO
+                // assert(false);
+            }
+        }
+        break;
+        //////////////
+        case TK_SIZEOF:
+        {
+            struct UnaryExpressionOperator* pUnaryExpressionOperator =
+                NEW((struct UnaryExpressionOperator)UNARYEXPRESSIONOPERATOR_INIT);
+            *ppExpression = (struct Expression*)pUnaryExpressionOperator;
+            pUnaryExpressionOperator->token = token0;
+            Parser_MatchToken(ctx, TK_SIZEOF, &pUnaryExpressionOperator->ClueList0);
+            if (Parser_CurrentTokenType(ctx) == TK_LEFT_PARENTHESIS)
+            {
+                const char* lookAheadlexeme = Parser_LookAheadLexeme(ctx);
+                enum TokenType lookAheadToken = Parser_LookAheadToken(ctx);
+                if (IsTypeName(ctx, lookAheadToken, lookAheadlexeme))
+                {
+                    //sizeof(type-name)
+                    Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pUnaryExpressionOperator->ClueList1);
+                    TypeName(ctx, &pUnaryExpressionOperator->TypeName);
+                    Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pUnaryExpressionOperator->ClueList2);
+                }
+                else
+                {
+                    //sizeof unary-expression
+                    struct Expression* pTUnaryExpression;
+                    UnaryExpression(ctx, &pTUnaryExpression);
+                    pUnaryExpressionOperator->pExpressionRight = pTUnaryExpression;
+                }
+            }
+            else
+            {
+                //sizeof do tipo desta expressao
                 struct Expression* pTUnaryExpression;
                 UnaryExpression(ctx, &pTUnaryExpression);
                 pUnaryExpressionOperator->pExpressionRight = pTUnaryExpression;
             }
         }
-        else
-        {
-            //sizeof do tipo desta expressao
-            struct Expression* pTUnaryExpression;
-            UnaryExpression(ctx, &pTUnaryExpression);
-            pUnaryExpressionOperator->pExpressionRight = pTUnaryExpression;
-        }
-    }
-    break;
-    case TK__ALINGOF:
-        //Match
-        //assert(false);
         break;
-    case TK_EOF:
-        break;
-    //TODO ver tudo que pode ser follow
-    default:
-        ////assert(false);
-        //        SetUnexpectedError(ctx, "Assert", "");
-        //aqui nao eh erro necessariamente
-        break;
+        case TK__ALINGOF:
+            //Match
+            //assert(false);
+            break;
+        case TK_EOF:
+            break;
+            //TODO ver tudo que pode ser follow
+        default:
+            ////assert(false);
+            //        SetUnexpectedError(ctx, "Assert", "");
+            //aqui nao eh erro necessariamente
+            break;
     }
 }
 
@@ -16506,48 +16830,48 @@ void MultiplicativeExpression(struct Parser* ctx, struct Expression** ppExpressi
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_PERCENT_SIGN:
-    case TK_SOLIDUS:
-    case TK_ASTERISK:
-    {
-        struct BinaryExpression* pBinaryExpression =
-            NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        GetPosition(ctx, &pBinaryExpression->Position);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        CastExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_PERCENT_SIGN:
+        case TK_SOLIDUS:
+        case TK_ASTERISK:
+        {
+            struct BinaryExpression* pBinaryExpression =
+                NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            GetPosition(ctx, &pBinaryExpression->Position);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            CastExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
     token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_PERCENT_SIGN:
-    case TK_SOLIDUS:
-    case TK_ASTERISK:
-    {
-        struct BinaryExpression* pBinaryExpression =
-            NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        MultiplicativeExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_PERCENT_SIGN:
+        case TK_SOLIDUS:
+        case TK_ASTERISK:
+        {
+            struct BinaryExpression* pBinaryExpression =
+                NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            MultiplicativeExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -16565,45 +16889,45 @@ void AdditiveExpression(struct Parser* ctx, struct Expression** ppExpression)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_PLUS_SIGN:
-    case TK_HYPHEN_MINUS:
-    {
-        struct BinaryExpression* pBinaryExpression =
-            NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        GetPosition(ctx, &pBinaryExpression->Position);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        MultiplicativeExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_PLUS_SIGN:
+        case TK_HYPHEN_MINUS:
+        {
+            struct BinaryExpression* pBinaryExpression =
+                NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            GetPosition(ctx, &pBinaryExpression->Position);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            MultiplicativeExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
     token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_PLUS_SIGN:
-    case TK_HYPHEN_MINUS:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        AdditiveExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_PLUS_SIGN:
+        case TK_HYPHEN_MINUS:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            AdditiveExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -16620,44 +16944,44 @@ void ShiftExpression(struct Parser* ctx, struct Expression** ppExpression)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_GREATERGREATER:
-    case TK_LESSLESS:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        AdditiveExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_GREATERGREATER:
+        case TK_LESSLESS:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            AdditiveExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
     token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_GREATERGREATER:
-    case TK_LESSLESS:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        ShiftExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_GREATERGREATER:
+        case TK_LESSLESS:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            ShiftExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -16677,48 +17001,48 @@ void RelationalExpression(struct Parser* ctx, struct Expression** ppExpression)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_LESS_THAN_SIGN:
-    case TK_GREATER_THAN_SIGN:
-    case TK_GREATEREQUAL:
-    case TK_LESSEQUAL:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        ShiftExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_LESS_THAN_SIGN:
+        case TK_GREATER_THAN_SIGN:
+        case TK_GREATEREQUAL:
+        case TK_LESSEQUAL:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            ShiftExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
     token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_LESS_THAN_SIGN:
-    case TK_GREATER_THAN_SIGN:
-    case TK_GREATEREQUAL:
-    case TK_LESSEQUAL:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        RelationalExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_LESS_THAN_SIGN:
+        case TK_GREATER_THAN_SIGN:
+        case TK_GREATEREQUAL:
+        case TK_LESSEQUAL:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            RelationalExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -16735,44 +17059,44 @@ void EqualityExpression(struct Parser* ctx, struct Expression** ppExpression)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_EQUALEQUAL:
-    case TK_NOTEQUAL:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        RelationalExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_EQUALEQUAL:
+        case TK_NOTEQUAL:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            RelationalExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
     token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_EQUALEQUAL:
-    case TK_NOTEQUAL:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        EqualityExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_EQUALEQUAL:
+        case TK_NOTEQUAL:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            EqualityExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -16788,42 +17112,42 @@ void AndExpression(struct Parser* ctx, struct Expression** ppExpression)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_AMPERSAND:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        EqualityExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_AMPERSAND:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            EqualityExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
     token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_AMPERSAND:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        AndExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_AMPERSAND:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            AndExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -16840,42 +17164,42 @@ void ExclusiveOrExpression(struct Parser* ctx, struct Expression** ppExpression)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_CIRCUMFLEX_ACCENT:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        AndExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_CIRCUMFLEX_ACCENT:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            AndExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
     token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_CIRCUMFLEX_ACCENT:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        ExclusiveOrExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_CIRCUMFLEX_ACCENT:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            ExclusiveOrExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -16892,42 +17216,42 @@ void InclusiveOrExpression(struct Parser* ctx, struct Expression** ppExpression)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_VERTICAL_LINE:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        ExclusiveOrExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_VERTICAL_LINE:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            ExclusiveOrExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
     token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_VERTICAL_LINE:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        InclusiveOrExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_VERTICAL_LINE:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            InclusiveOrExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -16944,43 +17268,43 @@ void LogicalAndExpression(struct Parser* ctx, struct Expression** ppExpression)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_ANDAND:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        GetPosition(ctx, &pBinaryExpression->Position);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        InclusiveOrExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_ANDAND:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            GetPosition(ctx, &pBinaryExpression->Position);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            InclusiveOrExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
     token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_ANDAND:
-    {
-        struct BinaryExpression* pBinaryExpression =
-            NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        GetPosition(ctx, &pBinaryExpression->Position);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        LogicalAndExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_ANDAND:
+        {
+            struct BinaryExpression* pBinaryExpression =
+                NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            GetPosition(ctx, &pBinaryExpression->Position);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            LogicalAndExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -16996,42 +17320,42 @@ void LogicalOrExpression(struct Parser* ctx, struct Expression** ppExpression)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_OROR:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        GetPosition(ctx, &pBinaryExpression->Position);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        LogicalAndExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_OROR:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            GetPosition(ctx, &pBinaryExpression->Position);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            LogicalAndExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
     token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_OROR:
-    {
-        struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        GetPosition(ctx, &pBinaryExpression->Position);
-        pBinaryExpression->token = token;
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        struct Expression* pExpressionRight;
-        LogicalOrExpression(ctx, &pExpressionRight);
-        pBinaryExpression->pExpressionRight = pExpressionRight;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //assert(false);
+        case TK_OROR:
+        {
+            struct BinaryExpression* pBinaryExpression = NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            GetPosition(ctx, &pBinaryExpression->Position);
+            pBinaryExpression->token = token;
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            struct Expression* pExpressionRight;
+            LogicalOrExpression(ctx, &pExpressionRight);
+            pBinaryExpression->pExpressionRight = pExpressionRight;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -17081,36 +17405,36 @@ void AssignmentExpression(struct Parser* ctx, struct Expression** ppExpression)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_EQUALS_SIGN:
-    case TK_MULTIEQUAL:
-    case TK_DIVEQUAL:
-    case TK_PERCENT_EQUAL:
-    case TK_PLUSEQUAL:
-    case TK_MINUS_EQUAL:
-    case TK_LESSLESSEQUAL:
-    case TK_GREATERGREATEREQUAL:
-    case TK_ANDEQUAL:
-    case TK_CARETEQUAL:
-    case TK_OREQUAL:
-    {
-        struct BinaryExpression* pBinaryExpression =
-            NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
-        Parser_Match(ctx, &pBinaryExpression->ClueList0);
-        //Significa que o anterior deve ser do tipo  unary-expression
-        //embora tenhamos feito o parser de conditional-expression
-        //se nao for é erro.
-        struct Expression* pAssignmentExpressionRight;
-        AssignmentExpression(ctx, &pAssignmentExpressionRight);
-        GetPosition(ctx, &pBinaryExpression->Position);
-        pBinaryExpression->pExpressionLeft = *ppExpression;
-        pBinaryExpression->pExpressionRight = pAssignmentExpressionRight;
-        pBinaryExpression->token = token;
-        *ppExpression = (struct Expression*)pBinaryExpression;
-    }
-    break;
-    default:
-        //É apenas conditional-expression
+        case TK_EQUALS_SIGN:
+        case TK_MULTIEQUAL:
+        case TK_DIVEQUAL:
+        case TK_PERCENT_EQUAL:
+        case TK_PLUSEQUAL:
+        case TK_MINUS_EQUAL:
+        case TK_LESSLESSEQUAL:
+        case TK_GREATERGREATEREQUAL:
+        case TK_ANDEQUAL:
+        case TK_CARETEQUAL:
+        case TK_OREQUAL:
+        {
+            struct BinaryExpression* pBinaryExpression =
+                NEW((struct BinaryExpression)BINARYEXPRESSION_INIT);
+            Parser_Match(ctx, &pBinaryExpression->ClueList0);
+            //Significa que o anterior deve ser do tipo  unary-expression
+            //embora tenhamos feito o parser de conditional-expression
+            //se nao for é erro.
+            struct Expression* pAssignmentExpressionRight;
+            AssignmentExpression(ctx, &pAssignmentExpressionRight);
+            GetPosition(ctx, &pBinaryExpression->Position);
+            pBinaryExpression->pExpressionLeft = *ppExpression;
+            pBinaryExpression->pExpressionRight = pAssignmentExpressionRight;
+            pBinaryExpression->token = token;
+            *ppExpression = (struct Expression*)pBinaryExpression;
+        }
         break;
+        default:
+            //É apenas conditional-expression
+            break;
     }
 }
 
@@ -17197,98 +17521,156 @@ void Selection_Statement(struct Parser* ctx, struct Statement** ppStatement)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_TRY:
-    case TK_IF:
-    {
-        bool bIsTryStatement = (token == TK_TRY);
-        struct IfStatement* pIfStatement = NEW((struct IfStatement)IFSTATEMENT_INIT);
-        *ppStatement = (struct Statement*)pIfStatement;
-        Parser_Match(ctx, &pIfStatement->ClueList0);
-        Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pIfStatement->ClueList1);
-        struct SymbolMap BlockScope = SYMBOLMAP_INIT;
-        BlockScope.pPrevious = ctx->pCurrentScope;
-        ctx->pCurrentScope = &BlockScope;
-        //primeira expressao do if
-        bool bHasDeclaration = Declaration(ctx, &pIfStatement->pInitDeclarationOpt);
-        if (bHasDeclaration)
+        case TK_TRY:
         {
-            token = Parser_CurrentTokenType(ctx);
-            //Esta eh a 2 expressao do if a que tem a condicao a declaracao ja comeu 1
-            Expression(ctx, &pIfStatement->pConditionExpression);
-            token = Parser_CurrentTokenType(ctx);
-            if (token == TK_SEMICOLON)
+            struct TryStatement* pIfStatement = NEW((struct TryStatement)TRYSTATEMENT_INIT);
+            *ppStatement = (struct Statement*)pIfStatement;
+            Parser_Match(ctx, &pIfStatement->ClueList0);
+            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pIfStatement->ClueList1);
+            struct SymbolMap BlockScope = SYMBOLMAP_INIT;
+            BlockScope.pPrevious = ctx->pCurrentScope;
+            ctx->pCurrentScope = &BlockScope;
+            //primeira expressao do if
+            bool bHasDeclaration = Declaration(ctx, &pIfStatement->pInitDeclarationOpt);
+            if (bHasDeclaration)
             {
-                //TEM DEFER
-                Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList2);
-                Expression(ctx, &pIfStatement->pDeferExpression);
-            }
-            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList4);
-        }
-        else /*if normal*/
-        {
-            struct Expression* pExpression = NULL;
-            Expression(ctx, &pExpression);
-            token = Parser_CurrentTokenType(ctx);
-            
-            if (token == TK_SEMICOLON)
-            {
-                Parser_Match(ctx, &pIfStatement->ClueList2);
-                pIfStatement->pInitialExpression = pExpression;
+                token = Parser_CurrentTokenType(ctx);
+                //Esta eh a 2 expressao do if a que tem a condicao a declaracao ja comeu 1
                 Expression(ctx, &pIfStatement->pConditionExpression);
+                token = Parser_CurrentTokenType(ctx);
+                if (token == TK_SEMICOLON)
+                {
+                    //TEM DEFER
+                    Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList2);
+                    Expression(ctx, &pIfStatement->pDeferExpression);
+                }
+                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList4);
             }
-            else if (token == TK_RIGHT_PARENTHESIS)
+            else /*if normal*/
             {
-                //Parser_Match(ctx, &pIfStatement->ClueList2);
-                pIfStatement->pConditionExpression = pExpression;
-            }
-            else {
-                //error
+                struct Expression* pExpression = NULL;
+                Expression(ctx, &pExpression);
+                token = Parser_CurrentTokenType(ctx);
+
+                if (token == TK_SEMICOLON)
+                {
+                    Parser_Match(ctx, &pIfStatement->ClueList2);
+                    pIfStatement->pInitialExpression = pExpression;
+                    Expression(ctx, &pIfStatement->pConditionExpression);
+                }
+                else if (token == TK_RIGHT_PARENTHESIS)
+                {
+                    //Parser_Match(ctx, &pIfStatement->ClueList2);
+                    pIfStatement->pConditionExpression = pExpression;
+                }
+                else {
+                    //error
+                }
+
+                token = Parser_CurrentTokenType(ctx);
+                if (token == TK_SEMICOLON)
+                {
+                    //TEM DEFER
+                    Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList3);
+                    Expression(ctx, &pIfStatement->pDeferExpression);
+                }
+                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList4);
             }
 
-            token = Parser_CurrentTokenType(ctx);
-            if (token == TK_SEMICOLON)
-            {
-                //TEM DEFER
-                Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList3);
-                Expression(ctx, &pIfStatement->pDeferExpression);
-            }
-            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList4);
-        }
 
-        if (bIsTryStatement)
-        {
-            Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList5);
-            VirtualCompound_Statement(ctx, &pIfStatement->pStatement);
-        }
-        else
-        {
-            Statement(ctx, &pIfStatement->pStatement);
-            token = Parser_CurrentTokenType(ctx);
-            if (token == TK_ELSE)
-            {
-                Parser_Match(ctx, &pIfStatement->ClueList3);
-                Statement(ctx, &pIfStatement->pElseStatement);
-            }
+                Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList5);
+                VirtualCompound_Statement(ctx, &pIfStatement->pStatement);
             
+            
+
+            ctx->pCurrentScope = BlockScope.pPrevious;
         }
-        
-        ctx->pCurrentScope = BlockScope.pPrevious;
-    }
-    break;  
-    case TK_SWITCH:
-    {
-        struct SwitchStatement* pSelectionStatement = NEW((struct SwitchStatement)SWITCHSTATEMENT_INIT);
-        *ppStatement = (struct Statement*)pSelectionStatement;
-        Parser_Match(ctx, &pSelectionStatement->ClueList0);
-        Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pSelectionStatement->ClueList1);
-        Expression(ctx, &pSelectionStatement->pConditionExpression);
-        Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pSelectionStatement->ClueList2);
-        Statement(ctx, &pSelectionStatement->pExpression);
-    }
-    break;
-    default:
-        //assert(false);
         break;
+
+        case TK_IF:
+        {
+            struct IfStatement* pIfStatement = NEW((struct IfStatement)IFSTATEMENT_INIT);
+            *ppStatement = (struct Statement*)pIfStatement;
+            Parser_Match(ctx, &pIfStatement->ClueList0);
+            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pIfStatement->ClueList1);
+            struct SymbolMap BlockScope = SYMBOLMAP_INIT;
+            BlockScope.pPrevious = ctx->pCurrentScope;
+            ctx->pCurrentScope = &BlockScope;
+            //primeira expressao do if
+            bool bHasDeclaration = Declaration(ctx, &pIfStatement->pInitDeclarationOpt);
+            if (bHasDeclaration)
+            {
+                token = Parser_CurrentTokenType(ctx);
+                //Esta eh a 2 expressao do if a que tem a condicao a declaracao ja comeu 1
+                Expression(ctx, &pIfStatement->pConditionExpression);
+                token = Parser_CurrentTokenType(ctx);
+                if (token == TK_SEMICOLON)
+                {
+                    //TEM DEFER
+                    Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList2);
+                    Expression(ctx, &pIfStatement->pDeferExpression);
+                }
+                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList4);
+            }
+            else /*if normal*/
+            {
+                struct Expression* pExpression = NULL;
+                Expression(ctx, &pExpression);
+                token = Parser_CurrentTokenType(ctx);
+
+                if (token == TK_SEMICOLON)
+                {
+                    Parser_Match(ctx, &pIfStatement->ClueList2);
+                    pIfStatement->pInitialExpression = pExpression;
+                    Expression(ctx, &pIfStatement->pConditionExpression);
+                }
+                else if (token == TK_RIGHT_PARENTHESIS)
+                {
+                    //Parser_Match(ctx, &pIfStatement->ClueList2);
+                    pIfStatement->pConditionExpression = pExpression;
+                }
+                else {
+                    //error
+                }
+
+                token = Parser_CurrentTokenType(ctx);
+                if (token == TK_SEMICOLON)
+                {
+                    //TEM DEFER
+                    Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList3);
+                    Expression(ctx, &pIfStatement->pDeferExpression);
+                }
+                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList4);
+            }
+
+            
+                Statement(ctx, &pIfStatement->pStatement);
+                token = Parser_CurrentTokenType(ctx);
+                if (token == TK_ELSE)
+                {
+                    Parser_Match(ctx, &pIfStatement->ClueList3);
+                    Statement(ctx, &pIfStatement->pElseStatement);
+                }
+
+            
+
+            ctx->pCurrentScope = BlockScope.pPrevious;
+        }
+        break;
+        case TK_SWITCH:
+        {
+            struct SwitchStatement* pSelectionStatement = NEW((struct SwitchStatement)SWITCHSTATEMENT_INIT);
+            *ppStatement = (struct Statement*)pSelectionStatement;
+            Parser_Match(ctx, &pSelectionStatement->ClueList0);
+            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pSelectionStatement->ClueList1);
+            Expression(ctx, &pSelectionStatement->pConditionExpression);
+            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pSelectionStatement->ClueList2);
+            Statement(ctx, &pSelectionStatement->pExpression);
+        }
+        break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -17305,51 +17687,65 @@ void Jump_Statement(struct Parser* ctx, struct Statement** ppStatement)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_GOTO:
-    {
-        struct JumpStatement* pJumpStatement = NEW((struct JumpStatement)JUMPSTATEMENT_INIT);
-        pJumpStatement->token = token;
-        *ppStatement = (struct Statement*)pJumpStatement;
-        Parser_Match(ctx, &pJumpStatement->ClueList0);
-        pJumpStatement->Identifier = strdup(Lexeme(ctx));
-        Parser_MatchToken(ctx, TK_IDENTIFIER, &pJumpStatement->ClueList1);
-        Parser_MatchToken(ctx, TK_SEMICOLON, &pJumpStatement->ClueList2);
-    }
-    break;
-    case TK_CONTINUE:
-    {
-        struct JumpStatement* pJumpStatement = NEW((struct JumpStatement)JUMPSTATEMENT_INIT);
-        pJumpStatement->token = token;
-        *ppStatement = (struct Statement*)pJumpStatement;
-        Parser_Match(ctx, &pJumpStatement->ClueList0);
-        Parser_MatchToken(ctx, TK_SEMICOLON, &pJumpStatement->ClueList2);
-    }
-    break;
-    case TK_BREAK:
-    {
-        struct JumpStatement* pJumpStatement = NEW((struct JumpStatement)JUMPSTATEMENT_INIT);
-        pJumpStatement->token = token;
-        *ppStatement = (struct Statement*)pJumpStatement;
-        Parser_Match(ctx, &pJumpStatement->ClueList0);
-        Parser_MatchToken(ctx, TK_SEMICOLON, &pJumpStatement->ClueList2);
-    }
-    break;
-    case TK_RETURN:
-    {
-        struct JumpStatement* pJumpStatement = NEW((struct JumpStatement)JUMPSTATEMENT_INIT);
-        pJumpStatement->token = token;
-        *ppStatement = (struct Statement*)pJumpStatement;
-        token = Parser_Match(ctx, &pJumpStatement->ClueList0);
-        if (token != TK_SEMICOLON)
+        case TK_GOTO:
         {
-            Expression(ctx, &pJumpStatement->pExpression);
+            struct JumpStatement* pJumpStatement = NEW((struct JumpStatement)JUMPSTATEMENT_INIT);
+            pJumpStatement->token = token;
+            *ppStatement = (struct Statement*)pJumpStatement;
+            Parser_Match(ctx, &pJumpStatement->ClueList0);
+            pJumpStatement->Identifier = strdup(Lexeme(ctx));
+            Parser_MatchToken(ctx, TK_IDENTIFIER, &pJumpStatement->ClueList1);
+            Parser_MatchToken(ctx, TK_SEMICOLON, &pJumpStatement->ClueList2);
         }
-        Parser_MatchToken(ctx, TK_SEMICOLON, &pJumpStatement->ClueList2);
-    }
-    break;
-    default:
-        //assert(false);
         break;
+        case TK_CONTINUE:
+        {
+            struct JumpStatement* pJumpStatement = NEW((struct JumpStatement)JUMPSTATEMENT_INIT);
+            pJumpStatement->token = token;
+            *ppStatement = (struct Statement*)pJumpStatement;
+            Parser_Match(ctx, &pJumpStatement->ClueList0);
+            Parser_MatchToken(ctx, TK_SEMICOLON, &pJumpStatement->ClueList2);
+        }
+        break;
+        case TK_BREAK:
+        {
+            struct JumpStatement* pJumpStatement = NEW((struct JumpStatement)JUMPSTATEMENT_INIT);
+            pJumpStatement->token = token;
+            *ppStatement = (struct Statement*)pJumpStatement;
+            Parser_Match(ctx, &pJumpStatement->ClueList0);
+            Parser_MatchToken(ctx, TK_SEMICOLON, &pJumpStatement->ClueList2);
+        }
+        break;
+        case TK_RETURN:
+        {
+            struct JumpStatement* pJumpStatement = NEW((struct JumpStatement)JUMPSTATEMENT_INIT);
+            pJumpStatement->token = token;
+            *ppStatement = (struct Statement*)pJumpStatement;
+            token = Parser_Match(ctx, &pJumpStatement->ClueList0);
+            if (token != TK_SEMICOLON)
+            {
+                Expression(ctx, &pJumpStatement->pExpression);
+            }
+            Parser_MatchToken(ctx, TK_SEMICOLON, &pJumpStatement->ClueList2);
+        }
+        break;
+        case TK_THROW:
+        {
+            struct JumpStatement* pJumpStatement = NEW((struct JumpStatement)JUMPSTATEMENT_INIT);
+            pJumpStatement->token = token;
+            *ppStatement = (struct Statement*)pJumpStatement;
+            token = Parser_Match(ctx, &pJumpStatement->ClueList0);
+            if (token != TK_SEMICOLON)
+            {
+                Expression(ctx, &pJumpStatement->pExpression);
+            }
+            Parser_MatchToken(ctx, TK_SEMICOLON, &pJumpStatement->ClueList2);
+        }
+        break;
+
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -17365,115 +17761,136 @@ void Iteration_Statement(struct Parser* ctx, struct Statement** ppStatement)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_WHILE:
-    {
-        struct WhileStatement* pWhileStatement = NEW((struct WhileStatement)WHILESTATEMENT_INIT);
-        *ppStatement = (struct Statement*)pWhileStatement;
-        Parser_Match(ctx, &pWhileStatement->ClueList0);
-        Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pWhileStatement->ClueList1);
-        Expression(ctx, &pWhileStatement->pExpression);
-        Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pWhileStatement->ClueList2);
-        Statement(ctx, &pWhileStatement->pStatement);
-    }
-    break;
-    case TK_DO:
-    {
-        struct DoStatement* pDoStatement = NEW((struct DoStatement)DOSTATEMENT_INIT);
-        *ppStatement = (struct Statement*)pDoStatement;
-        Parser_Match(ctx, &pDoStatement->ClueList0); //do
-        Statement(ctx, &pDoStatement->pStatement);
-        token = Parser_CurrentTokenType(ctx);
-        if (token == TK_WHILE) /*language extension make while optional*/
+
+        case TK_WHILE:
         {
-            Parser_MatchToken(ctx, TK_WHILE, &pDoStatement->ClueList1); //while
-            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pDoStatement->ClueList2); //(
-            Expression(ctx, &pDoStatement->pExpression);
-            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pDoStatement->ClueList3); //)
-            Parser_MatchToken(ctx, TK_SEMICOLON, &pDoStatement->ClueList4); //;
-        }        
-    }
-    break;
-    case TK_FOR:
-    {
-        struct ForStatement* pIterationStatement = NEW((struct ForStatement)FORSTATEMENT_INIT);
-        *ppStatement = (struct Statement*)pIterationStatement;
-        Parser_Match(ctx, &pIterationStatement->ClueList0);
-        token = Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pIterationStatement->ClueList1);
-        //primeira expressao do for
-        if (token != TK_SEMICOLON)
+            struct WhileStatement* pWhileStatement = NEW((struct WhileStatement)WHILESTATEMENT_INIT);
+            *ppStatement = (struct Statement*)pWhileStatement;
+            Parser_Match(ctx, &pWhileStatement->ClueList0);
+            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pWhileStatement->ClueList1);
+            Expression(ctx, &pWhileStatement->pExpression);
+            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pWhileStatement->ClueList2);
+            Statement(ctx, &pWhileStatement->pStatement);
+        }
+        break;
+        case TK_TRY:
         {
-            //
-            //for (expressionopt; expressionopt; expressionopt) statement
-            //for (declaration expressionopt; expressionopt) statement
-            bool bHasDeclaration = Declaration(ctx, &pIterationStatement->pInitDeclarationOpt);
-            if (bHasDeclaration)
+            struct TryBlockStatement* pTryBlockStatement = NEW((struct TryBlockStatement)TRYBLOCKSTATEMENT_INIT);
+            *ppStatement = (struct Statement*)pTryBlockStatement;
+            Parser_Match(ctx, &pTryBlockStatement->ClueListTry);
+            Compound_Statement(ctx, &pTryBlockStatement->pCompoundStatement);
+            token = Parser_CurrentTokenType(ctx);
+            
+            Parser_MatchToken(ctx, TK_CATCH, &pTryBlockStatement->ClueListCatch);
+            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pTryBlockStatement->ClueListLeftPar);
+
+            pTryBlockStatement->pParameter = NEW((struct Parameter) {PARAMETER_INIT});
+
+            Parameter_Declaration(ctx, pTryBlockStatement->pParameter);
+            
+            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pTryBlockStatement->ClueListRightPar);
+
+            Compound_Statement(ctx, &pTryBlockStatement->pCompoundCatchStatement);
+        }
+        break;
+        case TK_DO:
+        {
+            struct DoStatement* pDoStatement = NEW((struct DoStatement)DOSTATEMENT_INIT);
+            *ppStatement = (struct Statement*)pDoStatement;
+            Parser_Match(ctx, &pDoStatement->ClueList0); //do
+            Statement(ctx, &pDoStatement->pStatement);
+            token = Parser_CurrentTokenType(ctx);
+            if (token == TK_WHILE) /*language extension make while optional*/
             {
+                Parser_MatchToken(ctx, TK_WHILE, &pDoStatement->ClueList1); //while
+                Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pDoStatement->ClueList2); //(
+                Expression(ctx, &pDoStatement->pExpression);
+                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pDoStatement->ClueList3); //)
+                Parser_MatchToken(ctx, TK_SEMICOLON, &pDoStatement->ClueList4); //;
+            }
+        }
+        break;
+        case TK_FOR:
+        {
+            struct ForStatement* pIterationStatement = NEW((struct ForStatement)FORSTATEMENT_INIT);
+            *ppStatement = (struct Statement*)pIterationStatement;
+            Parser_Match(ctx, &pIterationStatement->ClueList0);
+            token = Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pIterationStatement->ClueList1);
+            //primeira expressao do for
+            if (token != TK_SEMICOLON)
+            {
+                //
+                //for (expressionopt; expressionopt; expressionopt) statement
+                //for (declaration expressionopt; expressionopt) statement
+                bool bHasDeclaration = Declaration(ctx, &pIterationStatement->pInitDeclarationOpt);
+                if (bHasDeclaration)
+                {
+                    token = Parser_CurrentTokenType(ctx);
+                    if (token != TK_SEMICOLON)
+                    {
+                        //Esta eh a 2 expressao do for, a declaracao ja comeu 1
+                        Expression(ctx, &pIterationStatement->pExpression2);
+                        Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList2);
+                    }
+                    else
+                    {
+                        //segunda expressao vazia
+                        Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList2);
+                    }
+                }
+                else
+                {
+                    token = Parser_CurrentTokenType(ctx);
+                    if (token != TK_SEMICOLON)
+                    {
+                        //primeira expressao do for
+                        Expression(ctx, &pIterationStatement->pExpression1);
+                        Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList2);
+                    }
+                    token = Parser_CurrentTokenType(ctx);
+                    if (token != TK_SEMICOLON)
+                    {
+                        //segunda expressao do for
+                        Expression(ctx, &pIterationStatement->pExpression2);
+                        Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList3);
+                    }
+                    else
+                    {
+                        //segunda expressao vazia
+                        Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList3);
+                    }
+                }
+            }
+            else
+            {
+                //primeira expressao do for vazia
+                Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList2);
                 token = Parser_CurrentTokenType(ctx);
                 if (token != TK_SEMICOLON)
                 {
                     //Esta eh a 2 expressao do for, a declaracao ja comeu 1
                     Expression(ctx, &pIterationStatement->pExpression2);
-                    Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList2);
-                }
-                else
-                {
-                    //segunda expressao vazia
-                    Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList2);
-                }
-            }
-            else
-            {
-                token = Parser_CurrentTokenType(ctx);
-                if (token != TK_SEMICOLON)
-                {
-                    //primeira expressao do for
-                    Expression(ctx, &pIterationStatement->pExpression1);
-                    Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList2);
-                }
-                token = Parser_CurrentTokenType(ctx);
-                if (token != TK_SEMICOLON)
-                {
-                    //segunda expressao do for
-                    Expression(ctx, &pIterationStatement->pExpression2);
                     Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList3);
                 }
                 else
                 {
-                    //segunda expressao vazia
+                    //segunda expressao do for vazia tb
                     Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList3);
                 }
             }
-        }
-        else
-        {
-            //primeira expressao do for vazia
-            Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList2);
             token = Parser_CurrentTokenType(ctx);
-            if (token != TK_SEMICOLON)
+            //terceira expressao do for
+            if (token != TK_RIGHT_PARENTHESIS)
             {
-                //Esta eh a 2 expressao do for, a declaracao ja comeu 1
-                Expression(ctx, &pIterationStatement->pExpression2);
-                Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList3);
+                Expression(ctx, &pIterationStatement->pExpression3);
             }
-            else
-            {
-                //segunda expressao do for vazia tb
-                Parser_MatchToken(ctx, TK_SEMICOLON, &pIterationStatement->ClueList3);
-            }
+            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIterationStatement->ClueList4);
+            Statement(ctx, &pIterationStatement->pStatement);
         }
-        token = Parser_CurrentTokenType(ctx);
-        //terceira expressao do for
-        if (token != TK_RIGHT_PARENTHESIS)
-        {
-            Expression(ctx, &pIterationStatement->pExpression3);
-        }
-        Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIterationStatement->ClueList4);
-        Statement(ctx, &pIterationStatement->pStatement);
-    }
-    break;
-    default:
-        //assert(false);
         break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -17590,143 +18007,151 @@ bool Statement(struct Parser* ctx, struct Statement** ppStatement)
     const char* lexeme = Lexeme(ctx);
     switch (token)
     {
-    case TK__ASM:
-        bResult = true;
-        Asm_Statement(ctx, ppStatement);
-        break;
-    case TK_LEFT_CURLY_BRACKET:
-    {
-        bResult = true;
-        Compound_Statement(ctx, ppStatement);
-    }
-    break;
-    case TK_CASE:
-    case TK_DEFAULT:
-        bResult = true;
-        Labeled_Statement(ctx, ppStatement);
-        break;
-    case TK_SWITCH:
-        bResult = true;
-        Selection_Statement(ctx, ppStatement);
-        break;
-    case TK_IF:
-    case TK_TRY:
-        bResult = true;
-        Selection_Statement(ctx, ppStatement);
-        break;
-    //case TK_ELSE:
-    ////assert(false);
-    //Ele tem que estar fazendo os statement do IF!
-    //bResult = true;
-    //Parser_Match(ctx, NULL); //else
-    //poderia retornar uma coisa so  p dizer q eh else
-    //Statement(ctx, obj);
-    //break;
-    //iteration-statement
-    case TK_WHILE:
-    case TK_FOR:
-    case TK_DO:
-        bResult = true;
-        Iteration_Statement(ctx, ppStatement);
-        break;
-    //jump-statement
-    case TK_GOTO:
-    case TK_CONTINUE:
-    case TK_BREAK:
-    case TK_RETURN:
-        bResult = true;
-        Jump_Statement(ctx, ppStatement);
-        break;
-    //lista de first para expressões
-    //expression-statement
-    case TK_LEFT_SQUARE_BRACKET://lamda todo isprimeiryfirst
-    case TK_LEFT_PARENTHESIS:
-    case TK_SEMICOLON:
-    case TK_DECIMAL_INTEGER:
-    case TK_FLOAT_NUMBER:
-    case TK_STRING_LITERAL:
-    //unary
-    case TK_PLUSPLUS:
-    case TK_MINUSMINUS:
-    case TK_SIZEOF:
-    //unary-operator
-    case TK_AMPERSAND:
-    case TK_ASTERISK:
-    case TK_PLUS_SIGN:
-    case TK_HYPHEN_MINUS:
-    case TK_TILDE:
-    case TK_EXCLAMATION_MARK:
-#ifdef LANGUAGE_EXTENSIONS
-    //unary-operator-extension
-    case TK_ANDAND: //&&
-#endif
-        bResult = true;
-        Expression_Statement(ctx, ppStatement);
-        break;
-    case TK_IDENTIFIER:
-        if (IsTypeName(ctx, TK_IDENTIFIER, lexeme))
+        case TK__ASM:
+            bResult = true;
+            Asm_Statement(ctx, ppStatement);
+            break;
+        case TK_LEFT_CURLY_BRACKET:
         {
-            //É uma declaracao
+            bResult = true;
+            Compound_Statement(ctx, ppStatement);
         }
-        else
-        {
-            if (Parser_LookAheadToken(ctx) == TK_COLON)
+        break;
+        case TK_CASE:
+        case TK_DEFAULT:
+            bResult = true;
+            Labeled_Statement(ctx, ppStatement);
+            break;
+        case TK_SWITCH:
+            bResult = true;
+            Selection_Statement(ctx, ppStatement);
+            break;
+        case TK_IF:
+        case TK_TRY:
+            bResult = true;
+            if (Parser_LookAheadToken(ctx) == TK_LEFT_CURLY_BRACKET)
             {
-                //era um label..
-                Labeled_Statement(ctx, ppStatement);
+                Iteration_Statement(ctx, ppStatement);
             }
             else
             {
-                Expression_Statement(ctx, ppStatement);
+                Selection_Statement(ctx, ppStatement);
             }
+            break;
+            //case TK_ELSE:
+            ////assert(false);
+            //Ele tem que estar fazendo os statement do IF!
+            //bResult = true;
+            //Parser_Match(ctx, NULL); //else
+            //poderia retornar uma coisa so  p dizer q eh else
+            //Statement(ctx, obj);
+            //break;
+            //iteration-statement
+        case TK_WHILE:
+        case TK_FOR:
+        case TK_DO:
             bResult = true;
-        }
-        break;
-    case TK_INLINE:
-    case TK__INLINE: //microscoft
-    case TK__NORETURN:
-    case TK__ALIGNAS:
-    //type-qualifier
-    case TK_CONST:
-    case TK_RESTRICT:
-    case TK_VOLATILE:
-    case TK__ATOMIC:
-    case TK_TYPEDEF:
-    case TK_EXTERN:
-    case TK_STATIC:
-    case TK__THREAD_LOCAL:
-    case TK_AUTO:
-    case TK_REGISTER:
-    case TK_VOID:
-    case TK_CHAR:
-    case TK_SHORT:
-    case TK_INT:
-    case TK_LONG:
-    //microsoft
-    case TK__INT8:
-    case TK__INT16:
-    case TK__INT32:
-    case TK__INT64:
-    case TK___DECLSPEC:
-    case TK__WCHAR_T:
-    /////////
-    case TK_FLOAT:
-    case TK_DOUBLE:
-    case TK_SIGNED:
-    case TK_UNSIGNED:
-    case TK__BOOL:
-    case TK__COMPLEX:
-    case TK_STRUCT:
-    case TK_UNION:
-    case TK_ENUM:
-        bResult = false;
-        break;
-    default:
-        SetError(ctx, "unexpected error");
-        //bResult = true;
-        //SetType(pStatement, "expression-statement");
-        //Expression_Statement(ctx, pStatement);
-        break;
+            Iteration_Statement(ctx, ppStatement);
+            break;
+            //jump-statement
+        case TK_GOTO:
+        case TK_CONTINUE:
+        case TK_BREAK:
+        case TK_THROW:
+        case TK_RETURN:
+            bResult = true;
+            Jump_Statement(ctx, ppStatement);
+            break;
+            //lista de first para expressões
+            //expression-statement
+        case TK_LEFT_SQUARE_BRACKET://lamda todo isprimeiryfirst
+        case TK_LEFT_PARENTHESIS:
+        case TK_SEMICOLON:
+        case TK_DECIMAL_INTEGER:
+        case TK_FLOAT_NUMBER:
+        case TK_STRING_LITERAL:
+            //unary
+        case TK_PLUSPLUS:
+        case TK_MINUSMINUS:
+        case TK_SIZEOF:
+            //unary-operator
+        case TK_AMPERSAND:
+        case TK_ASTERISK:
+        case TK_PLUS_SIGN:
+        case TK_HYPHEN_MINUS:
+        case TK_TILDE:
+        case TK_EXCLAMATION_MARK:
+#ifdef LANGUAGE_EXTENSIONS
+            //unary-operator-extension
+        case TK_ANDAND: //&&
+#endif
+            bResult = true;
+            Expression_Statement(ctx, ppStatement);
+            break;
+        case TK_IDENTIFIER:
+            if (IsTypeName(ctx, TK_IDENTIFIER, lexeme))
+            {
+                //É uma declaracao
+            }
+            else
+            {
+                if (Parser_LookAheadToken(ctx) == TK_COLON)
+                {
+                    //era um label..
+                    Labeled_Statement(ctx, ppStatement);
+                }
+                else
+                {
+                    Expression_Statement(ctx, ppStatement);
+                }
+                bResult = true;
+            }
+            break;
+        case TK_INLINE:
+        case TK__INLINE: //microscoft
+        case TK__NORETURN:
+        case TK__ALIGNAS:
+            //type-qualifier
+        case TK_CONST:
+        case TK_RESTRICT:
+        case TK_VOLATILE:
+        case TK__ATOMIC:
+        case TK_TYPEDEF:
+        case TK_EXTERN:
+        case TK_STATIC:
+        case TK__THREAD_LOCAL:
+        case TK_AUTO:
+        case TK_REGISTER:
+        case TK_VOID:
+        case TK_CHAR:
+        case TK_SHORT:
+        case TK_INT:
+        case TK_LONG:
+            //microsoft
+        case TK__INT8:
+        case TK__INT16:
+        case TK__INT32:
+        case TK__INT64:
+        case TK___DECLSPEC:
+        case TK__WCHAR_T:
+            /////////
+        case TK_FLOAT:
+        case TK_DOUBLE:
+        case TK_SIGNED:
+        case TK_UNSIGNED:
+        case TK__BOOL:
+        case TK__COMPLEX:
+        case TK_STRUCT:
+        case TK_UNION:
+        case TK_ENUM:
+            bResult = false;
+            break;
+        default:
+            SetError(ctx, "unexpected error");
+            //bResult = true;
+            //SetType(pStatement, "expression-statement");
+            //Expression_Statement(ctx, pStatement);
+            break;
     }
     return bResult;
 }
@@ -17781,11 +18206,12 @@ void VirtualCompound_Statement(struct Parser* ctx, struct Statement** ppStatemen
     { block-item-listopt }
     */
     struct CompoundStatement* pCompoundStatement = NEW((struct CompoundStatement)COMPOUNDSTATEMENT_INIT);
+    pCompoundStatement->bVirtual = true;
     *ppStatement = (struct Statement*)pCompoundStatement;
     struct SymbolMap BlockScope = SYMBOLMAP_INIT;
     BlockScope.pPrevious = ctx->pCurrentScope;
     ctx->pCurrentScope = &BlockScope;
-   // Parser_MatchToken(ctx, TK_LEFT_CURLY_BRACKET, &pCompoundStatement->ClueList0);
+    // Parser_MatchToken(ctx, TK_LEFT_CURLY_BRACKET, &pCompoundStatement->ClueList0);
     enum TokenType token = Parser_CurrentTokenType(ctx);
     if (token != TK_RIGHT_CURLY_BRACKET)
     {
@@ -17831,17 +18257,17 @@ void Struct_Or_Union(struct Parser* ctx,
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK_STRUCT:
-        pStructUnionSpecifier->Token = token;
-        Parser_Match(ctx, &pStructUnionSpecifier->ClueList0);
-        break;
-    case TK_UNION:
-        pStructUnionSpecifier->Token = token;
-        Parser_Match(ctx, &pStructUnionSpecifier->ClueList0);
-        break;
-    default:
-        //assert(false);
-        break;
+        case TK_STRUCT:
+            pStructUnionSpecifier->Token = token;
+            Parser_Match(ctx, &pStructUnionSpecifier->ClueList0);
+            break;
+        case TK_UNION:
+            pStructUnionSpecifier->Token = token;
+            Parser_Match(ctx, &pStructUnionSpecifier->ClueList0);
+            break;
+        default:
+            //assert(false);
+            break;
     }
 }
 
@@ -18290,14 +18716,14 @@ bool TFunctionSpecifier_IsFirst(enum TokenType token)
     bool bResult = false;
     switch (token)
     {
-    case TK_INLINE:
-    case TK__INLINE://microsoft
-    case TK__FORCEINLINE://microsoft
-    case TK__NORETURN:
-        bResult = true;
-        break;
-    default:
-        break;
+        case TK_INLINE:
+        case TK__INLINE://microsoft
+        case TK__FORCEINLINE://microsoft
+        case TK__NORETURN:
+            bResult = true;
+            break;
+        default:
+            break;
     }
     return bResult;
 }
@@ -18313,15 +18739,15 @@ void Function_Specifier(struct Parser* ctx,
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    case TK__INLINE://microsoft
-    case TK__FORCEINLINE://microsoft
-    case TK_INLINE:
-    case TK__NORETURN:
-        pFunctionSpecifier->Token = token;
-        Parser_Match(ctx, &pFunctionSpecifier->ClueList0);
-        break;
-    default:
-        break;
+        case TK__INLINE://microsoft
+        case TK__FORCEINLINE://microsoft
+        case TK_INLINE:
+        case TK__NORETURN:
+            pFunctionSpecifier->Token = token;
+            Parser_Match(ctx, &pFunctionSpecifier->ClueList0);
+            break;
+        default:
+            break;
     }
 }
 
@@ -18339,20 +18765,20 @@ bool TStorageSpecifier_IsFirst(enum TokenType token)
     */
     switch (token)
     {
-    case TK___DECLSPEC: //microsoft
-    case TK_TYPEDEF:
-    case TK_EXTERN:
-    case TK_STATIC:
-    case TK__THREAD_LOCAL:
-    case TK_AUTO:
-    case TK_REGISTER:
-        bResult = true;
-        break;
-    //TODO
-    // __declspec
-    //https://docs.microsoft.com/pt-br/cpp/c-language/summary-of-declarations?view=msvc-160
-    default:
-        break;
+        case TK___DECLSPEC: //microsoft
+        case TK_TYPEDEF:
+        case TK_EXTERN:
+        case TK_STATIC:
+        case TK__THREAD_LOCAL:
+        case TK_AUTO:
+        case TK_REGISTER:
+            bResult = true;
+            break;
+            //TODO
+            // __declspec
+            //https://docs.microsoft.com/pt-br/cpp/c-language/summary-of-declarations?view=msvc-160
+        default:
+            break;
     }
     return bResult;
 }
@@ -18377,40 +18803,40 @@ void Storage_Class_Specifier(struct Parser* ctx,
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    //https://docs.microsoft.com/en-us/cpp/cpp/declspec?view=msvc-160
-    //Microsoft extension
-    case TK___DECLSPEC:
-        pStorageSpecifier->Token = token;
-        Parser_Match(ctx, NULL);
-        int count = 0;
-        for (;;)
-        {
-            token = Parser_CurrentTokenType(ctx);
-            switch (token)
-            {
-            case TK_RIGHT_PARENTHESIS:
-                count--;
-                break;
-            case TK_LEFT_PARENTHESIS:
-                count++;
-                break;
-            }
+        //https://docs.microsoft.com/en-us/cpp/cpp/declspec?view=msvc-160
+        //Microsoft extension
+        case TK___DECLSPEC:
+            pStorageSpecifier->Token = token;
             Parser_Match(ctx, NULL);
-            if (count == 0 || Parser_HasError(ctx))
-                break; //last parentesis closed
-        }
-        break;
-    case TK_TYPEDEF:
-    case TK_EXTERN:
-    case TK_STATIC:
-    case TK__THREAD_LOCAL:
-    case TK_AUTO:
-    case TK_REGISTER:
-        pStorageSpecifier->Token = token;
-        Parser_Match(ctx, &pStorageSpecifier->ClueList0);
-        break;
-    default:
-        break;
+            int count = 0;
+            for (;;)
+            {
+                token = Parser_CurrentTokenType(ctx);
+                switch (token)
+                {
+                    case TK_RIGHT_PARENTHESIS:
+                        count--;
+                        break;
+                    case TK_LEFT_PARENTHESIS:
+                        count++;
+                        break;
+                }
+                Parser_Match(ctx, NULL);
+                if (count == 0 || Parser_HasError(ctx))
+                    break; //last parentesis closed
+            }
+            break;
+        case TK_TYPEDEF:
+        case TK_EXTERN:
+        case TK_STATIC:
+        case TK__THREAD_LOCAL:
+        case TK_AUTO:
+        case TK_REGISTER:
+            pStorageSpecifier->Token = token;
+            Parser_Match(ctx, &pStorageSpecifier->ClueList0);
+            break;
+        default:
+            break;
     }
 }
 
@@ -18469,7 +18895,7 @@ void Parameter_Type_List(struct Parser* ctx,
     */
     Parameter_List(ctx, &pParameterList->ParameterList);
     if (pParameterList->ParameterList.pHead &&
-            pParameterList->ParameterList.pHead->pNext == NULL)
+        pParameterList->ParameterList.pHead->pNext == NULL)
     {
         if (pParameterList->ParameterList.pHead->Declarator.PointerList.pHead == 0)
         {
@@ -18518,33 +18944,33 @@ void Direct_Declarator(struct Parser* ctx, bool bAbstract, struct DirectDeclarat
         return;
     switch (token)
     {
-    case TK_LEFT_PARENTHESIS:
-    {
-        pDirectDeclarator = NEW((struct DirectDeclarator)TDIRECTDECLARATOR_INIT);
-        Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pDirectDeclarator->ClueList0);
-        Declarator(ctx, bAbstract, &pDirectDeclarator->pDeclarator);
-        Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pDirectDeclarator->ClueList1);
-        //Para indicar que eh uma ( declarator )
-        pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeDeclarator;
-        // ) para nao confundir com funcao (
-    }
-    break;
-    case TK_IDENTIFIER:
-    {
-        //identifier
-        pDirectDeclarator = NEW((struct DirectDeclarator)TDIRECTDECLARATOR_INIT);
-        //Para indicar que eh uma identificador
-        pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeIdentifier;
-        const char* lexeme = Lexeme(ctx);
-        pDirectDeclarator->Identifier = strdup(lexeme);
-        pDirectDeclarator->Position.Line = GetCurrentLine(ctx);
-        pDirectDeclarator->Position.FileIndex = GetFileIndex(ctx);
-        Parser_Match(ctx, &pDirectDeclarator->ClueList0);
-    }
-    break;
-    default:
-        ////assert(false);
+        case TK_LEFT_PARENTHESIS:
+        {
+            pDirectDeclarator = NEW((struct DirectDeclarator)TDIRECTDECLARATOR_INIT);
+            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pDirectDeclarator->ClueList0);
+            Declarator(ctx, bAbstract, &pDirectDeclarator->pDeclarator);
+            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pDirectDeclarator->ClueList1);
+            //Para indicar que eh uma ( declarator )
+            pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeDeclarator;
+            // ) para nao confundir com funcao (
+        }
         break;
+        case TK_IDENTIFIER:
+        {
+            //identifier
+            pDirectDeclarator = NEW((struct DirectDeclarator)TDIRECTDECLARATOR_INIT);
+            //Para indicar que eh uma identificador
+            pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeIdentifier;
+            const char* lexeme = Lexeme(ctx);
+            pDirectDeclarator->Identifier = strdup(lexeme);
+            pDirectDeclarator->Position.Line = GetCurrentLine(ctx);
+            pDirectDeclarator->Position.FileIndex = GetFileIndex(ctx);
+            Parser_Match(ctx, &pDirectDeclarator->ClueList0);
+        }
+        break;
+        default:
+            ////assert(false);
+            break;
     }
     if (pDirectDeclarator == NULL)
     {
@@ -18567,78 +18993,78 @@ void Direct_Declarator(struct Parser* ctx, bool bAbstract, struct DirectDeclarat
         token = Parser_CurrentTokenType(ctx);
         switch (token)
         {
-        case TK_LEFT_PARENTHESIS:
-            /*
-            direct-declarator ( parameter-type-list )
-            direct-declarator ( identifier-listopt )
-            */
-            //      pDirectDeclarator->token = token;
-            //      //assert(pDirectDeclarator->pParametersOpt == NULL);
-            //      pDirectDeclarator->pParametersOpt = TParameterList_Create();
-            token = Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pDirectDeclarator->ClueList2);
-            //Para indicar que eh uma funcao
-            pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeFunction;
-            if (token != TK_RIGHT_PARENTHESIS)
-            {
-                //opt
-                Parameter_Type_List(ctx, &pDirectDeclarator->Parameters);
-            }
-            token = Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pDirectDeclarator->ClueList3);
-            if (token == TK_IDENTIFIER && strcmp(Lexeme(ctx), "overload") == 0)
-            {
+            case TK_LEFT_PARENTHESIS:
                 /*
-                  int f() overload;
-                  int f() overload, a;
+                direct-declarator ( parameter-type-list )
+                direct-declarator ( identifier-listopt )
                 */
-                struct StrBuilder sb = STRBUILDER_INIT;
-                /*ainda nao tem o retorno specifiers no  name mangling*/
-                /*esta declaracao fica no codeprint*/
-                StrBuilder_Append(&sb, pDirectDeclarator->Identifier);
-                ParameterList_PrintNameMangling(&pDirectDeclarator->Parameters.ParameterList, &sb);
-                Parser_MatchToken(ctx, TK_IDENTIFIER, &pDirectDeclarator->ClueList4);
-                pDirectDeclarator->bOverload = true;
-                pDirectDeclarator->NameMangling = sb.c_str; /*moved*/
-            }
-            break;
-        case TK_LEFT_SQUARE_BRACKET:
-            /*
-            direct-declarator [ type-qualifier-listopt assignment-expressionopt ]
-            direct-declarator [ static type-qualifier-listopt assignment-expression ]
-            direct-declarator [ type-qualifier-list static assignment-expression ]
-            direct-declarator [ type-qualifier-listopt * ]
-            */
-            ////assert(pDirectDeclarator->pParametersOpt == NULL);
-            //pDirectDeclarator->pParametersOpt = TParameterList_Create();
-            //Para indicar que eh um array
-            pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeArray;
-            token = Parser_MatchToken(ctx, TK_LEFT_SQUARE_BRACKET, &pDirectDeclarator->ClueList2);
-            if (token == TK_STATIC)
-            {
-            }
-            else if (token == TK_AUTO)
-            {
-                //int a[auto];
-                pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeAutoArray;
-                Parser_MatchToken(ctx, TK_AUTO, &pDirectDeclarator->ClueList3);
-            }
-            else
-            {
-                if (token != TK_RIGHT_SQUARE_BRACKET)
+                //      pDirectDeclarator->token = token;
+                //      //assert(pDirectDeclarator->pParametersOpt == NULL);
+                //      pDirectDeclarator->pParametersOpt = TParameterList_Create();
+                token = Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pDirectDeclarator->ClueList2);
+                //Para indicar que eh uma funcao
+                pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeFunction;
+                if (token != TK_RIGHT_PARENTHESIS)
                 {
-                    //assert(pDirectDeclarator->pExpression == NULL);
-                    AssignmentExpression(ctx, &pDirectDeclarator->pExpression);
+                    //opt
+                    Parameter_Type_List(ctx, &pDirectDeclarator->Parameters);
+                }
+                token = Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pDirectDeclarator->ClueList3);
+                if (token == TK_IDENTIFIER && strcmp(Lexeme(ctx), "overload") == 0)
+                {
+                    /*
+                      int f() overload;
+                      int f() overload, a;
+                    */
+                    struct StrBuilder sb = STRBUILDER_INIT;
+                    /*ainda nao tem o retorno specifiers no  name mangling*/
+                    /*esta declaracao fica no codeprint*/
+                    StrBuilder_Append(&sb, pDirectDeclarator->Identifier);
+                    ParameterList_PrintNameMangling(&pDirectDeclarator->Parameters.ParameterList, &sb);
+                    Parser_MatchToken(ctx, TK_IDENTIFIER, &pDirectDeclarator->ClueList4);
+                    pDirectDeclarator->bOverload = true;
+                    pDirectDeclarator->NameMangling = sb.c_str; /*moved*/
+                }
+                break;
+            case TK_LEFT_SQUARE_BRACKET:
+                /*
+                direct-declarator [ type-qualifier-listopt assignment-expressionopt ]
+                direct-declarator [ static type-qualifier-listopt assignment-expression ]
+                direct-declarator [ type-qualifier-list static assignment-expression ]
+                direct-declarator [ type-qualifier-listopt * ]
+                */
+                ////assert(pDirectDeclarator->pParametersOpt == NULL);
+                //pDirectDeclarator->pParametersOpt = TParameterList_Create();
+                //Para indicar que eh um array
+                pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeArray;
+                token = Parser_MatchToken(ctx, TK_LEFT_SQUARE_BRACKET, &pDirectDeclarator->ClueList2);
+                if (token == TK_STATIC)
+                {
+                }
+                else if (token == TK_AUTO)
+                {
+                    //int a[auto];
+                    pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeAutoArray;
+                    Parser_MatchToken(ctx, TK_AUTO, &pDirectDeclarator->ClueList3);
                 }
                 else
                 {
-                    //array vazio é permitido se for o ultimo cara da struct
-                    //struct X { int ElementCount;  int Elements[]; };
+                    if (token != TK_RIGHT_SQUARE_BRACKET)
+                    {
+                        //assert(pDirectDeclarator->pExpression == NULL);
+                        AssignmentExpression(ctx, &pDirectDeclarator->pExpression);
+                    }
+                    else
+                    {
+                        //array vazio é permitido se for o ultimo cara da struct
+                        //struct X { int ElementCount;  int Elements[]; };
+                    }
                 }
-            }
-            Parser_MatchToken(ctx, TK_RIGHT_SQUARE_BRACKET, &pDirectDeclarator->ClueList3);
-            break;
-        default:
-            //assert(false);
-            break;
+                Parser_MatchToken(ctx, TK_RIGHT_SQUARE_BRACKET, &pDirectDeclarator->ClueList3);
+                break;
+            default:
+                //assert(false);
+                break;
         }
         token = Parser_CurrentTokenType(ctx);
         if (token != TK_LEFT_PARENTHESIS && token != TK_LEFT_SQUARE_BRACKET)
@@ -18674,21 +19100,21 @@ static bool TTypeQualifier_IsFirst(enum TokenType token)
     bool bResult = false;
     switch (token)
     {
-    case TK_CONST:
-    case TK_RESTRICT:
-    case TK_VOLATILE:
-    case TK__ATOMIC:
-        bResult = true;
-        break;
+        case TK_CONST:
+        case TK_RESTRICT:
+        case TK_VOLATILE:
+        case TK__ATOMIC:
+            bResult = true;
+            break;
 #ifdef LANGUAGE_EXTENSIONS
-    //type-qualifier-extensions
-    case TK_LEFT_SQUARE_BRACKET:
-    case TK_AUTO:
-        bResult = true;
-        break;
+            //type-qualifier-extensions
+        case TK_LEFT_SQUARE_BRACKET:
+        case TK_AUTO:
+            bResult = true;
+            break;
 #endif
-    default:
-        break;
+        default:
+            break;
     }
     return bResult;
 }
@@ -18713,23 +19139,23 @@ bool Type_Qualifier(struct Parser* ctx, struct TypeQualifier* pQualifier)
     //const char* lexeme = Lexeme(ctx);
     switch (token)
     {
-    case TK_CONST:
-    case TK_RESTRICT:
-    case TK_VOLATILE:
-    case TK__ATOMIC:
-        pQualifier->Token = token;
-        Parser_Match(ctx, &pQualifier->ClueList0);
-        bResult = true;
-        break;
+        case TK_CONST:
+        case TK_RESTRICT:
+        case TK_VOLATILE:
+        case TK__ATOMIC:
+            pQualifier->Token = token;
+            Parser_Match(ctx, &pQualifier->ClueList0);
+            bResult = true;
+            break;
 #ifdef LANGUAGE_EXTENSIONS
-    case TK_AUTO:
-        pQualifier->Token = token;
-        Parser_Match(ctx, &pQualifier->ClueList0);
-        bResult = true;
-        break;
+        case TK_AUTO:
+            pQualifier->Token = token;
+            Parser_Match(ctx, &pQualifier->ClueList0);
+            bResult = true;
+            break;
 #endif
-    default:
-        break;
+        default:
+            break;
     }
     return bResult;
 }
@@ -18790,14 +19216,14 @@ static bool IsVCAtributte(const char* lexeme)
 {
     //https://docs.microsoft.com/pt-br/cpp/c-language/summary-of-declarations?view=msvc-160
     if (strcmp(lexeme, "__asm") == 0 ||
-            strcmp(lexeme, "__based") == 0 ||
-            strcmp(lexeme, "__cdecl") == 0 ||
-            strcmp(lexeme, "__clrcall") == 0 ||
-            strcmp(lexeme, "__fastcall") == 0 ||
-            strcmp(lexeme, "__inline") == 0 ||
-            strcmp(lexeme, "__stdcall") == 0 ||
-            strcmp(lexeme, "__thiscall") == 0 ||
-            strcmp(lexeme, "__vectorcall") == 0)
+        strcmp(lexeme, "__based") == 0 ||
+        strcmp(lexeme, "__cdecl") == 0 ||
+        strcmp(lexeme, "__clrcall") == 0 ||
+        strcmp(lexeme, "__fastcall") == 0 ||
+        strcmp(lexeme, "__inline") == 0 ||
+        strcmp(lexeme, "__stdcall") == 0 ||
+        strcmp(lexeme, "__thiscall") == 0 ||
+        strcmp(lexeme, "__vectorcall") == 0)
     {
         return true;
     }
@@ -18894,35 +19320,35 @@ bool TTypeSpecifier_IsFirst(struct Parser* ctx, enum TokenType token, const char
     bool bResult = false;
     switch (token)
     {
-    case TK_VOID:
-    case TK_CHAR:
-    case TK_SHORT:
-    case TK_INT:
-    case TK_LONG:
-    //microsoft
-    case TK__INT8:
-    case TK__INT16:
-    case TK__INT32:
-    case TK__INT64:
-    case TK__WCHAR_T:
-    /////
-    case TK_FLOAT:
-    case TK_DOUBLE:
-    case TK_SIGNED:
-    case TK_UNSIGNED:
-    case TK__BOOL:
-    case TK__COMPLEX:
-    case TK__ATOMIC:
-    case TK_STRUCT:
-    case TK_UNION:
-    case TK_ENUM:
-        bResult = true;
-        break;
-    case TK_IDENTIFIER:
-        bResult = IsTypeName(ctx, TK_IDENTIFIER, lexeme);
-        break;
-    default:
-        break;
+        case TK_VOID:
+        case TK_CHAR:
+        case TK_SHORT:
+        case TK_INT:
+        case TK_LONG:
+            //microsoft
+        case TK__INT8:
+        case TK__INT16:
+        case TK__INT32:
+        case TK__INT64:
+        case TK__WCHAR_T:
+            /////
+        case TK_FLOAT:
+        case TK_DOUBLE:
+        case TK_SIGNED:
+        case TK_UNSIGNED:
+        case TK__BOOL:
+        case TK__COMPLEX:
+        case TK__ATOMIC:
+        case TK_STRUCT:
+        case TK_UNION:
+        case TK_ENUM:
+            bResult = true;
+            break;
+        case TK_IDENTIFIER:
+            bResult = IsTypeName(ctx, TK_IDENTIFIER, lexeme);
+            break;
+        default:
+            break;
     }
     return bResult;
 }
@@ -18969,84 +19395,84 @@ void Type_Specifier(struct Parser* ctx, struct TypeSpecifier** ppTypeSpecifier)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     switch (token)
     {
-    //type - specifier
-    case TK_VOID:
-    case TK_CHAR:
-    case TK_SHORT:
-    case TK_INT:
-    case TK_LONG:
-    //microsoft
-    case TK__INT8:
-    case TK__INT16:
-    case TK__INT32:
-    case TK__INT64:
-    //case TK___DECLSPEC:
-    case TK__WCHAR_T:
-    /////////
-    case TK_FLOAT:
-    case TK_DOUBLE:
-    case TK_SIGNED:
-    case TK_UNSIGNED:
-    case TK__BOOL:
-    case TK__COMPLEX:
-    {
-        struct SingleTypeSpecifier* pSingleTypeSpecifier = NEW((struct SingleTypeSpecifier)SINGLETYPESPECIFIER_INIT);
-        pSingleTypeSpecifier->Token2 = token;
-        //bResult = true;
-        Parser_Match(ctx, &pSingleTypeSpecifier->ClueList0);
-        *ppTypeSpecifier = (struct TypeSpecifier*)pSingleTypeSpecifier;
-    }
-    break;
-    //atomic-type-specifier
-    case TK__ATOMIC:
-        //bResult = true;
-        AtomicTypeSpecifier(ctx, ppTypeSpecifier);
-        break;
-    case TK_STRUCT:
-    case TK_UNION:
-    {
-        //assert(*ppTypeSpecifier == NULL);
-        //bResult = true;
-        struct StructUnionSpecifier* pStructUnionSpecifier = NEW((struct StructUnionSpecifier)STRUCTUNIONSPECIFIER_INIT);
-        *ppTypeSpecifier = (struct TypeSpecifier*)pStructUnionSpecifier;
-        Struct_Or_Union_Specifier(ctx, pStructUnionSpecifier);
-    }
-    break;
-    case TK_ENUM:
-    {
-        struct EnumSpecifier* pEnumSpecifier2 = NEW((struct EnumSpecifier)ENUMSPECIFIER_INIT);
-        *ppTypeSpecifier = (struct TypeSpecifier*)pEnumSpecifier2;
-        Enum_Specifier(ctx, pEnumSpecifier2);
-    }
-    break;
-    case TK_IDENTIFIER:
-    {
-        int bIsTypedef = IsTypeName(ctx, TK_IDENTIFIER, lexeme);
-        if (bIsTypedef)
+        //type - specifier
+        case TK_VOID:
+        case TK_CHAR:
+        case TK_SHORT:
+        case TK_INT:
+        case TK_LONG:
+            //microsoft
+        case TK__INT8:
+        case TK__INT16:
+        case TK__INT32:
+        case TK__INT64:
+            //case TK___DECLSPEC:
+        case TK__WCHAR_T:
+            /////////
+        case TK_FLOAT:
+        case TK_DOUBLE:
+        case TK_SIGNED:
+        case TK_UNSIGNED:
+        case TK__BOOL:
+        case TK__COMPLEX:
         {
             struct SingleTypeSpecifier* pSingleTypeSpecifier = NEW((struct SingleTypeSpecifier)SINGLETYPESPECIFIER_INIT);
-            if (bIsTypedef == 2 /*struct*/)
-                pSingleTypeSpecifier->Token2 = TK_STRUCT;
-            else if (bIsTypedef == 3 /*union*/)
-                pSingleTypeSpecifier->Token2 = TK_UNION;
-            else if (bIsTypedef == 4 /*enum*/)
-                pSingleTypeSpecifier->Token2 = TK_ENUM;
-            else
-                pSingleTypeSpecifier->Token2 = token;
-            pSingleTypeSpecifier->TypedefName = strdup(lexeme);
+            pSingleTypeSpecifier->Token2 = token;
             //bResult = true;
             Parser_Match(ctx, &pSingleTypeSpecifier->ClueList0);
             *ppTypeSpecifier = (struct TypeSpecifier*)pSingleTypeSpecifier;
         }
-        else
-        {
-            //assert(false); //temque chegar aqui limpo ja
-            SetError(ctx, "internal error 2");
-        }
-    }
-    break;
-    default:
         break;
+        //atomic-type-specifier
+        case TK__ATOMIC:
+            //bResult = true;
+            AtomicTypeSpecifier(ctx, ppTypeSpecifier);
+            break;
+        case TK_STRUCT:
+        case TK_UNION:
+        {
+            //assert(*ppTypeSpecifier == NULL);
+            //bResult = true;
+            struct StructUnionSpecifier* pStructUnionSpecifier = NEW((struct StructUnionSpecifier)STRUCTUNIONSPECIFIER_INIT);
+            *ppTypeSpecifier = (struct TypeSpecifier*)pStructUnionSpecifier;
+            Struct_Or_Union_Specifier(ctx, pStructUnionSpecifier);
+        }
+        break;
+        case TK_ENUM:
+        {
+            struct EnumSpecifier* pEnumSpecifier2 = NEW((struct EnumSpecifier)ENUMSPECIFIER_INIT);
+            *ppTypeSpecifier = (struct TypeSpecifier*)pEnumSpecifier2;
+            Enum_Specifier(ctx, pEnumSpecifier2);
+        }
+        break;
+        case TK_IDENTIFIER:
+        {
+            int bIsTypedef = IsTypeName(ctx, TK_IDENTIFIER, lexeme);
+            if (bIsTypedef)
+            {
+                struct SingleTypeSpecifier* pSingleTypeSpecifier = NEW((struct SingleTypeSpecifier)SINGLETYPESPECIFIER_INIT);
+                if (bIsTypedef == 2 /*struct*/)
+                    pSingleTypeSpecifier->Token2 = TK_STRUCT;
+                else if (bIsTypedef == 3 /*union*/)
+                    pSingleTypeSpecifier->Token2 = TK_UNION;
+                else if (bIsTypedef == 4 /*enum*/)
+                    pSingleTypeSpecifier->Token2 = TK_ENUM;
+                else
+                    pSingleTypeSpecifier->Token2 = token;
+                pSingleTypeSpecifier->TypedefName = strdup(lexeme);
+                //bResult = true;
+                Parser_Match(ctx, &pSingleTypeSpecifier->ClueList0);
+                *ppTypeSpecifier = (struct TypeSpecifier*)pSingleTypeSpecifier;
+            }
+            else
+            {
+                //assert(false); //temque chegar aqui limpo ja
+                SetError(ctx, "internal error 2");
+            }
+        }
+        break;
+        default:
+            break;
     }
     //token = Parser_CurrentToken(ctx);
     //if (token == TK_VERTICAL_LINE)
@@ -19096,8 +19522,8 @@ void Declaration_Specifiers(struct Parser* ctx,
     else if (TTypeSpecifier_IsFirst(ctx, token, lexeme))
     {
         if (DeclarationSpecifiers_CanAddSpeficier(pDeclarationSpecifiers,
-                token,
-                lexeme))
+            token,
+            lexeme))
         {
             struct TypeSpecifier* pTypeSpecifier = NULL;
             Type_Specifier(ctx, &pTypeSpecifier);
@@ -19138,8 +19564,8 @@ void Declaration_Specifiers(struct Parser* ctx,
     if (Declaration_Specifiers_IsFirst(ctx, token, lexeme))
     {
         if (DeclarationSpecifiers_CanAddSpeficier(pDeclarationSpecifiers,
-                token,
-                lexeme))
+            token,
+            lexeme))
         {
             Declaration_Specifiers(ctx, pDeclarationSpecifiers);
         }
@@ -19194,7 +19620,7 @@ void Initializer_List(struct Parser* ctx, struct InitializerList* pInitializerLi
         struct InitializerListItem* pTInitializerListItem = NEW((struct InitializerListItem)INITIALIZERLISTITEM_INIT);
         List_Add(pInitializerList, pTInitializerListItem);
         if (token == TK_LEFT_SQUARE_BRACKET ||
-                token == TK_FULL_STOP)
+            token == TK_FULL_STOP)
         {
             Designation(ctx, &pTInitializerListItem->DesignatorList);
         }
@@ -19238,7 +19664,7 @@ void Designator_List(struct Parser* ctx, struct DesignatorList* pDesignatorList)
             break;
         enum TokenType token = Parser_CurrentTokenType(ctx);
         if (token == TK_LEFT_SQUARE_BRACKET ||
-                token == TK_FULL_STOP)
+            token == TK_FULL_STOP)
         {
             struct Designator* pDesignatorNew = NEW((struct Designator)DESIGNATOR_INIT);
             Designator(ctx, pDesignatorNew);
@@ -19332,7 +19758,7 @@ void Parse_Declarations(struct Parser* ctx, struct Declarations* declarations);
 void PopBack(struct TokenList* clueList)
 {
     if (clueList->pHead &&
-            clueList->pHead->pNext == clueList->pTail)
+        clueList->pHead->pNext == clueList->pTail)
     {
         Token_Delete(clueList->pTail);
         clueList->pTail = clueList->pHead;
@@ -19345,7 +19771,7 @@ bool HasCommentedKeyword(struct TokenList* clueList, const char* keyword)
     bool bResult = false;
     struct Token* pCurrent = clueList->pTail;
     if (pCurrent &&
-            pCurrent->token == TK_COMMENT)
+        pCurrent->token == TK_COMMENT)
     {
         bResult = strncmp(pCurrent->lexeme.c_str + 2, keyword, strlen(keyword)) == 0;
     }
@@ -19421,8 +19847,8 @@ bool  Declaration(struct Parser* ctx,
                 //colocar os declaradores nos simbolos
                 //agora ele monta a tabela com a declaracao toda
                 for (struct InitDeclarator* pInitDeclarator = pFuncVarDeclaration->InitDeclaratorList.pHead;
-                        pInitDeclarator != NULL;
-                        pInitDeclarator = pInitDeclarator->pNext)
+                     pInitDeclarator != NULL;
+                     pInitDeclarator = pInitDeclarator->pNext)
                 {
                     const char* declaratorName = InitDeclarator_FindName(pInitDeclarator);
                     if (declaratorName != NULL)
@@ -19437,10 +19863,10 @@ bool  Declaration(struct Parser* ctx,
                     //Adiconar os parametros em um escopo um pouco a cima.
                     struct SymbolMap BlockScope2 = SYMBOLMAP_INIT;
                     struct InitDeclarator* pDeclarator3 =
-                            pFuncVarDeclaration->InitDeclaratorList.pHead;
+                        pFuncVarDeclaration->InitDeclaratorList.pHead;
                     for (struct Parameter* pParameter = pDeclarator3->pDeclarator->pDirectDeclarator->Parameters.ParameterList.pHead;
-                            pParameter != NULL;
-                            pParameter = pParameter->pNext)
+                         pParameter != NULL;
+                         pParameter = pParameter->pNext)
                     {
                         const char* parameterName = Declarator_GetName(&pParameter->Declarator);
                         if (parameterName != NULL)

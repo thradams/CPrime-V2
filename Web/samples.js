@@ -234,7 +234,7 @@ int F2(){return 2;}
 
 int main()
 {
-    do {
+    try {
         try (F1() == 1);        
         printf("this line is printed 1\\n");      
         try (F2() == 2);
@@ -243,6 +243,9 @@ int main()
         printf("this line is NOT printed 3\\n");      
         try (F2() == 0);        
         printf("this line is NOT printed 4\\n");
+    }
+    catch (int error)
+    {
     }
     printf("continuation...\\n");
 }
@@ -264,7 +267,7 @@ sample["try with defer"] =
     
     int main()
     {
-        do {
+        try {
             try (char *p1 = malloc(1); p1; Free("free p1", p1));
             printf("this line is printed 1\\n");      
             try (char *p2 = malloc(1); p2;  Free("free p2", p2));        
@@ -273,45 +276,38 @@ sample["try with defer"] =
             printf("this line NOT is printed 2\\n");
             
         }
+        catch(int error)
+        {
+        }
         printf("continuation...\\n");
     }      
 `;
 
-sample["try with defer (destructor)"] =
+sample["try with defer and loop"] =
 `
 #include <stdio.h>
-#include <stdlib.h>
 
-int F2() {return 2;}
-
-
-struct Person {
-  char* auto name;
-};
-
-void destroy(struct Person* p) overload {
-    /*
-      this is a user defined function to receive an event
-      just before the object destruction.
-      This function is called indirectly by the destroy.
-    */
-    printf("person destructor called\\n");
-}
+void defer1() { printf("defer 1 called\\n");}
+void defer2() { printf("defer 2 called\\n"); }
 
 int main()
 {
-    do {
-        try (struct Person * auto p1 = new (struct Person); p1; destroy(p1));
-        printf("this line is printed 1\\n");      
-        try (struct Person * auto p2 = new (struct Person); p2; destroy(p2));
-        printf("this line is printed 1\\n");                
-        try (F2() == 0);
-        printf("this line NOT is printed 2\\n");
+    int j;
+    try
+    {
+        try (int i = 0; i == 0; defer1());
+        for (int k = 0; k < 10; k++)
+        {
+           printf("%d ", k);
+           if (k == 5) {throw k;}
+        }
         
     }
-    printf("continuation...\\n");
+    catch (int errorcode)
+    {
+      printf("erro %d\\n", errorcode);
+    }
 }
-
 `
 
 sample["try error propagation pattern"] =
@@ -339,14 +335,15 @@ int main()
 {
     struct error error = {0};
 
-    do {
+    try {
         try(Parse1(&error) == 0);
         try(Parse2(&error) == 0);
         try(Parse3(&error) == 0);
     }
-
-    if (error.code != 0)
-      printf("parsing error : %s", error.message);
+    catch (int errorcode)
+    {
+       printf("parsing error : %s", error.message);
+    }
       
     printf("continuation...\\n");
 }

@@ -262,7 +262,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
       return words.propertyIsEnumerable(word);
     }
   }
-  var cKeywords = "auto if break case register continue return default do sizeof " +
+  var cKeywords = "throw auto if break case register continue return default do sizeof " +
     "static else struct switch extern typedef union for goto while enum const volatile overload destroy new";
   var cTypes = "int long char short double float unsigned signed void size_t ptrdiff_t";
 
@@ -368,7 +368,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
   def(["text/x-csrc", "text/x-c", "text/x-chdr"], {
     name: "clike",
     keywords: words(cKeywords),
-    types: words(cTypes + " _Static_assert try bool _Complex _Bool float_t double_t intptr_t intmax_t " +
+      types: words(cTypes + "throw catch _Static_assert try bool _Complex _Bool float_t double_t intptr_t intmax_t " +
                  "int8_t int16_t int32_t int64_t uintptr_t uintmax_t uint8_t uint16_t " +
                  "uint32_t uint64_t restrict _Noreturn"),
     blockKeywords: words("case do else for if switch while struct"),
@@ -641,7 +641,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     keywords: words("sampler1D sampler2D sampler3D samplerCube " +
                     "sampler1DShadow sampler2DShadow " +
                     "const attribute uniform varying " +
-                    "break continue discard return " +
+                    "break continue discard return throw" +
                     "for while do if else struct " +
                     "in out inout"),
     types: words("float int bool void " +
@@ -709,7 +709,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
 
   def("text/x-objectivec", {
     name: "clike",
-    keywords: words(cKeywords + "try inline restrict _Static_assert _Bool _Complex _Imaginary BOOL Class bycopy byref id IMP in " +
+    keywords: words(cKeywords + "catch throw try inline restrict _Static_assert _Bool _Complex _Imaginary BOOL Class bycopy byref id IMP in " +
                     "inout nil oneway out Protocol SEL self super atomic nonatomic retain copy readwrite readonly"),
     types: words(cTypes),
     atoms: words("YES NO NULL NILL ON OFF true false"),
@@ -729,7 +729,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
   def("text/x-squirrel", {
     name: "clike",
     keywords: words("base break clone continue const default delete enum extends function in class" +
-                    " foreach local resume return this throw typeof yield constructor instanceof static"),
+                    " throw foreach local resume return this throw typeof yield constructor instanceof static"),
     types: words(cTypes),
     blockKeywords: words("case catch class else for foreach if switch try while"),
     defKeywords: words("function local class"),

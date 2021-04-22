@@ -208,6 +208,7 @@ enum TokenType
     ////////////////
     TK_REGISTER,
     TK_RETURN,
+    TK_THROW, /*extension*/
     TK_SHORT,
     TK_SIGNED,
     TK_SIZEOF,
@@ -220,6 +221,7 @@ enum TokenType
     TK_VOID,
     TK_VOLATILE,
     TK_WHILE,
+    TK_CATCH, /*ex*/
     TK__THREAD_LOCAL,
     TK__BOOL,
     TK__COMPLEX,
@@ -440,6 +442,8 @@ enum Type
     AsmStatement_ID,
     WhileStatement_ID,
     DoStatement_ID,
+    TryBlockStatement_ID,
+    TryStatement_ID,
     IfStatement_ID,
     TypeName_ID,
     Enumerator_ID,
@@ -540,7 +544,7 @@ struct CompoundStatement
     struct BlockItemList BlockItemList;
     struct TokenList ClueList0;
     struct TokenList ClueList1;
-
+    bool bVirtual;
 };
 
 #define COMPOUNDSTATEMENT_INIT {CompoundStatement_ID}
@@ -679,6 +683,27 @@ struct DoStatement
 #define DOSTATEMENT_INIT {DoStatement_ID}
 void DoStatement_Delete(struct DoStatement* p);
 
+struct TryBlockStatement
+{
+    /*
+    try-block:
+       try compound-statement catch ( parameter ) compound-statement
+    */
+
+    enum Type Type;
+    struct Parameter* pParameter;
+    struct CompoundStatement* pCompoundStatement;
+    struct CompoundStatement* pCompoundCatchStatement;
+    struct TokenList ClueListTry;    
+    struct TokenList ClueListCatch;
+    struct TokenList ClueListLeftPar;
+    struct TokenList ClueListRightPar;
+    
+
+};
+#define TRYBLOCKSTATEMENT_INIT {TryBlockStatement_ID}
+void TryBlockStatement_Delete(struct TryBlockStatement* p);
+
 struct LabeledStatement
 {
     enum Type Type;
@@ -752,6 +777,36 @@ struct IfStatement
 
 #define IFSTATEMENT_INIT  {IfStatement_ID}
 void IfStatement_Delete(struct IfStatement* p);
+
+
+struct TryStatement
+{
+    /*
+    selection-statement:
+     try (condition-expression) ;
+     try (declaration or expression ; condition-expression; defer optional) ;
+    */
+
+    enum Type Type;
+
+    struct AnyDeclaration* pInitDeclarationOpt;
+    struct Expression* pDeferExpression;
+    struct Expression* pConditionExpression;
+    struct Expression* pInitialExpression;
+
+    struct Statement* pStatement;
+    
+    struct TokenList ClueList0; //if or try
+    struct TokenList ClueList1; //(
+    struct TokenList ClueList2; //;
+    struct TokenList ClueList3; //;
+    struct TokenList ClueList4; //)
+    struct TokenList ClueList5; //)
+    struct TokenList ClueList6; //; 
+};
+
+#define TRYSTATEMENT_INIT  {TryStatement_ID}
+void TryStatement_Delete(struct TryStatement* p);
 
 
 struct Statement
