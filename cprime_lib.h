@@ -773,6 +773,7 @@ struct IfStatement
     struct TokenList ClueList4; //)
     struct TokenList ClueList5; //)
     struct TokenList ClueList6; //; 
+    struct TokenList ClueListThrow; //; 
 };
 
 #define IFSTATEMENT_INIT  {IfStatement_ID}
@@ -793,6 +794,7 @@ struct TryStatement
     struct Expression* pDeferExpression;
     struct Expression* pConditionExpression;
     struct Expression* pInitialExpression;
+    struct Expression* pThrowExpression;
 
     struct Statement* pStatement;
     
@@ -803,6 +805,7 @@ struct TryStatement
     struct TokenList ClueList4; //)
     struct TokenList ClueList5; //)
     struct TokenList ClueList6; //; 
+    struct TokenList ClueListThrow; //; 
 };
 
 #define TRYSTATEMENT_INIT  {TryStatement_ID}

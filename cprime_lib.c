@@ -4057,7 +4057,7 @@ struct PrintCodeOptions
     int IdentationLevel;
     //
 
-    
+
 
     struct StrBuilder sbPreDeclaration;
     struct HashMap instantiations;
@@ -7305,9 +7305,9 @@ static void TCompoundStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
                                          struct StrBuilder* fp)
 {
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-    
+
     if (!p->bVirtual)
-      Output_Append(fp, options, "{");
+        Output_Append(fp, options, "{");
 
     for (int j = 0; j < p->BlockItemList.size; j++)
     {
@@ -7317,7 +7317,7 @@ static void TCompoundStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
     TNodeClueList_CodePrint(options, &p->ClueList1, fp);
 
     if (!p->bVirtual)
-        Output_Append(fp, options, "}");    
+        Output_Append(fp, options, "}");
 }
 
 
@@ -7445,31 +7445,47 @@ static void TTryBlockStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct 
     TNodeClueList_CodePrint(options, &p->ClueListTry, fp);
     //StrBuilder_AppendFmt
     Output_Append(fp, options, "/*try-block*/ { ");
-    TParameter_CodePrint(pSyntaxTree, options, p->pParameter, fp);
+    if (p->pParameter)
+    {
+        TParameter_CodePrint(pSyntaxTree, options, p->pParameter, fp);
+    }
+    else
+    {
+        Output_Append(fp, options, "int _try_error");
+    }
 
     //Output_Append(fp, options, indestrs);
     Output_Append(fp, options, " = 0;");
 
 
     TCompoundStatement_CodePrint(pSyntaxTree, options, p->pCompoundStatement, fp);
-    TNodeClueList_CodePrint(options, &p->ClueListCatch, fp);
-    TNodeClueList_CodePrint(options, &p->ClueListLeftPar, fp);
-    TNodeClueList_CodePrint(options, &p->ClueListRightPar, fp);
 
-    Output_Append(fp, options, "/*catch*/ goto _exit_try_label");
-    Output_Append(fp, options, indestrs);
-    Output_Append(fp, options, ";");
+    if (p->pCompoundCatchStatement)
+    {
+        TNodeClueList_CodePrint(options, &p->ClueListCatch, fp);
+        TNodeClueList_CodePrint(options, &p->ClueListLeftPar, fp);
+        TNodeClueList_CodePrint(options, &p->ClueListRightPar, fp);
 
-    Output_Append(fp, options, "_catch_label");
-    Output_Append(fp, options, indestrs);
-    Output_Append(fp, options, ":;");
+        Output_Append(fp, options, "/*catch*/ goto _exit_try_label");
+        Output_Append(fp, options, indestrs);
+        Output_Append(fp, options, ";");
 
-    TCompoundStatement_CodePrint(pSyntaxTree, options, p->pCompoundCatchStatement, fp);
+        Output_Append(fp, options, "_catch_label");
+        Output_Append(fp, options, indestrs);
+        Output_Append(fp, options, ":;");
 
-    Output_Append(fp, options, "_exit_try_label");
-    Output_Append(fp, options, indestrs);
-    Output_Append(fp, options, ":;");
+        TCompoundStatement_CodePrint(pSyntaxTree, options, p->pCompoundCatchStatement, fp);
 
+        Output_Append(fp, options, "_exit_try_label");
+        Output_Append(fp, options, indestrs);
+        Output_Append(fp, options, ":;");
+    }
+    else
+    {
+        Output_Append(fp, options, "_catch_label");
+        Output_Append(fp, options, indestrs);
+        Output_Append(fp, options, ":;");
+    }
 
     Output_Append(fp, options, "} /*end try-block*/");
 
@@ -7520,14 +7536,13 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
         {
             if (options->pCurrentTryBlock)
             {
+                Output_Append(fp, options, "/*throw*/ {");
+
                 char try_statement_index_string[20];
                 snprintf(try_statement_index_string, sizeof(try_statement_index_string), "%d", try_statement_index);
 
                 if (p->pExpression && options->sbDefer.size > 0)
                 {
-
-
-                    //Output_Append(fp, options, options->returnType.c_str);
                     if (options->pCurrentTryBlock->pParameter)
                     {
                         TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameter->Declarator, fp);
@@ -7540,12 +7555,10 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
                         /*error tem que estar dentro de try*/
                     }
 
-
-
-
                     Output_Append(fp, options, options->sbDefer.c_str);
                     Output_Append(fp, options, " goto _catch_label");
                     Output_Append(fp, options, try_statement_index_string);
+                    Output_Append(fp, options, ";");
                 }
                 else
                 {
@@ -7554,15 +7567,18 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
                     Output_Append(fp, options, " = ");
                     TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
                     Output_Append(fp, options, ";");
-                    TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+                    
                     Output_Append(fp, options, " goto _catch_label");
                     Output_Append(fp, options, try_statement_index_string);
+                    Output_Append(fp, options, ";");
                 }
+                Output_Append(fp, options, "}");
             }
             else
             {
                 Output_Append(fp, options, "#error throw can be used only inside try-blocks");
             }
+            
         }
         break;
 
@@ -7616,9 +7632,9 @@ static void TSwitchStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Pr
 
 
 static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
-                                   struct PrintCodeOptions* options,
-                                   struct TryStatement* p,
-                                   struct StrBuilder* fp)
+                                    struct PrintCodeOptions* options,
+                                    struct TryStatement* p,
+                                    struct StrBuilder* fp)
 {
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
     Output_Append(fp, options, "/*try*/ ");
@@ -7652,7 +7668,7 @@ static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
     TNodeClueList_CodePrint(options, &p->ClueList4, fp);
     Output_Append(fp, options, ")) { ");
 
-    #pragma region throw_block
+#pragma region throw_block
     { /*mesmo codigo throw refatorar*/
         char try_statement_index_string[20];
         snprintf(try_statement_index_string, sizeof(try_statement_index_string), "%d", try_statement_index);
@@ -7684,8 +7700,25 @@ static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
         else
         {
             Output_Append(fp, options, options->sbDefer.c_str);
-            TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameter->Declarator, fp);
-            Output_Append(fp, options, " = 1;");
+            if (options->pCurrentTryBlock->pParameter)
+            {
+                TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameter->Declarator, fp);
+            }
+            else
+            {
+                Output_Append(fp, options, "_try_error");
+            }
+            Output_Append(fp, options, " = ");
+            if (p->pThrowExpression)
+            {
+                TExpression_CodePrint(pSyntaxTree, options, p->pThrowExpression, fp);
+            }
+            else
+            {
+                Output_Append(fp, options, "1");
+            }
+            Output_Append(fp, options, ";");
+
             //TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
             //Output_Append(fp, options, ";");
             //TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
@@ -7694,7 +7727,7 @@ static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
             Output_Append(fp, options, ";");
         }
     } /*refatorar com threoe*/
-    #pragma endregion 
+#pragma endregion 
 
 
     Output_Append(fp, options, "}");
@@ -7734,14 +7767,14 @@ static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
         else
             TStatement_CodePrint(pSyntaxTree, options, p->pStatement, fp);
     }
-    
-    
+
+
 
 
 
     if (p->pInitDeclarationOpt)
     {
-       // Output_Append(fp, options, "}");
+        // Output_Append(fp, options, "}");
     }
 }
 
@@ -10000,7 +10033,11 @@ void SyntaxTree_PrintCodeToString(struct SyntaxTree* pSyntaxTree,
 {
     struct PrintCodeOptions options = CODE_PRINT_OPTIONS_INIT;
     options.Options = *options0;
+    
+    /*reseta contadores de geracao*/
     global_lambda_counter = 0;
+    try_statement_index = 0;
+
     int k = 0;
     struct StrBuilder sb = STRBUILDER_INIT;
     StrBuilder_Reserve(&sb, 80 * 5000);
@@ -12250,7 +12287,7 @@ void TryBlockStatement_Delete(struct TryBlockStatement* p)
         TokenList_Destroy(&p->ClueListCatch);
         TokenList_Destroy(&p->ClueListLeftPar);
         TokenList_Destroy(&p->ClueListRightPar);
-        
+
         free((void*)p);
     }
 }
@@ -12316,6 +12353,7 @@ void IfStatement_Delete(struct IfStatement* p)
         TokenList_Destroy(&p->ClueList4);
         TokenList_Destroy(&p->ClueList5);
         TokenList_Destroy(&p->ClueList6);
+        TokenList_Destroy(&p->ClueListThrow);
         free((void*)p);
     }
 }
@@ -12326,8 +12364,11 @@ void TryStatement_Delete(struct TryStatement* p)
     {
         Expression_Delete(p->pInitialExpression);
         Expression_Delete(p->pConditionExpression);
-        Statement_Delete(p->pStatement);
+        Expression_Delete(p->pThrowExpression);
         
+
+        Statement_Delete(p->pStatement);
+
         TokenList_Destroy(&p->ClueList0);
         TokenList_Destroy(&p->ClueList1);
         TokenList_Destroy(&p->ClueList2);
@@ -12335,6 +12376,8 @@ void TryStatement_Delete(struct TryStatement* p)
         TokenList_Destroy(&p->ClueList4);
         TokenList_Destroy(&p->ClueList5);
         TokenList_Destroy(&p->ClueList6);
+        TokenList_Destroy(&p->ClueListThrow);
+        
         free((void*)p);
     }
 }
@@ -17523,28 +17566,28 @@ void Selection_Statement(struct Parser* ctx, struct Statement** ppStatement)
     {
         case TK_TRY:
         {
-            struct TryStatement* pIfStatement = NEW((struct TryStatement)TRYSTATEMENT_INIT);
-            *ppStatement = (struct Statement*)pIfStatement;
-            Parser_Match(ctx, &pIfStatement->ClueList0);
-            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pIfStatement->ClueList1);
+            struct TryStatement* pTryStatement = NEW((struct TryStatement)TRYSTATEMENT_INIT);
+            *ppStatement = (struct Statement*)pTryStatement;
+            Parser_Match(ctx, &pTryStatement->ClueList0);
+            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pTryStatement->ClueList1);
             struct SymbolMap BlockScope = SYMBOLMAP_INIT;
             BlockScope.pPrevious = ctx->pCurrentScope;
             ctx->pCurrentScope = &BlockScope;
             //primeira expressao do if
-            bool bHasDeclaration = Declaration(ctx, &pIfStatement->pInitDeclarationOpt);
+            bool bHasDeclaration = Declaration(ctx, &pTryStatement->pInitDeclarationOpt);
             if (bHasDeclaration)
             {
                 token = Parser_CurrentTokenType(ctx);
                 //Esta eh a 2 expressao do if a que tem a condicao a declaracao ja comeu 1
-                Expression(ctx, &pIfStatement->pConditionExpression);
+                Expression(ctx, &pTryStatement->pConditionExpression);
                 token = Parser_CurrentTokenType(ctx);
                 if (token == TK_SEMICOLON)
                 {
                     //TEM DEFER
-                    Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList2);
-                    Expression(ctx, &pIfStatement->pDeferExpression);
+                    Parser_MatchToken(ctx, TK_SEMICOLON, &pTryStatement->ClueList2);
+                    Expression(ctx, &pTryStatement->pDeferExpression);
                 }
-                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList4);
+                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pTryStatement->ClueList4);
             }
             else /*if normal*/
             {
@@ -17554,14 +17597,14 @@ void Selection_Statement(struct Parser* ctx, struct Statement** ppStatement)
 
                 if (token == TK_SEMICOLON)
                 {
-                    Parser_Match(ctx, &pIfStatement->ClueList2);
-                    pIfStatement->pInitialExpression = pExpression;
-                    Expression(ctx, &pIfStatement->pConditionExpression);
+                    Parser_Match(ctx, &pTryStatement->ClueList2);
+                    pTryStatement->pInitialExpression = pExpression;
+                    Expression(ctx, &pTryStatement->pConditionExpression);
                 }
                 else if (token == TK_RIGHT_PARENTHESIS)
                 {
-                    //Parser_Match(ctx, &pIfStatement->ClueList2);
-                    pIfStatement->pConditionExpression = pExpression;
+                    //Parser_Match(ctx, &pTryStatement->ClueList2);
+                    pTryStatement->pConditionExpression = pExpression;
                 }
                 else {
                     //error
@@ -17571,18 +17614,25 @@ void Selection_Statement(struct Parser* ctx, struct Statement** ppStatement)
                 if (token == TK_SEMICOLON)
                 {
                     //TEM DEFER
-                    Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList3);
-                    Expression(ctx, &pIfStatement->pDeferExpression);
+                    Parser_MatchToken(ctx, TK_SEMICOLON, &pTryStatement->ClueList3);
+                    Expression(ctx, &pTryStatement->pDeferExpression);
                 }
-                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList4);
+                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pTryStatement->ClueList4);
+            }
+
+            token = Parser_CurrentTokenType(ctx);
+            if (token == TK_THROW)
+            {
+                Parser_Match(ctx, &pTryStatement->ClueListThrow);
+                Expression(ctx, &pTryStatement->pThrowExpression);
             }
 
 
-                Parser_MatchToken(ctx, TK_SEMICOLON, &pIfStatement->ClueList5);
-                VirtualCompound_Statement(ctx, &pIfStatement->pStatement);
-            
-            
+            Parser_MatchToken(ctx, TK_SEMICOLON, &pTryStatement->ClueList5);
+            VirtualCompound_Statement(ctx, &pTryStatement->pStatement);
 
+
+         
             ctx->pCurrentScope = BlockScope.pPrevious;
         }
         break;
@@ -17643,16 +17693,16 @@ void Selection_Statement(struct Parser* ctx, struct Statement** ppStatement)
                 Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pIfStatement->ClueList4);
             }
 
-            
-                Statement(ctx, &pIfStatement->pStatement);
-                token = Parser_CurrentTokenType(ctx);
-                if (token == TK_ELSE)
-                {
-                    Parser_Match(ctx, &pIfStatement->ClueList3);
-                    Statement(ctx, &pIfStatement->pElseStatement);
-                }
 
-            
+            Statement(ctx, &pIfStatement->pStatement);
+            token = Parser_CurrentTokenType(ctx);
+            if (token == TK_ELSE)
+            {
+                Parser_Match(ctx, &pIfStatement->ClueList3);
+                Statement(ctx, &pIfStatement->pElseStatement);
+            }
+
+
 
             ctx->pCurrentScope = BlockScope.pPrevious;
         }
@@ -17780,17 +17830,25 @@ void Iteration_Statement(struct Parser* ctx, struct Statement** ppStatement)
             Parser_Match(ctx, &pTryBlockStatement->ClueListTry);
             Compound_Statement(ctx, &pTryBlockStatement->pCompoundStatement);
             token = Parser_CurrentTokenType(ctx);
-            
-            Parser_MatchToken(ctx, TK_CATCH, &pTryBlockStatement->ClueListCatch);
-            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pTryBlockStatement->ClueListLeftPar);
+            if (token == TK_CATCH)
+            {
+                Parser_MatchToken(ctx, TK_CATCH, &pTryBlockStatement->ClueListCatch);
+                Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pTryBlockStatement->ClueListLeftPar);
 
-            pTryBlockStatement->pParameter = NEW((struct Parameter) {PARAMETER_INIT});
+                pTryBlockStatement->pParameter = NEW((struct Parameter) {
+                    PARAMETER_INIT
+                });
 
-            Parameter_Declaration(ctx, pTryBlockStatement->pParameter);
-            
-            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pTryBlockStatement->ClueListRightPar);
+                Parameter_Declaration(ctx, pTryBlockStatement->pParameter);
 
-            Compound_Statement(ctx, &pTryBlockStatement->pCompoundCatchStatement);
+                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pTryBlockStatement->ClueListRightPar);
+
+                Compound_Statement(ctx, &pTryBlockStatement->pCompoundCatchStatement);
+            }
+            else
+            {
+                //sem catch
+            }
         }
         break;
         case TK_DO:
@@ -20158,6 +20216,49 @@ char* CompileText(int type, int bNoImplicitTag, const char* input);
 "\n"\
 "#endif /* _STDBOOL */\n"
 
+#define STDERRNO \
+"#pragma once\n"\
+"\n"\
+"extern int errno;\n"\
+"\n"\
+"// Error codes\n"\
+"#define EPERM           1\n"\
+"#define ENOENT          2\n"\
+"#define ESRCH           3\n"\
+"#define EINTR           4\n"\
+"#define EIO             5\n"\
+"#define ENXIO           6\n"\
+"#define E2BIG           7\n"\
+"#define ENOEXEC         8\n"\
+"#define EBADF           9\n"\
+"#define ECHILD          10\n"\
+"#define EAGAIN          11\n"\
+"#define ENOMEM          12\n"\
+"#define EACCES          13\n"\
+"#define EFAULT          14\n"\
+"#define EBUSY           16\n"\
+"#define EEXIST          17\n"\
+"#define EXDEV           18\n"\
+"#define ENODEV          19\n"\
+"#define ENOTDIR         20\n"\
+"#define EISDIR          21\n"\
+"#define ENFILE          23\n"\
+"#define EMFILE          24\n"\
+"#define ENOTTY          25\n"\
+"#define EFBIG           27\n"\
+"#define ENOSPC          28\n"\
+"#define ESPIPE          29\n"\
+"#define EROFS           30\n"\
+"#define EMLINK          31\n"\
+"#define EPIPE           32\n"\
+"#define EDOM            33\n"\
+"#define EDEADLK         36\n"\
+"#define ENAMETOOLONG    38\n"\
+"#define ENOLCK          39\n"\
+"#define ENOSYS          40\n"\
+"#define ENOTEMPTY       41\n"\
+"\n"
+
 char* CompileText(int type, int bNoImplicitTag, const char* input)
 {
     struct EmulatedFile* files[] =
@@ -20169,6 +20270,7 @@ char* CompileText(int type, int bNoImplicitTag, const char* input)
         &(struct EmulatedFile) {"c:/stdlib.h", STDLIB},
         &(struct EmulatedFile) {"c:/string.h", STRING},
         &(struct EmulatedFile) {"c:/stdbool.h", STDBOOL},
+        &(struct EmulatedFile) {"c:/errno.h", STDERRNO},
         NULL
     };
     s_emulatedFiles = files;

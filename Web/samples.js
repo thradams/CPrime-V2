@@ -224,57 +224,78 @@ int main()
 
 
 
-sample["try"] =
-    `
+sample["try-block statement"] =
+`
 #include <stdio.h>
-#include <stdlib.h>
 
-int F1(){return 1;}
-int F2(){return 2;}
+int F1(){ return 1; }
 
 int main()
 {
     try {
-        try (F1() == 1);        
-        printf("this line is printed 1\\n");      
-        try (F2() == 2);
-        printf("this line is printed 2\\n");
-        try (F1() == 0);        
-        printf("this line is NOT printed 3\\n");      
-        try (F2() == 0);        
-        printf("this line is NOT printed 4\\n");
+        if (F1() != 0)
+          throw 2;
     }
     catch (int error)
     {
+      printf("catch error %d\\n", error);
     }
+  
     printf("continuation...\\n");
 }
 `;
 
+sample["try statement"] =
+`
+    #include <stdio.h>
+    
+    int F() { return 1; }
+    
+    int main()
+    {
+        try {            
+            try (F() == 0); /*if fails throw 1*/
+        }
+        catch(int error)
+        {
+          printf("error %d \\n", error);
+        }
+        printf("continuation...\\n");
+    }      
+
+`;
+
+
+sample["try statement throw"] =
+    `
+    #include <stdio.h>
+    
+    int F() { return 1; }
+    
+    int main()
+    {
+        try {            
+            try (F() == 0) throw 2;
+        }
+        catch(int error)
+        {
+          printf("error %d \\n", error);
+        }
+        printf("continuation...\\n");
+    }      
+
+`;
 
 sample["try with defer"] =
 `
     #include <stdio.h>
     #include <stdlib.h>
-    
-    int F2() {return 2;}
-    
-    void Free(const char* msg, void* p)
-    {
-       printf("%s\\n",msg);
-       free(p);
-    }
+    #include <errno.h>
     
     int main()
     {
         try {
-            try (char *p1 = malloc(1); p1; Free("free p1", p1));
-            printf("this line is printed 1\\n");      
-            try (char *p2 = malloc(1); p2;  Free("free p2", p2));        
-            printf("this line is printed 1\\n");                
-            try (F2() == 0);
-            printf("this line NOT is printed 2\\n");
-            
+            try (FILE* f = fopen(\"input.txt\", \"r\"); f; fclose(f)) throw errno;
         }
         catch(int error)
         {
@@ -312,6 +333,7 @@ int main()
 
 sample["try error propagation pattern"] =
 `
+
 #include <stdio.h>
 
 struct error {
@@ -319,16 +341,32 @@ struct error {
   char message[100];
 };
 
-int Parse1(struct error* error){
+int Parse1(struct error* error) {
+  /*some code*/
   return error->code;
 }
 
-int Parse2(struct error* error){
+int Parse2(struct error* error) {
+  /*some code*/
+  error->code = 2;
+  snprintf(error->message, sizeof(error->message), "missing token at 2...");
   return error->code;
 }
 
-int Parse3(struct error* error){
+int Parse3(struct error* error) {
+  /*some code*/
   return error->code;
+}
+
+int F(struct error* error)
+{
+    try {
+        try(Parse1(error) == 0);
+        try(Parse2(error) == 0);
+        try(Parse3(error) == 0);
+    } /*catch is optional*/
+  
+    return error->code;
 }
 
 int main()
@@ -336,13 +374,13 @@ int main()
     struct error error = {0};
 
     try {
-        try(Parse1(&error) == 0);
-        try(Parse2(&error) == 0);
-        try(Parse3(&error) == 0);
+        try(F(&error) == 0);        
     }
-    catch (int errorcode)
+    
+    
+    if (error.code != 0)
     {
-       printf("parsing error : %s", error.message);
+       printf("parsing error : %s\\n", error.message);
     }
       
     printf("continuation...\\n");

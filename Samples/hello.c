@@ -1,18 +1,45 @@
 
+//#include <stdio.h>
 
-void defer1() {}
-void defer2() {}
+struct error {
+    int code;
+    char message[100];
+};
+
+int Parse1(struct error* error) {
+    return error->code;
+}
+
+int Parse2(struct error* error) {
+    return error->code;
+}
+
+int Parse3(struct error* error) {
+    return error->code;
+}
+
+int F(struct error* error)
+{
+    try {
+        try(Parse1(error) == 0);
+        try(Parse2(error) == 0);
+        try(Parse3(error) == 0);
+    }
+    return error->code;
+}
 
 int main()
 {
-    int j;
-    try
-    {        
-        try (int i = 0; i == 1; defer1());
-        try (int i2 = 0; i2 == 1; defer2());
-        /*B*/
+    struct error error = { 0 };
+
+    try {
+        try(F(&error) == 0);
     }
-    /*C*/ catch (int meunome)
+    catch (int errorcode)
     {
+        printf("parsing error : %s", error.message);
     }
+
+    printf("continuation...\n");
 }
+
