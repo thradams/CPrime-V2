@@ -21,10 +21,10 @@ int Parse3(struct error* error) {
 int F(struct error* error)
 {
     
-    /*try-block*/ { int _try_error = 0; {
-        /*try*/ if (!(Parse1(error) == 0)) { _try_error =  = 1; goto _catch_label1;}
-        /*try*/ if (!(Parse2(error) == 0)) { _try_error =  = 1; goto _catch_label1;}
-        /*try*/ if (!(Parse3(error) == 0)) { _try_error =  = 1; goto _catch_label1;}
+    /*try-block*/ {  {
+        /*try*/ if (!(Parse1(error) == 0)) {  goto _catch_label1;}
+        /*try*/ if (!(Parse2(error) == 0)) {  goto _catch_label1;}
+        /*try*/ if (!(Parse3(error) == 0)) {  goto _catch_label1;}
     }_catch_label1:;} /*end try-block*/
     return error->code;
 }
@@ -35,10 +35,11 @@ int main()
 
     
 
-    /*try-block*/ { int errorcode = 0; {
-        /*try*/ if (!(F(&error) == 0)) {  errorcode = 1; goto _catch_label1;}
+    /*try-block*/ {  {
+        /*try*/ if (!(F(&error) == 0)) {  goto _catch_label1;}
+        
     }
-     /*catch*/ goto _exit_try_label1;_catch_label1:;
+    /*catch*/ goto _exit_try_label1;_catch_label1:;
     {
         printf("parsing error : %s", error.message);
     }_exit_try_label1:;} /*end try-block*/

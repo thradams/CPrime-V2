@@ -7445,17 +7445,11 @@ static void TTryBlockStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct 
     TNodeClueList_CodePrint(options, &p->ClueListTry, fp);
     //StrBuilder_AppendFmt
     Output_Append(fp, options, "/*try-block*/ { ");
-    if (p->pParameter)
+    if (p->pParameterOptional)
     {
-        TParameter_CodePrint(pSyntaxTree, options, p->pParameter, fp);
+        TParameter_CodePrint(pSyntaxTree, options, p->pParameterOptional, fp);
+        Output_Append(fp, options, ";");
     }
-    else
-    {
-        Output_Append(fp, options, "int _try_error");
-    }
-
-    //Output_Append(fp, options, indestrs);
-    Output_Append(fp, options, " = 0;");
 
 
     TCompoundStatement_CodePrint(pSyntaxTree, options, p->pCompoundStatement, fp);
@@ -7489,10 +7483,6 @@ static void TTryBlockStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct 
 
     Output_Append(fp, options, "} /*end try-block*/");
 
-    //else
-    //{
-      //  Output_Append(fp, options, " while(0);");
-    //}
     try_statement_index--;
     options->pCurrentTryBlock = pOld;
 }
@@ -7543,17 +7533,14 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
 
                 if (p->pExpression && options->sbDefer.size > 0)
                 {
-                    if (options->pCurrentTryBlock->pParameter)
+                    if (options->pCurrentTryBlock->pParameterOptional)
                     {
-                        TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameter->Declarator, fp);
+                        TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameterOptional->Declarator, fp);
                         Output_Append(fp, options, " = ");
                         TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
                         Output_Append(fp, options, ";");
                     }
-                    else
-                    {
-                        /*error tem que estar dentro de try*/
-                    }
+                  
 
                     Output_Append(fp, options, options->sbDefer.c_str);
                     Output_Append(fp, options, " goto _catch_label");
@@ -7562,12 +7549,15 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
                 }
                 else
                 {
-                    Output_Append(fp, options, options->sbDefer.c_str);
-                    TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameter->Declarator, fp);
-                    Output_Append(fp, options, " = ");
-                    TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
-                    Output_Append(fp, options, ";");
-                    
+                    if (options->pCurrentTryBlock->pParameterOptional)
+                    {
+                        Output_Append(fp, options, options->sbDefer.c_str);
+                        TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameterOptional->Declarator, fp);
+                        Output_Append(fp, options, " = ");
+                        TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+                        Output_Append(fp, options, ";");
+                    }
+
                     Output_Append(fp, options, " goto _catch_label");
                     Output_Append(fp, options, try_statement_index_string);
                     Output_Append(fp, options, ";");
@@ -7675,22 +7665,12 @@ static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
 
         if (options->sbDefer.size > 0)
         {
-
-
-            //Output_Append(fp, options, options->returnType.c_str);
-            if (options->pCurrentTryBlock->pParameter)
+            if (options->pCurrentTryBlock->pParameterOptional)
             {
-                TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameter->Declarator, fp);
+                TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameterOptional->Declarator, fp);
                 Output_Append(fp, options, " = 1;");
 
             }
-            else
-            {
-                /*error tem que estar dentro de try*/
-            }
-
-
-
 
             Output_Append(fp, options, options->sbDefer.c_str);
             Output_Append(fp, options, " goto _catch_label");
@@ -7700,28 +7680,28 @@ static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
         else
         {
             Output_Append(fp, options, options->sbDefer.c_str);
-            if (options->pCurrentTryBlock->pParameter)
-            {
-                TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameter->Declarator, fp);
-            }
-            else
-            {
-                Output_Append(fp, options, "_try_error");
-            }
-            Output_Append(fp, options, " = ");
+            
             if (p->pThrowExpression)
             {
+                if (options->pCurrentTryBlock->pParameterOptional)
+                {
+                    TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameterOptional->Declarator, fp);
+                }
+                else
+                {
+                    Output_Append(fp, options, "#error catch without declarator\n");
+                }
+
+
+                Output_Append(fp, options, " = ");
                 TExpression_CodePrint(pSyntaxTree, options, p->pThrowExpression, fp);
+                Output_Append(fp, options, ";");
             }
             else
             {
-                Output_Append(fp, options, "1");
+                //Output_Append(fp, options, "1");
             }
-            Output_Append(fp, options, ";");
-
-            //TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
-            //Output_Append(fp, options, ";");
-            //TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+            
             Output_Append(fp, options, " goto _catch_label");
             Output_Append(fp, options, try_statement_index_string);
             Output_Append(fp, options, ";");
@@ -7732,9 +7712,9 @@ static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
 
     Output_Append(fp, options, "}");
 
-    if (p->pStatement->Type != CompoundStatement_ID)
+    if (p->pCompoundStatement->Type != CompoundStatement_ID)
         Output_Append(fp, options, "");
-    if (p->pStatement)
+    if (p->pCompoundStatement)
     {
         if (p->pDeferExpression)
         {
@@ -7754,7 +7734,7 @@ static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
             StrBuilder_Append(&options->sbDeferLoop, sb.c_str);
             StrBuilder_Append(&options->sbDeferLoop, copyLoop.c_str);
             StrBuilder_Destroy(&sb);
-            TStatement_CodePrint(pSyntaxTree, options, p->pStatement, fp);
+            TCompoundStatement_CodePrint(pSyntaxTree, options, p->pCompoundStatement, fp);
             //volta ao que era antes...
             StrBuilder_Swap(&copy, &options->sbDefer);
             StrBuilder_Swap(&copyLoop, &options->sbDeferLoop);
@@ -7765,7 +7745,7 @@ static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
             //Output_Append(fp, options, "}");
         }
         else
-            TStatement_CodePrint(pSyntaxTree, options, p->pStatement, fp);
+            TCompoundStatement_CodePrint(pSyntaxTree, options, p->pCompoundStatement, fp);
     }
 
 
@@ -12279,7 +12259,7 @@ void TryBlockStatement_Delete(struct TryBlockStatement* p)
     if (p != NULL)
     {
 
-        Parameter_Delete(p->pParameter);
+        Parameter_Delete(p->pParameterOptional);
         CompoundStatement_Delete(p->pCompoundStatement);
         CompoundStatement_Delete(p->pCompoundCatchStatement);
 
@@ -12367,7 +12347,7 @@ void TryStatement_Delete(struct TryStatement* p)
         Expression_Delete(p->pThrowExpression);
         
 
-        Statement_Delete(p->pStatement);
+        CompoundStatement_Delete(p->pCompoundStatement);
 
         TokenList_Destroy(&p->ClueList0);
         TokenList_Destroy(&p->ClueList1);
@@ -16049,8 +16029,8 @@ void PrimaryExpressionLiteral(struct Parser* ctx, struct Expression** ppPrimaryE
     }
 }
 
-void Compound_Statement(struct Parser* ctx, struct Statement** ppStatement);
-void VirtualCompound_Statement(struct Parser* ctx, struct Statement** ppStatement);
+void Compound_Statement(struct Parser* ctx, struct CompoundStatement** ppStatement);
+void VirtualCompound_Statement(struct Parser* ctx, struct CompoundStatement** ppStatement);
 
 void Parameter_Type_List(struct Parser* ctx, struct ParameterTypeList* pParameterList);
 
@@ -16122,7 +16102,7 @@ void LambdaExpression(struct Parser* ctx, struct Expression** ppPrimaryExpressio
                           TK_RIGHT_PARENTHESIS,
                           &pPrimaryExpressionLambda->ClueList3);
     }
-    Compound_Statement(ctx, (struct Statement**)&pPrimaryExpressionLambda->pCompoundStatement);
+    Compound_Statement(ctx, &pPrimaryExpressionLambda->pCompoundStatement);
 }
 
 void PrimaryExpression(struct Parser* ctx, struct Expression** ppPrimaryExpression)
@@ -17527,7 +17507,7 @@ void Designator_List(struct Parser* ctx, struct DesignatorList* pDesignatorList)
 void Designation(struct Parser* ctx, struct DesignatorList* pDesignatorList);
 void Initializer_List(struct Parser* ctx, struct InitializerList* pInitializerList);
 bool Statement(struct Parser* ctx, struct Statement** ppStatement);
-void Compound_Statement(struct Parser* ctx, struct Statement** ppStatement);
+void Compound_Statement(struct Parser* ctx, struct CompoundStatement** ppStatement);
 void Parameter_Declaration(struct Parser* ctx, struct Parameter* pParameterDeclaration);
 bool Declaration(struct Parser* ctx, struct AnyDeclaration** ppDeclaration);
 void Type_Qualifier_List(struct Parser* ctx, struct TypeQualifierList* pQualifiers);
@@ -17624,12 +17604,17 @@ void Selection_Statement(struct Parser* ctx, struct Statement** ppStatement)
             if (token == TK_THROW)
             {
                 Parser_Match(ctx, &pTryStatement->ClueListThrow);
-                Expression(ctx, &pTryStatement->pThrowExpression);
+                token = Parser_CurrentTokenType(ctx);
+                if (token != TK_SEMICOLON)
+                {
+                    /*expressao opcional*/
+                    Expression(ctx, &pTryStatement->pThrowExpression);
+                }
             }
 
 
             Parser_MatchToken(ctx, TK_SEMICOLON, &pTryStatement->ClueList5);
-            VirtualCompound_Statement(ctx, &pTryStatement->pStatement);
+            VirtualCompound_Statement(ctx, &pTryStatement->pCompoundStatement);
 
 
          
@@ -17833,15 +17818,20 @@ void Iteration_Statement(struct Parser* ctx, struct Statement** ppStatement)
             if (token == TK_CATCH)
             {
                 Parser_MatchToken(ctx, TK_CATCH, &pTryBlockStatement->ClueListCatch);
-                Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pTryBlockStatement->ClueListLeftPar);
+                token = Parser_CurrentTokenType(ctx);
+                if (token == TK_LEFT_PARENTHESIS)                
+                {
+                    /*opcional*/
+                    Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pTryBlockStatement->ClueListLeftPar);
 
-                pTryBlockStatement->pParameter = NEW((struct Parameter) {
-                    PARAMETER_INIT
-                });
+                    pTryBlockStatement->pParameterOptional = NEW((struct Parameter) {
+                        PARAMETER_INIT
+                    });
 
-                Parameter_Declaration(ctx, pTryBlockStatement->pParameter);
+                    Parameter_Declaration(ctx, pTryBlockStatement->pParameterOptional);
 
-                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pTryBlockStatement->ClueListRightPar);
+                    Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pTryBlockStatement->ClueListRightPar);
+                }
 
                 Compound_Statement(ctx, &pTryBlockStatement->pCompoundCatchStatement);
             }
@@ -18257,7 +18247,7 @@ void Block_Item_List(struct Parser* ctx, struct BlockItemList* pBlockItemList)
     }
 }
 
-void VirtualCompound_Statement(struct Parser* ctx, struct Statement** ppStatement)
+void VirtualCompound_Statement(struct Parser* ctx, struct CompoundStatement** ppStatement)
 {
     /*
     compound-statement:
@@ -18281,14 +18271,14 @@ void VirtualCompound_Statement(struct Parser* ctx, struct Statement** ppStatemen
     SymbolMap_Destroy(&BlockScope);
 }
 
-void Compound_Statement(struct Parser* ctx, struct Statement** ppStatement)
+void Compound_Statement(struct Parser* ctx, struct CompoundStatement** ppStatement)
 {
     /*
     compound-statement:
     { block-item-listopt }
     */
     struct CompoundStatement* pCompoundStatement = NEW((struct CompoundStatement)COMPOUNDSTATEMENT_INIT);
-    *ppStatement = (struct Statement*)pCompoundStatement;
+    *ppStatement = (struct CompoundStatement*)pCompoundStatement;
     struct SymbolMap BlockScope = SYMBOLMAP_INIT;
     BlockScope.pPrevious = ctx->pCurrentScope;
     ctx->pCurrentScope = &BlockScope;
@@ -19943,7 +19933,7 @@ bool  Declaration(struct Parser* ctx,
                     6.9.1) function-definition:
                     declaration-specifiers declarator declaration-listopt compound-statement
                     */
-                    struct Statement* pStatement;
+                    struct CompoundStatement* pStatement;
                     Compound_Statement(ctx, &pStatement);
                     //TODO cast
                     ctx->pCurrentScope = BlockScope2.pPrevious;

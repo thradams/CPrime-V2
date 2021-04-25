@@ -691,7 +691,7 @@ struct TryBlockStatement
     */
 
     enum Type Type;
-    struct Parameter* pParameter;
+    struct Parameter* pParameterOptional;
     struct CompoundStatement* pCompoundStatement;
     struct CompoundStatement* pCompoundCatchStatement;
     struct TokenList ClueListTry;    
@@ -796,7 +796,7 @@ struct TryStatement
     struct Expression* pInitialExpression;
     struct Expression* pThrowExpression;
 
-    struct Statement* pStatement;
+    struct CompoundStatement* pCompoundStatement;
     
     struct TokenList ClueList0; //if or try
     struct TokenList ClueList1; //(

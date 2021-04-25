@@ -222,9 +222,30 @@ int main()
 }
 `;
 
+sample["try-block statement (jumps)"] =
+    `
+
+#include <stdio.h>
+
+int main()
+{
+    try {
+        for (int i =0 ; i < 10; i++)
+        {
+          for (int j =0 ; j < 10; j++)
+          {
+            if (i == 5 && j ==5)
+              throw;
+          }
+        }
+    }
+     
+    printf("continuation...\\n");
+}
+`;
 
 
-sample["try-block statement"] =
+sample["try-block statement (throw value)"] =
 `
 #include <stdio.h>
 

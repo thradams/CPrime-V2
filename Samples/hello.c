@@ -34,8 +34,9 @@ int main()
 
     try {
         try(F(&error) == 0);
+        
     }
-    catch (int errorcode)
+    catch
     {
         printf("parsing error : %s", error.message);
     }
