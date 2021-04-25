@@ -297,11 +297,11 @@ sample["try statement"] =
     int main()
     {
         try {            
-            try (F() == 0); /*if fails throw 1*/
+            try (F() == 0);
         }
-        catch(int error)
+        catch
         {
-          printf("error %d \\n", error);
+          printf("catch\\n");
         }
         printf("continuation...\\n");
     }      
@@ -309,7 +309,7 @@ sample["try statement"] =
 `;
 
 
-sample["try statement throw"] =
+sample["try statement with throw"] =
     `
     #include <stdio.h>
     
