@@ -266,6 +266,28 @@ int main()
 }
 `;
 
+sample["try-block statement (throw value II)"] =
+    `
+#include <stdio.h>
+
+int F1(){ return 1; }
+
+int main()
+{
+    try {
+        if (F1() != 0)
+          throw "message";
+    }
+    catch (const char * msg)
+    {
+      printf("catch error %s\\n", msg);
+    }
+  
+    printf("continuation...\\n");
+}
+`;
+
+
 sample["try statement"] =
 `
     #include <stdio.h>

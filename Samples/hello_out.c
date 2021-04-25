@@ -35,11 +35,11 @@ int main()
 
     
 
-    /*try-block*/ {  {
-        /*try*/ if (!(F(&error) == 0)) {  goto _catch_label1;}
+    /*try-block*/ { const char* e; {
+        /*try*/ if (!(F(&error) == 0)) {  e =  "error"; goto _catch_label1;}
         
     }
-    /*catch*/ goto _exit_try_label1;_catch_label1:;
+     /*catch*/ goto _exit_try_label1;_catch_label1:;
     {
         printf("parsing error : %s", error.message);
     }_exit_try_label1:;} /*end try-block*/

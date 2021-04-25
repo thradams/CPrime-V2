@@ -7504,6 +7504,11 @@ static void TDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
 #define JUMPSTATEMENT_INIT {JumpStatement_ID}
 void JumpStatement_Delete(struct JumpStatement* p);
 
+static void TDirectDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
+                                 struct PrintCodeOptions* options,
+                                 struct DirectDeclarator* pDirectDeclarator,
+                                 struct StrBuilder* fp);
+
 static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct JumpStatement* p, struct StrBuilder* fp)
 {
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
@@ -7535,7 +7540,7 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
                 {
                     if (options->pCurrentTryBlock->pParameterOptional)
                     {
-                        TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameterOptional->Declarator, fp);
+                        TDirectDeclarator_CodePrint(pSyntaxTree, options, options->pCurrentTryBlock->pParameterOptional->Declarator.pDirectDeclarator, fp);
                         Output_Append(fp, options, " = ");
                         TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
                         Output_Append(fp, options, ";");
@@ -7552,7 +7557,7 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
                     if (options->pCurrentTryBlock->pParameterOptional)
                     {
                         Output_Append(fp, options, options->sbDefer.c_str);
-                        TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameterOptional->Declarator, fp);
+                        TDirectDeclarator_CodePrint(pSyntaxTree, options, options->pCurrentTryBlock->pParameterOptional->Declarator.pDirectDeclarator, fp);
                         Output_Append(fp, options, " = ");
                         TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
                         Output_Append(fp, options, ";");
@@ -7685,7 +7690,7 @@ static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
             {
                 if (options->pCurrentTryBlock->pParameterOptional)
                 {
-                    TDeclarator_CodePrint(pSyntaxTree, options, &options->pCurrentTryBlock->pParameterOptional->Declarator, fp);
+                    TDirectDeclarator_CodePrint(pSyntaxTree, options, options->pCurrentTryBlock->pParameterOptional->Declarator.pDirectDeclarator, fp);
                 }
                 else
                 {

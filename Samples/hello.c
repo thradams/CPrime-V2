@@ -33,10 +33,10 @@ int main()
     struct error error = { 0 };
 
     try {
-        try(F(&error) == 0);
+        try(F(&error) == 0) throw "error";
         
     }
-    catch
+    catch (const char* e)
     {
         printf("parsing error : %s", error.message);
     }
