@@ -7505,9 +7505,9 @@ static void TDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
 void JumpStatement_Delete(struct JumpStatement* p);
 
 static void TDirectDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
-                                 struct PrintCodeOptions* options,
-                                 struct DirectDeclarator* pDirectDeclarator,
-                                 struct StrBuilder* fp);
+                                        struct PrintCodeOptions* options,
+                                        struct DirectDeclarator* pDirectDeclarator,
+                                        struct StrBuilder* fp);
 
 static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct JumpStatement* p, struct StrBuilder* fp)
 {
@@ -7545,7 +7545,7 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
                         TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
                         Output_Append(fp, options, ";");
                     }
-                  
+
 
                     Output_Append(fp, options, options->sbDefer.c_str);
                     Output_Append(fp, options, " goto _catch_label");
@@ -7573,7 +7573,7 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
             {
                 Output_Append(fp, options, "#error throw can be used only inside try-blocks");
             }
-            
+
         }
         break;
 
@@ -7685,7 +7685,7 @@ static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
         else
         {
             Output_Append(fp, options, options->sbDefer.c_str);
-            
+
             if (p->pThrowExpression)
             {
                 if (options->pCurrentTryBlock->pParameterOptional)
@@ -7706,7 +7706,7 @@ static void TTryStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
             {
                 //Output_Append(fp, options, "1");
             }
-            
+
             Output_Append(fp, options, " goto _catch_label");
             Output_Append(fp, options, try_statement_index_string);
             Output_Append(fp, options, ";");
@@ -10018,7 +10018,7 @@ void SyntaxTree_PrintCodeToString(struct SyntaxTree* pSyntaxTree,
 {
     struct PrintCodeOptions options = CODE_PRINT_OPTIONS_INIT;
     options.Options = *options0;
-    
+
     /*reseta contadores de geracao*/
     global_lambda_counter = 0;
     try_statement_index = 0;
@@ -12350,7 +12350,7 @@ void TryStatement_Delete(struct TryStatement* p)
         Expression_Delete(p->pInitialExpression);
         Expression_Delete(p->pConditionExpression);
         Expression_Delete(p->pThrowExpression);
-        
+
 
         CompoundStatement_Delete(p->pCompoundStatement);
 
@@ -12362,7 +12362,7 @@ void TryStatement_Delete(struct TryStatement* p)
         TokenList_Destroy(&p->ClueList5);
         TokenList_Destroy(&p->ClueList6);
         TokenList_Destroy(&p->ClueListThrow);
-        
+
         free((void*)p);
     }
 }
@@ -17622,7 +17622,7 @@ void Selection_Statement(struct Parser* ctx, struct Statement** ppStatement)
             VirtualCompound_Statement(ctx, &pTryStatement->pCompoundStatement);
 
 
-         
+
             ctx->pCurrentScope = BlockScope.pPrevious;
         }
         break;
@@ -17824,7 +17824,7 @@ void Iteration_Statement(struct Parser* ctx, struct Statement** ppStatement)
             {
                 Parser_MatchToken(ctx, TK_CATCH, &pTryBlockStatement->ClueListCatch);
                 token = Parser_CurrentTokenType(ctx);
-                if (token == TK_LEFT_PARENTHESIS)                
+                if (token == TK_LEFT_PARENTHESIS)
                 {
                     /*opcional*/
                     Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pTryBlockStatement->ClueListLeftPar);
@@ -17853,14 +17853,13 @@ void Iteration_Statement(struct Parser* ctx, struct Statement** ppStatement)
             Parser_Match(ctx, &pDoStatement->ClueList0); //do
             Statement(ctx, &pDoStatement->pStatement);
             token = Parser_CurrentTokenType(ctx);
-            if (token == TK_WHILE) /*language extension make while optional*/
-            {
-                Parser_MatchToken(ctx, TK_WHILE, &pDoStatement->ClueList1); //while
-                Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pDoStatement->ClueList2); //(
-                Expression(ctx, &pDoStatement->pExpression);
-                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pDoStatement->ClueList3); //)
-                Parser_MatchToken(ctx, TK_SEMICOLON, &pDoStatement->ClueList4); //;
-            }
+
+            Parser_MatchToken(ctx, TK_WHILE, &pDoStatement->ClueList1); //while
+            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pDoStatement->ClueList2); //(
+            Expression(ctx, &pDoStatement->pExpression);
+            Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pDoStatement->ClueList3); //)
+            Parser_MatchToken(ctx, TK_SEMICOLON, &pDoStatement->ClueList4); //;
+
         }
         break;
         case TK_FOR:
