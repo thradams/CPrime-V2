@@ -1,49 +1,23 @@
 
-//#include <stdio.h>
 
-struct error {
-    int code;
-    char message[100];
-};
-
-int Parse1(struct error* error) {
-    return error->code;
-}
-
-int Parse2(struct error* error) {
-    return error->code;
-}
-
-int Parse3(struct error* error) {
-    return error->code;
-}
-
-int F(struct error* error)
-{
+int main(){
+    int i;
     
-    /*try-block*/ {  {
-        /*try*/ if (!(Parse1(error) == 0)) {  goto _catch_label1;}
-        /*try*/ if (!(Parse2(error) == 0)) {  goto _catch_label1;}
-        /*try*/ if (!(Parse3(error) == 0)) {  goto _catch_label1;}
-    }_catch_label1:;} /*end try-block*/
-    return error->code;
-}
-
-int main()
-{
-    struct error error = { 0 };
-
-    
-
-    /*try-block*/ { const char* e; {
-        /*try*/ if (!(F(&error) == 0)) {  e =  "error"; goto _catch_label1;}
+    if (1) /*try*/{
         
-    }
-     /*catch*/ goto _exit_try_label1;_catch_label1:;
-    {
-        printf("parsing error : %s", error.message);
-    }_exit_try_label1:;} /*end try-block*/
+        {            
+             i = 2;
+        }
 
-    printf("continuation...\n");
+        /*throw*/ { i = 1; goto _catch_label1;};
+
+        {int i = 0; if( i < 10){{
+        } i = 3;}} i = 1;
+    }
+    else /*catch*/ _catch_label1:{
+    }
+
+   
+
 }
 

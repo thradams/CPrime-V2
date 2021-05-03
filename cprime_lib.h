@@ -195,6 +195,7 @@ enum TokenType
     TK_GOTO,
     TK_IF,
     TK_TRY,
+    TK_DEFER,
     TK_INT,
     TK_LONG,
     ////////////////
@@ -443,13 +444,13 @@ enum Type
     WhileStatement_ID,
     DoStatement_ID,
     TryBlockStatement_ID,
-    TryStatement_ID,
+    
     IfStatement_ID,
     TypeName_ID,
     Enumerator_ID,
 
     InitializerListType_ID,
-
+    DeferStatement_ID,
     PrimaryExpression_ID,
     UnaryExpressionOperator_ID,
     CastExpressionType_ID,
@@ -543,8 +544,7 @@ struct CompoundStatement
     enum Type Type;
     struct BlockItemList BlockItemList;
     struct TokenList ClueList0;
-    struct TokenList ClueList1;
-    bool bVirtual;
+    struct TokenList ClueList1;    
 };
 
 #define COMPOUNDSTATEMENT_INIT {CompoundStatement_ID}
@@ -613,6 +613,19 @@ struct JumpStatement
     struct TokenList ClueList1;
     struct TokenList ClueList2;
 };
+
+struct DeferStatement
+{
+    /*
+    jump-statement:
+       defer statement;       
+    */
+    enum Type Type;
+    struct Statement* pStatement;
+    struct TokenList ClueList0;      
+};
+#define DEFERSTATEMENT_INIT  {DeferStatement_ID}
+void DeferStatement_Delete(struct DeferStatement* p);
 
 
 
@@ -691,7 +704,7 @@ struct TryBlockStatement
     */
 
     enum Type Type;
-    struct Parameter* pParameterOptional;
+    
     struct CompoundStatement* pCompoundStatement;
     struct CompoundStatement* pCompoundCatchStatement;
     struct TokenList ClueListTry;    
@@ -778,38 +791,6 @@ struct IfStatement
 
 #define IFSTATEMENT_INIT  {IfStatement_ID}
 void IfStatement_Delete(struct IfStatement* p);
-
-
-struct TryStatement
-{
-    /*
-    selection-statement:
-     try (condition-expression) ;
-     try (declaration or expression ; condition-expression; defer optional) ;
-    */
-
-    enum Type Type;
-
-    struct AnyDeclaration* pInitDeclarationOpt;
-    struct Expression* pDeferExpression;
-    struct Expression* pConditionExpression;
-    struct Expression* pInitialExpression;
-    struct Expression* pThrowExpression;
-
-    struct CompoundStatement* pCompoundStatement;
-    
-    struct TokenList ClueList0; //if or try
-    struct TokenList ClueList1; //(
-    struct TokenList ClueList2; //;
-    struct TokenList ClueList3; //;
-    struct TokenList ClueList4; //)
-    struct TokenList ClueList5; //)
-    struct TokenList ClueList6; //; 
-    struct TokenList ClueListThrow; //; 
-};
-
-#define TRYSTATEMENT_INIT  {TryStatement_ID}
-void TryStatement_Delete(struct TryStatement* p);
 
 
 struct Statement

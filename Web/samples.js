@@ -89,7 +89,66 @@ int main()
 
 `;
 
-sample["If with initializer"] =
+sample["defer"] =
+`
+/***********************************************
+  defer statement
+
+  statement is called at the end of scope.
+  or before jumps to outside the scope.
+    
+************************************************/
+
+#include <stdlib.h>
+#include <stdio.h>
+
+int main()
+{
+   char* s1 = malloc(1);
+   defer { printf("defer1\\n"); free(s1); }
+
+   printf("scope 1\\n");
+   {
+      char* s2 = malloc(1);    
+      defer { printf("defer2\\n"); free(s2); }     
+      printf("scope 2\\n");
+   }
+}
+
+`;
+
+sample["Defer + Destructor"] =
+    `
+#include <stdlib.h>
+#include <stdio.h>
+
+struct Person {
+  char* auto name;
+};
+
+void destroy(struct Person* p) overload {
+    /*
+      this is a user defined function to receive an event
+      just before the object destruction.
+      This function is called indirectly by the destroy.
+    */
+    printf("person destructor called");
+}
+
+struct House {
+   struct Person person;
+};
+
+int main()
+{
+   struct House house = {};
+   defer destroy(house);
+   printf("some work..\\n");
+}
+`;
+
+
+sample["If with initializer (Like C++ 17)"] =
     `
 #include <stdlib.h>
 
@@ -106,8 +165,15 @@ int main()
 }
 `;
 
+
+
 sample["If with initializer and defer"] =
-    `
+`
+/***************************************************
+  We can include a expression that is executed if
+  the condition is true at the end of scope or before
+  jumps.
+****************************************************/
 #include <stdlib.h>
 
 struct Person {
@@ -123,34 +189,6 @@ int main()
 }
 `;
 
-
-sample["If defer and jumps"] =
-    `
-
-#include <stdlib.h>
-
-int main()
-{
-   if (void* p0 = malloc(1) ; p0; free(p0))
-   {
-     for (;;)
-     {
-       if (void* p1 = malloc(1) ; p1; free(p1))
-       {     
-         if (void* p2 = malloc(1) ; p2; free(p2))
-         {
-           break;
-         }       
-         while (1)
-         {
-           break;
-         }
-         return 1;
-       }
-     }
-   }
-}
-`;
 
 sample["If+defer and return"] =
     `
@@ -176,55 +214,16 @@ void * F() {
   }
 }
 `
-sample["If + defer"] =
+
+sample["try-block statement"] =
     `
-#include  <stdlib.h>
+/*******************************************
+  try compound-statement catch (optional) compound-statement
 
-struct allocator {
-    int dummy;
-};
+  throw can only be used inside try blocks. 
+  It always LOCAL jump. No need for stack unwinding.
 
-void* allocator_alloc(struct allocator* allocator, int bytes) {
-    return malloc(bytes);
-}
-
-void* allocator_free(struct allocator* allocator, void* p) {
-    free(p);
-}
-
-void* allocator_destroy(struct allocator* allocator){
-}
-
-int main() {
-    struct allocator allocator = { 0 };
-
-    if (void* p = allocator_alloc(&allocator, 1);
-        p;
-        allocator_free(&allocator, p)
-        ) 
-    {        
-    }
-    allocator_destroy(&allocator);
-}
-`
-
-sample["do statement with optional while"] =
-`
-#include <stdio.h>
-int main()
-{  
-   do
-   {
-       if (1) break;
-       printf("this line is not printed\\n");
-   }
-   printf("continuation...\\n");
-}
-`;
-
-sample["try-block statement (jumps)"] =
-    `
-
+********************************************/
 #include <stdio.h>
 
 int main()
@@ -245,7 +244,7 @@ int main()
 `;
 
 
-sample["try-block statement (throw value)"] =
+sample["try-block-catch statement "] =
 `
 #include <stdio.h>
 
@@ -253,11 +252,15 @@ int F1(){ return 1; }
 
 int main()
 {
+    int error = 0;
     try {
         if (F1() != 0)
-          throw 2;
+        {
+          error = 1; 
+          throw;
+        }
     }
-    catch (int error)
+    catch 
     {
       printf("catch error %d\\n", error);
     }
@@ -266,68 +269,7 @@ int main()
 }
 `;
 
-sample["try-block statement (throw value II)"] =
-    `
-#include <stdio.h>
 
-int F1(){ return 1; }
-
-int main()
-{
-    try {
-        if (F1() != 0)
-          throw "message";
-    }
-    catch (const char * msg)
-    {
-      printf("catch error %s\\n", msg);
-    }
-  
-    printf("continuation...\\n");
-}
-`;
-
-
-sample["try statement"] =
-`
-    #include <stdio.h>
-    
-    int F() { return 1; }
-    
-    int main()
-    {
-        try {            
-            try (F() == 0);
-        }
-        catch
-        {
-          printf("catch\\n");
-        }
-        printf("continuation...\\n");
-    }      
-
-`;
-
-
-sample["try statement with throw"] =
-    `
-    #include <stdio.h>
-    
-    int F() { return 1; }
-    
-    int main()
-    {
-        try {            
-            try (F() == 0) throw 2;
-        }
-        catch(int error)
-        {
-          printf("error %d \\n", error);
-        }
-        printf("continuation...\\n");
-    }      
-
-`;
 
 sample["try with defer"] =
 `
@@ -337,99 +279,24 @@ sample["try with defer"] =
     
     int main()
     {
+        int error = 0;
         try {
-            try (FILE* f = fopen(\"input.txt\", \"r\"); f; fclose(f)) throw errno;
+            FILE* f = fopen(\"input.txt\", \"r\"); 
+            if (f == NULL) {
+              error = errno; 
+              throw;
+            }
+            defer fclose(f);
+            printf("using f..\\n");
         }
-        catch(int error)
+        catch
         {
+             printf("error %d\\n", error);
         }
         printf("continuation...\\n");
     }      
 `;
 
-sample["try with defer and loop"] =
-`
-#include <stdio.h>
-
-void defer1() { printf("defer 1 called\\n");}
-void defer2() { printf("defer 2 called\\n"); }
-
-int main()
-{
-    int j;
-    try
-    {
-        try (int i = 0; i == 0; defer1());
-        for (int k = 0; k < 10; k++)
-        {
-           printf("%d ", k);
-           if (k == 5) {throw k;}
-        }
-        
-    }
-    catch (int errorcode)
-    {
-      printf("erro %d\\n", errorcode);
-    }
-}
-`
-
-sample["try error propagation pattern"] =
-`
-
-#include <stdio.h>
-
-struct error {
-  int code;
-  char message[100];
-};
-
-int Parse1(struct error* error) {
-  /*some code*/
-  return error->code;
-}
-
-int Parse2(struct error* error) {
-  /*some code*/
-  error->code = 2;
-  snprintf(error->message, sizeof(error->message), "missing token at 2...");
-  return error->code;
-}
-
-int Parse3(struct error* error) {
-  /*some code*/
-  return error->code;
-}
-
-int F(struct error* error)
-{
-    try {
-        try(Parse1(error) == 0);
-        try(Parse2(error) == 0);
-        try(Parse3(error) == 0);
-    } /*catch is optional*/
-  
-    return error->code;
-}
-
-int main()
-{
-    struct error error = {0};
-
-    try {
-        try(F(&error) == 0);        
-    }
-    
-    
-    if (error.code != 0)
-    {
-       printf("parsing error : %s\\n", error.message);
-    }
-      
-    printf("continuation...\\n");
-}
-
-`;
 
 sample["Polimorphism"] =
     `

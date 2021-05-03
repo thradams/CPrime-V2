@@ -262,7 +262,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
       return words.propertyIsEnumerable(word);
     }
   }
-  var cKeywords = "throw auto if break case register continue return default do sizeof " +
+  var cKeywords = "try catch defer throw auto inline if break case register continue return default do sizeof " +
     "static else struct switch extern typedef union for goto while enum const volatile overload destroy new";
   var cTypes = "int long char short double float unsigned signed void size_t ptrdiff_t";
 
@@ -368,10 +368,10 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
   def(["text/x-csrc", "text/x-c", "text/x-chdr"], {
     name: "clike",
     keywords: words(cKeywords),
-      types: words(cTypes + "throw catch _Static_assert try bool _Complex _Bool float_t double_t intptr_t intmax_t " +
+      types: words(cTypes + "inline throw defer bool _Complex _Bool float_t double_t intptr_t intmax_t " +
                  "int8_t int16_t int32_t int64_t uintptr_t uintmax_t uint8_t uint16_t " +
                  "uint32_t uint64_t restrict _Noreturn"),
-    blockKeywords: words("case do else for if switch while struct"),
+    blockKeywords: words("try case do else for if switch while struct"),
     defKeywords: words("struct"),
     typeFirstDefinitions: true,
     atoms: words("NULL true false"),
