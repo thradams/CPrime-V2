@@ -7685,6 +7685,9 @@ static void TIfStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
             StrBuilder_Swap(&options->sbDeferGlobal, &sb2);
             StrBuilder_Destroy(&sb2);
 
+            
+            /*para defer ficar dentro do if (true)*/
+            Output_Append(fp, options, "{");
             TStatement_CodePrint(pSyntaxTree, options, p->pStatement, fp);
    
             TExpression_CodePrint(pSyntaxTree, options, p->pDeferExpression, fp);

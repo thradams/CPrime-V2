@@ -3,14 +3,14 @@ int main()
 {
     try {
 
-        if (int i = 1; i ; i = 1000)
+        if (int i = 1; i; i = 1000)
         {
-            throw;            
-    }
+            throw;
         }
+    }
     catch
     {
-        
+
     }
-    
+
 }
