@@ -298,7 +298,7 @@ int main()
 `;
 
 sample["throw inside if defer expression"] =
-    `
+`
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -315,9 +315,9 @@ int main()
     }
     catch
     {
-       printf("error %d\n", error);
+       printf("error %d\\n", error);
     }
-    printf("continuation...\n");
+    printf("continuation...\\n");
 } 
 `;
 
