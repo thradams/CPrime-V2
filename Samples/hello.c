@@ -1,28 +1,16 @@
 
-
 int main()
 {
-    int i;
-    try
-    {
-        
-        defer i = 1;
+    try {
 
-        {            
-            defer i = 2;
-        }
-
-        throw;
-
-        if (int i = 0; i < 10; i = 3)
+        if (int i = 1; i ; i = 1000)
         {
-        }
+            throw;            
     }
+        }
     catch
     {
+        
     }
-
-   
-
+    
 }
-

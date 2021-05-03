@@ -7311,15 +7311,15 @@ static void TCompoundStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
 
                                          struct StrBuilder* fp)
 {
-    
+
     /*faz uma copia do deferlocal do escopo de cima*/
     struct StrBuilder  sbDeferLocalCopy = { 0 };
     StrBuilder_Swap(&sbDeferLocalCopy, &options->sbDeferLocal);
-    
-    struct StrBuilder  sbDeferGlobalCopy = { 0 };
-    StrBuilder_Swap(&sbDeferGlobalCopy, &options->sbDeferGlobal);
 
-    
+    struct StrBuilder  sbDeferGlobalCopy = { 0 };
+    StrBuilder_Set(&sbDeferGlobalCopy, options->sbDeferGlobal.c_str);
+
+
     Output_Append(fp, options, "{");
 
     for (int j = 0; j < p->BlockItemList.size; j++)
@@ -7327,9 +7327,9 @@ static void TCompoundStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
         struct BlockItem* pBlockItem = p->BlockItemList.data[j];
         TBlockItem_CodePrint(pSyntaxTree, options, pBlockItem, fp);
     }
-    
 
-    
+
+
     /*na saida normal imprime defer local*/
     Output_Append(fp, options, options->sbDeferLocal.c_str);
 
@@ -7471,11 +7471,11 @@ static void TTryBlockStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct 
     try_statement_index++;
     char indestrs[20];
     snprintf(indestrs, sizeof(indestrs), "%d", try_statement_index);
-    
+
     TNodeClueList_CodePrint(options, &p->ClueListTry, fp);
-    
+
     Output_Append(fp, options, "if (1) /*try*/");
-    
+
 
 
     TCompoundStatement_CodePrint(pSyntaxTree, options, p->pCompoundStatement, fp);
@@ -7486,7 +7486,7 @@ static void TTryBlockStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct 
         TNodeClueList_CodePrint(options, &p->ClueListLeftPar, fp);
         TNodeClueList_CodePrint(options, &p->ClueListRightPar, fp);
 
-        Output_Append(fp, options, "else /*catch*/ _catch_label");        
+        Output_Append(fp, options, "else /*catch*/ _catch_label");
         Output_Append(fp, options, indestrs);
         Output_Append(fp, options, ":");
 
@@ -7530,15 +7530,15 @@ static void TDirectDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
 static void DeferStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct DeferStatement* p, struct StrBuilder* fp)
 {
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-    
+
     struct StrBuilder  sb = { 0 };
-    TStatement_CodePrint(pSyntaxTree, options, p->pStatement, &sb);    
-    StrBuilder_Append(&sb, options->sbDeferLocal.c_str);    
+    TStatement_CodePrint(pSyntaxTree, options, p->pStatement, &sb);
+    StrBuilder_Append(&sb, options->sbDeferLocal.c_str);
     StrBuilder_Swap(&options->sbDeferLocal, &sb);
     StrBuilder_Destroy(&sb);
 
     struct StrBuilder  sb2 = { 0 };
-    TStatement_CodePrint(pSyntaxTree, options, p->pStatement, &sb2);    
+    TStatement_CodePrint(pSyntaxTree, options, p->pStatement, &sb2);
     StrBuilder_Append(&sb2, options->sbDeferGlobal.c_str);
     StrBuilder_Swap(&options->sbDeferGlobal, &sb2);
     StrBuilder_Destroy(&sb2);
@@ -7572,24 +7572,12 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
                 char try_statement_index_string[20];
                 snprintf(try_statement_index_string, sizeof(try_statement_index_string), "%d", try_statement_index);
 
-                if (p->pExpression && options->sbDeferGlobal.size > 0)
-                {
 
-                    Output_Append(fp, options, options->sbDeferGlobal.c_str);
-                    Output_Append(fp, options, " goto _catch_label");
-                    Output_Append(fp, options, try_statement_index_string);
-                    Output_Append(fp, options, ";");
-                }
-                else
-                {
-                    
-                    Output_Append(fp, options, options->sbDeferGlobal.c_str);
-                    
+                Output_Append(fp, options, options->sbDeferGlobal.c_str);
+                Output_Append(fp, options, " goto _catch_label");
+                Output_Append(fp, options, try_statement_index_string);
+                Output_Append(fp, options, ";");
 
-                    Output_Append(fp, options, " goto _catch_label");
-                    Output_Append(fp, options, try_statement_index_string);
-                    Output_Append(fp, options, ";");
-                }
                 Output_Append(fp, options, "}");
             }
             else
@@ -7690,28 +7678,15 @@ static void TIfStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
     {
         if (p->pDeferExpression)
         {
-            Output_Append(fp, options, "{");
-            struct StrBuilder  copyLoop = { 0 };
-            //StrBuilder_Append(&copyLoop, options->sbDeferLoop.c_str);
-            struct StrBuilder  copy = { 0 };
-            StrBuilder_Append(&copy, options->sbDeferGlobal.c_str);
-            //vou empilhar o defer aqui..
-            struct StrBuilder  sb = { 0 };
-            StrBuilder_Clear(&options->sbDeferGlobal);
-            TExpression_CodePrint(pSyntaxTree, options, p->pDeferExpression, &sb);
-            StrBuilder_Append(&sb, ";");
-            StrBuilder_Append(&options->sbDeferGlobal, sb.c_str);
-            StrBuilder_Append(&options->sbDeferGlobal, copy.c_str);
-            //StrBuilder_Clear(&options->sbDeferLoop);
-            //StrBuilder_Append(&options->sbDeferLoop, sb.c_str);
-            //StrBuilder_Append(&options->sbDeferLoop, copyLoop.c_str);
-            StrBuilder_Destroy(&sb);
+            struct StrBuilder  sb2 = { 0 };
+            TExpression_CodePrint(pSyntaxTree, options, p->pDeferExpression, &sb2);
+            StrBuilder_Append(&sb2, options->sbDeferGlobal.c_str);
+            StrBuilder_Append(&sb2, ";");
+            StrBuilder_Swap(&options->sbDeferGlobal, &sb2);
+            StrBuilder_Destroy(&sb2);
+
             TStatement_CodePrint(pSyntaxTree, options, p->pStatement, fp);
-            //volta ao que era antes...
-            StrBuilder_Swap(&copy, &options->sbDeferGlobal);
-            //StrBuilder_Swap(&copyLoop, &options->sbDeferLoop);
-            StrBuilder_Destroy(&copy);
-            StrBuilder_Destroy(&copyLoop);
+   
             TExpression_CodePrint(pSyntaxTree, options, p->pDeferExpression, fp);
             Output_Append(fp, options, ";");
             Output_Append(fp, options, "}");
@@ -7772,7 +7747,7 @@ static void TStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCod
             break;
         case TryBlockStatement_ID:
             TTryBlockStatement_CodePrint(pSyntaxTree, options, (struct TryBlockStatement*)p, fp);
-            break;        
+            break;
         default:
             //assert(false);
             break;
@@ -7816,7 +7791,7 @@ static void TBlockItem_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCod
         case TryBlockStatement_ID:
             TTryBlockStatement_CodePrint(pSyntaxTree, options, (struct TryBlockStatement*)p, fp);
             break;
-        
+
         case Declaration_ID:
             TDeclaration_CodePrint(pSyntaxTree, options, (struct Declaration*)p, fp);
             //Output_Append(fp, options,  "\n");
@@ -12152,7 +12127,7 @@ void TryBlockStatement_Delete(struct TryBlockStatement* p)
     if (p != NULL)
     {
 
-        
+
         CompoundStatement_Delete(p->pCompoundStatement);
         CompoundStatement_Delete(p->pCompoundCatchStatement);
 
@@ -12253,7 +12228,7 @@ void Statement_Delete(struct Statement* p)
                 break;
             case IfStatement_ID:
                 IfStatement_Delete((struct IfStatement*)p);
-                break;            
+                break;
             case TryBlockStatement_ID:
                 TryBlockStatement_Delete((struct TryBlockStatement*)p);
                 break;
@@ -12304,7 +12279,7 @@ void BlockItem_Delete(struct BlockItem* p)
                 break;
             case IfStatement_ID:
                 IfStatement_Delete((struct IfStatement*)p);
-                break;            
+                break;
             case TryBlockStatement_ID:
                 TryBlockStatement_Delete((struct TryBlockStatement*)p);
                 break;
@@ -17874,12 +17849,12 @@ bool Statement(struct Parser* ctx, struct Statement** ppStatement)
             bResult = true;
             Selection_Statement(ctx, ppStatement);
             break;
-        
+
         case TK_TRY:
             bResult = true;
             Iteration_Statement(ctx, ppStatement);
             break;
-            
+
             //case TK_ELSE:
             ////assert(false);
             //Ele tem que estar fazendo os statement do IF!
@@ -17889,7 +17864,7 @@ bool Statement(struct Parser* ctx, struct Statement** ppStatement)
             //Statement(ctx, obj);
             //break;
             //iteration-statement
-        
+
         case TK_WHILE:
         case TK_FOR:
         case TK_DO:
@@ -17899,7 +17874,7 @@ bool Statement(struct Parser* ctx, struct Statement** ppStatement)
             //jump-statement
         case TK_DEFER:
             bResult = true;
-            Defer_Statement(ctx, ppStatement);            
+            Defer_Statement(ctx, ppStatement);
             break;
         case TK_GOTO:
         case TK_CONTINUE:
@@ -18053,7 +18028,7 @@ void VirtualCompound_Statement(struct Parser* ctx, struct CompoundStatement** pp
     { block-item-listopt }
     */
     struct CompoundStatement* pCompoundStatement = NEW((struct CompoundStatement)COMPOUNDSTATEMENT_INIT);
-    
+
     *ppStatement = (struct Statement*)pCompoundStatement;
     struct SymbolMap BlockScope = SYMBOLMAP_INIT;
     BlockScope.pPrevious = ctx->pCurrentScope;

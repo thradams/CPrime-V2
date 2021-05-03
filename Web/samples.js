@@ -273,31 +273,53 @@ int main()
 
 sample["try with defer"] =
 `
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
     
-    int main()
+int main()
+{
+    int error = 0;
+    try {
+        FILE* f = fopen(\"input.txt\", \"r\"); 
+        if (f == NULL) {
+            error = errno; 
+            throw;
+        }
+        defer fclose(f);
+        printf("using f..\\n");
+    }
+    catch
     {
-        int error = 0;
-        try {
-            FILE* f = fopen(\"input.txt\", \"r\"); 
-            if (f == NULL) {
-              error = errno; 
-              throw;
-            }
-            defer fclose(f);
-            printf("using f..\\n");
-        }
-        catch
-        {
-             printf("error %d\\n", error);
-        }
-        printf("continuation...\\n");
-    }      
+            printf("error %d\\n", error);
+    }
+    printf("continuation...\\n");
+}      
 `;
 
-
+sample["throw inside if+defer-expression"] =
+`
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+    
+int main()
+{
+    int error = 0;
+    try {
+        if (FILE* f = fopen("input.txt", "r"); f; fclose(f))
+        {            
+            printf("using f..\\n");
+            throw;
+        }            
+    }
+    catch
+    {
+       printf("error %d\n", error);
+    }
+    printf("continuation...\n");
+} 
+`
 sample["Polimorphism"] =
     `
 
@@ -318,7 +340,7 @@ void draw(struct Box* pBox) overload {
 }
 
 struct Circle {
-    int id = 2;
+    int id = 2; 
 };
 
 void draw(struct Circle* pCircle) overload
