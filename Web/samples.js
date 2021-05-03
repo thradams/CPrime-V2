@@ -297,8 +297,8 @@ int main()
 }      
 `;
 
-sample["throw inside if+defer-expression"] =
-`
+sample["throw inside if defer expression"] =
+    `
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -319,7 +319,8 @@ int main()
     }
     printf("continuation...\n");
 } 
-`
+`;
+
 sample["Polimorphism"] =
     `
 
