@@ -16159,12 +16159,12 @@ function _TExpression_CodePrintSpaces($0,$1,$2,$3) {
   break;
  }
  case 38:  {
-  ___assert_fail((3849|0),(2346|0),8364,(3855|0));
+  ___assert_fail((3849|0),(2346|0),8365,(3855|0));
   // unreachable;
   break;
  }
  case 35:  {
-  ___assert_fail((3849|0),(2346|0),8369,(3855|0));
+  ___assert_fail((3849|0),(2346|0),8370,(3855|0));
   // unreachable;
   break;
  }
@@ -17622,7 +17622,7 @@ function _Expression_GetTypeName($0) {
   break;
  }
  default: {
-  ___assert_fail((3849|0),(2346|0),12505,(5207|0));
+  ___assert_fail((3849|0),(2346|0),12506,(5207|0));
   // unreachable;
  }
  }
@@ -17843,7 +17843,7 @@ function _InstanciateDestroy($0,$1,$2,$3,$4,$5,$6,$7) {
  $111 = HEAP32[$110>>2]|0;
  $112 = ($111|0)!=(0|0);
  if (!($112)) {
-  ___assert_fail((4361|0),(2346|0),10563,(4388|0));
+  ___assert_fail((4361|0),(2346|0),10564,(4388|0));
   // unreachable;
  }
  _memset(($28|0),0,200)|0;
@@ -19916,7 +19916,7 @@ function _InstantiateDestroyForPolymorphicType($0,$1,$2,$3,$4) {
   $14 = $65;
  }
  if ((label|0) == 9) {
-  ___assert_fail((3849|0),(2346|0),10008,(3897|0));
+  ___assert_fail((3849|0),(2346|0),10009,(3897|0));
   // unreachable;
  }
  ;HEAP32[$16>>2]=0|0;HEAP32[$16+4>>2]=0|0;HEAP32[$16+8>>2]=0|0;
@@ -20134,7 +20134,7 @@ function _FindRuntimeID($0,$1,$2) {
  $11 = $5;
  $12 = ($11|0)==(0|0);
  if ($12) {
-  ___assert_fail((3849|0),(2346|0),9487,(12519|0));
+  ___assert_fail((3849|0),(2346|0),9488,(12519|0));
   // unreachable;
  }
  $13 = $5;
@@ -20153,7 +20153,7 @@ function _FindRuntimeID($0,$1,$2) {
  $23 = $5;
  $24 = ($23|0)==(0|0);
  if ($24) {
-  ___assert_fail((3849|0),(2346|0),9497,(12519|0));
+  ___assert_fail((3849|0),(2346|0),9498,(12519|0));
   // unreachable;
  }
  $7 = 0;
@@ -20611,7 +20611,7 @@ function _InstanciateInit($0,$1,$2,$3,$4,$5,$6,$7) {
   $270 = $42;
   $271 = ($270|0)==(0|0);
   if ($271) {
-   ___assert_fail((3849|0),(2346|0),10439,(4307|0));
+   ___assert_fail((3849|0),(2346|0),10440,(4307|0));
    // unreachable;
   }
   $272 = $12;
@@ -21393,7 +21393,7 @@ function _InstantiateInitForStruct($0,$1,$2,$3) {
  $38 = $6;
  $39 = ($38|0)==(0|0);
  if ($39) {
-  ___assert_fail((3849|0),(2346|0),10818,(4699|0));
+  ___assert_fail((3849|0),(2346|0),10819,(4699|0));
   // unreachable;
  }
  $40 = $6;
@@ -22496,7 +22496,7 @@ function _BasicScanner_Next($0) {
               HEAP32[$222>>2] = 13;
               break;
              } else {
-              ___assert_fail((3849|0),(2346|0),11493,(5183|0));
+              ___assert_fail((3849|0),(2346|0),11494,(5183|0));
               // unreachable;
              }
             }
@@ -23086,7 +23086,7 @@ function _BasicScanner_Next($0) {
           $581 = HEAP32[$580>>2]|0;
           $582 = ($581|0)==(21);
           if ($582) {
-           ___assert_fail((3849|0),(2346|0),11865,(5183|0));
+           ___assert_fail((3849|0),(2346|0),11866,(5183|0));
            // unreachable;
           } else {
            STACKTOP = sp;return;
@@ -26126,7 +26126,7 @@ function _DeclarationSpecifier_Clone($0) {
   break;
  }
  default: {
-  ___assert_fail((3849|0),(2346|0),13185,(5251|0));
+  ___assert_fail((3849|0),(2346|0),13186,(5251|0));
   // unreachable;
  }
  }
@@ -26194,7 +26194,7 @@ function _AtomicTypeSpecifier_Clone($0) {
  HEAP32[$3>>2] = 9;
  $4 = (_mallocinit(56,$3)|0);
  $2 = $4;
- ___assert_fail((3849|0),(2346|0),13881,(5303|0));
+ ___assert_fail((3849|0),(2346|0),13882,(5303|0));
  // unreachable;
  return (0)|0;
 }
@@ -26210,7 +26210,7 @@ function _AlignmentSpecifier_Clone($0) {
  HEAP32[$4>>2] = 0;
  $5 = (_mallocinit(8,$3)|0);
  $2 = $5;
- ___assert_fail((3849|0),(2346|0),13463,(5278|0));
+ ___assert_fail((3849|0),(2346|0),13464,(5278|0));
  // unreachable;
  return (0)|0;
 }
@@ -26764,7 +26764,7 @@ function _SpecifierQualifier_Clone($0) {
   break;
  }
  default: {
-  ___assert_fail((3849|0),(2346|0),14237,(5329|0));
+  ___assert_fail((3849|0),(2346|0),14238,(5329|0));
   // unreachable;
  }
  }
@@ -29162,7 +29162,7 @@ function _PostfixExpression($0,$1) {
    $98 = HEAP32[$97>>2]|0;
    $99 = ($98|0)==(0|0);
    if (!($99)) {
-    ___assert_fail((5576|0),(2346|0),16236,(5619|0));
+    ___assert_fail((5576|0),(2346|0),16237,(5619|0));
     // unreachable;
    }
    ;HEAP32[$15>>2]=0|0;HEAP32[$15+4>>2]=0|0;HEAP32[$15+8>>2]=0|0;HEAP32[$15+12>>2]=0|0;HEAP32[$15+16>>2]=0|0;HEAP32[$15+20>>2]=0|0;HEAP32[$15+24>>2]=0|0;
@@ -29466,19 +29466,19 @@ function _PostfixExpression($0,$1) {
   $5 = $291;
  }
  if ((label|0) == 22) {
-  ___assert_fail((5637|0),(2346|0),16279,(5619|0));
+  ___assert_fail((5637|0),(2346|0),16280,(5619|0));
   // unreachable;
  }
  else if ((label|0) == 40) {
-  ___assert_fail((5637|0),(2346|0),16332,(5619|0));
+  ___assert_fail((5637|0),(2346|0),16333,(5619|0));
   // unreachable;
  }
  else if ((label|0) == 44) {
-  ___assert_fail((5637|0),(2346|0),16352,(5619|0));
+  ___assert_fail((5637|0),(2346|0),16353,(5619|0));
   // unreachable;
  }
  else if ((label|0) == 47) {
-  ___assert_fail((5637|0),(2346|0),16362,(5619|0));
+  ___assert_fail((5637|0),(2346|0),16363,(5619|0));
   // unreachable;
  }
  else if ((label|0) == 51) {
@@ -32255,7 +32255,7 @@ function _Labeled_Statement($0,$1) {
   $19 = HEAP32[$18>>2]|0;
   $20 = ($19|0)==(0|0);
   if (!($20)) {
-   ___assert_fail((5715|0),(2346|0),17744,(5750|0));
+   ___assert_fail((5715|0),(2346|0),17745,(5750|0));
    // unreachable;
   }
   $21 = $2;
@@ -33291,7 +33291,7 @@ function _Struct_Or_Union_Specifier($0,$1) {
     (_Parser_Match($33,$35)|0);
     break;
    } else {
-    ___assert_fail((5921|0),(2346|0),18421,(5953|0));
+    ___assert_fail((5921|0),(2346|0),18422,(5953|0));
     // unreachable;
    }
   }
@@ -33359,7 +33359,7 @@ function _Enumeration_Constant($0,$1) {
   (_Parser_MatchToken($15,9,$17)|0);
   STACKTOP = sp;return;
  } else {
-  ___assert_fail((5979|0),(2346|0),18450,(6003|0));
+  ___assert_fail((5979|0),(2346|0),18451,(6003|0));
   // unreachable;
  }
 }
@@ -33527,7 +33527,7 @@ function _Enum_Specifier($0,$1) {
  $17 = HEAP32[$16>>2]|0;
  $18 = ($17|0)==(0|0);
  if (!($18)) {
-  ___assert_fail((6024|0),(2346|0),18517,(6050|0));
+  ___assert_fail((6024|0),(2346|0),18518,(6050|0));
   // unreachable;
  }
  $19 = $5;
@@ -36978,15 +36978,15 @@ function _TJumpStatement_CodePrint($0,$1,$2,$3) {
    $52 = $7;
    $53 = $5;
    _Output_Append($52,$53,$8);
-   $54 = $7;
-   $55 = $5;
-   _Output_Append($54,$55,2693);
-   $56 = $5;
-   $57 = ((($56)) + 72|0);
-   $58 = ((($57)) + 4|0);
-   $59 = HEAP32[$58>>2]|0;
-   $60 = ($59|0)>(0);
-   if ($60) {
+   $54 = $5;
+   $55 = ((($54)) + 72|0);
+   $56 = ((($55)) + 4|0);
+   $57 = HEAP32[$56>>2]|0;
+   $58 = ($57|0)>(0);
+   if ($58) {
+    $59 = $7;
+    $60 = $5;
+    _Output_Append($59,$60,2693);
     $61 = $7;
     $62 = $5;
     _Output_Append($61,$62,2721);
