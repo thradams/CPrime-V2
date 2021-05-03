@@ -7567,18 +7567,25 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
         {
             if (options->pCurrentTryBlock)
             {
-                Output_Append(fp, options, "/*throw*/ {");
+                Output_Append(fp, options, "/*throw*/");
 
                 char try_statement_index_string[20];
                 snprintf(try_statement_index_string, sizeof(try_statement_index_string), "%d", try_statement_index);
-
-
+                if (options->sbDeferGlobal.size > 0)
+                {
+                    /*neste caso adicionamos um {*/
+                    Output_Append(fp, options, "{");
+                }
                 Output_Append(fp, options, options->sbDeferGlobal.c_str);
                 Output_Append(fp, options, " goto _catch_label");
                 Output_Append(fp, options, try_statement_index_string);
-                Output_Append(fp, options, ";");
+                
 
-                Output_Append(fp, options, "}");
+                if (options->sbDeferGlobal.size > 0)
+                {
+                    Output_Append(fp, options, ";");
+                    Output_Append(fp, options, "}");
+                }
             }
             else
             {
