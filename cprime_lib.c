@@ -381,6 +381,94 @@ void GetFullDirS(const char* fileName, char* out)
     snprintf(out, CPRIME_MAX_PATH, "%s%s", drive, dir);
 }
 
+
+static bool fread2(void* buffer, size_t size, size_t count, FILE* stream, size_t* sz)
+{
+    *sz = 0;//out
+
+    bool result = false;
+    size_t n = fread(buffer, size, count, stream);
+    if (n == count)
+    {
+        *sz = n;
+        result = true;
+    }
+    else if (n < count)
+    {
+        if (feof(stream))
+        {
+            *sz = n;
+            result = true;
+        }
+    }
+    return result;
+}
+
+char* readfile(const char* path)
+{
+    char* result = NULL;
+
+    struct stat info;
+    if (stat(path, &info) == 0)
+    {
+        char* data = (char*)malloc(sizeof(char) * info.st_size + 1);
+        if (data != NULL)
+        {
+            FILE* file = fopen(path, "r");
+            if (file != NULL)
+            {
+                if (info.st_size >= 3)
+                {
+                    size_t n = 0;
+                    if (fread2(data, 1, 3, file, &n))
+                    {
+                        if (n == 3)
+                        {
+                            if ((unsigned char)data[0] == 0xEF &&
+                                (unsigned char)data[1] == 0xBB &&
+                                (unsigned char)data[2] == 0xBF)
+                            {
+                                if (fread2(data, 1, info.st_size - 3, file, &n))
+                                {
+                                    //ok
+                                    data[n] = 0;
+                                    result = data;
+                                    data = 0;
+                                }
+                            }
+                            else if (fread2(data + 3, 1, info.st_size - 3, file, &n))
+                            {
+                                data[3 + n] = 0;
+                                result = data;
+                                data = 0;
+                            }
+                        }
+                        else
+                        {
+                            data[n] = 0;
+                            result = data;
+                            data = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    size_t n = 0;
+                    if (fread2(data, 1, info.st_size, file, &n))
+                    {
+                        data[n] = 0;
+                        result = data;
+                        data = 0;
+                    }
+                }
+                fclose(file);
+            }
+            free(data);
+        }
+    }
+    return result;
+}
+
 bool LoadFile(const char* filename, const char** out, int* szOut)
 {
     if (s_emulatedFiles)
@@ -401,34 +489,13 @@ bool LoadFile(const char* filename, const char** out, int* szOut)
         }
         return false;
     }
-    bool result = false;
-    int lSize = 0;
-    FILE* fp = (FILE*)fopen(filename, "rb");
-    if (fp)
+    bool result = 0;
+    char* buffer = readfile(filename);
+    if (buffer != NULL)
     {
-        fseek(fp, 0L, SEEK_END);
-        lSize = ftell(fp);
-        rewind(fp);
-        char* buffer = (char*)malloc(lSize + 1);
-        if (buffer)
-        {
-            /*int fr =*/ fread(buffer, 1, lSize, fp);
-            if (feof(fp))
-            {
-                //ok leu tudo
-            }
-            if (!ferror(fp))
-            {
-                //ok
-                buffer[lSize] = '\0';
-                *out = buffer;
-                buffer = NULL;
-                result = true;
-                *szOut = lSize;
-            }
-            free(buffer);
-        }
-        fclose(fp);
+        *out = buffer;
+        *szOut = strlen(buffer);
+        result = 1;
     }
     return result;
 }
