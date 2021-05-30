@@ -564,6 +564,15 @@ wchar_t Stream_LookAhead(struct Stream* pStream)
     return pStream->Text[pStream->Position + 1];
 }
 
+wchar_t Stream_LookAhead2(struct Stream* pStream)
+{
+    if (pStream->Position + 2 >= pStream->TextLen)
+    {
+        return '\0';
+    }
+    return pStream->Text[pStream->Position + 2];
+}
+
 void Stream_Match(struct Stream* pStream)
 {
     if (pStream->Position >= pStream->TextLen)
@@ -4564,7 +4573,7 @@ static bool Scanner_InitCore(struct Scanner* pScanner)
     AddStandardMacro(pScanner, "WIN32", "1");
     AddStandardMacro(pScanner, "_CONSOLE", "1");
     AddStandardMacro(pScanner, "_WIN32", "1");
-    AddStandardMacro(pScanner, "__CPRIME__", "0");
+    AddStandardMacro(pScanner, "__CPRIME__", "1");
     AddStandardMacro(pScanner, "__LINE__", "0");
     AddStandardMacro(pScanner, "__FILE__", "\"__FILE__\"");
     AddStandardMacro(pScanner, "__DATE__", "\"__DATE__\"");
@@ -7645,8 +7654,8 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
                 }
                 Output_Append(fp, options, options->sbDeferGlobal.c_str);
                 Output_Append(fp, options, " goto _catch_label");
+
                 Output_Append(fp, options, try_statement_index_string);
-                
 
                 if (options->sbDeferGlobal.size > 0)
                 {
@@ -7665,16 +7674,29 @@ static void TJumpStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct Prin
         case TK_RETURN:
             if (p->pExpression)
             {
-                Output_Append(fp, options, options->returnType.c_str);
-                Output_Append(fp, options, " _result = ");
-                TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
-                Output_Append(fp, options, ";");
-                Output_Append(fp, options, options->sbDeferGlobal.c_str);
-                Output_Append(fp, options, "return _result");
+                if (options->sbDeferGlobal.size != 0)
+                {
+                    Output_Append(fp, options, " ");
+                    Output_Append(fp, options, options->returnType.c_str);
+                    Output_Append(fp, options, " _result = ");
+                    TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+                    Output_Append(fp, options, ";");
+                    Output_Append(fp, options, options->sbDeferGlobal.c_str);
+                    Output_Append(fp, options, "return _result");
+                }
+                else
+                {
+                    Output_Append(fp, options, "return");
+                    TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);                    
+                }
+
             }
             else
             {
-                Output_Append(fp, options, options->sbDeferGlobal.c_str);
+                if (options->sbDeferGlobal.size > 0)
+                {
+                    Output_Append(fp, options, options->sbDeferGlobal.c_str);
+                }
                 Output_Append(fp, options, "return");
             }
             break;
@@ -7759,11 +7781,11 @@ static void TIfStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
             StrBuilder_Swap(&options->sbDeferGlobal, &sb2);
             StrBuilder_Destroy(&sb2);
 
-            
+
             /*para defer ficar dentro do if (true)*/
             Output_Append(fp, options, "{");
             TStatement_CodePrint(pSyntaxTree, options, p->pStatement, fp);
-   
+
             TExpression_CodePrint(pSyntaxTree, options, p->pDeferExpression, fp);
             Output_Append(fp, options, ";");
             Output_Append(fp, options, "}");
@@ -8214,147 +8236,155 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
             break;
         case TK_LEFT_PARENTHESIS:
         {
-            const char* funcName = GetFuncName(p->pExpressionLeft);
-            if (funcName != NULL && strcmp(funcName, "typename") == 0)
+            if (p->pExpressionLeft)
             {
-                /*colocar uma string literal no lugar*/
-                if (p->ArgumentExpressionList.size == 1)
+                const char* funcName = GetFuncName(p->pExpressionLeft);
+                if (funcName != NULL && strcmp(funcName, "typename") == 0)
                 {
-                    struct StrBuilder str = STRBUILDER_INIT;
-                    GetTypeName(p->ArgumentExpressionList.data[0]->pExpression, &str);
-                    StrBuilder_Append(fp, "\"");
-                    StrBuilder_Append(fp, str.c_str);
-                    StrBuilder_Append(fp, "\"");
-                    StrBuilder_Destroy(&str);
-                }
-                else
-                {
-                    //wrong number of argument
-                }
-            }
-            else if (funcName != NULL && strcmp(funcName, "destroy") == 0)
-            {
-                if (p->ArgumentExpressionList.size == 1)
-                {
-                    struct TypeName* pTypeName = Expression_GetTypeName(p->ArgumentExpressionList.data[0]->pExpression);
-                    struct StrBuilder strtemp = STRBUILDER_INIT;
-                    struct StrBuilder instantiate = STRBUILDER_INIT;
-                    TExpression_CodePrint(pSyntaxTree, options, p->ArgumentExpressionList.data[0]->pExpression, &strtemp);
-                    InstanciateDestroy(pSyntaxTree,
-                                       options,
-                                       0,
-                                       &pTypeName->SpecifierQualifierList,
-                                       &pTypeName->Declarator,
-                                       strtemp.c_str,
-                                       false,
-                                       &instantiate);
-                    //imprimir espacos na frente
-                    TExpression_CodePrintSpaces(pSyntaxTree, options, p->pExpressionLeft, fp);
-                    if (instantiate.size > 0)
+                    /*colocar uma string literal no lugar*/
+                    if (p->ArgumentExpressionList.size == 1)
                     {
-                        StrBuilder_Append(fp, instantiate.c_str);
+                        struct StrBuilder str = STRBUILDER_INIT;
+                        GetTypeName(p->ArgumentExpressionList.data[0]->pExpression, &str);
+                        StrBuilder_Append(fp, "\"");
+                        StrBuilder_Append(fp, str.c_str);
+                        StrBuilder_Append(fp, "\"");
+                        StrBuilder_Destroy(&str);
                     }
-                    /*se este cara for vazio nao precisaria fazer nada remover chamada*/
-                    StrBuilder_Destroy(&strtemp);
-                    StrBuilder_Destroy(&instantiate);
+                    else
+                    {
+                        //wrong number of argument
+                    }
+                }
+                else if (funcName != NULL && strcmp(funcName, "destroy") == 0)
+                {
+                    if (p->ArgumentExpressionList.size == 1)
+                    {
+                        struct TypeName* pTypeName = Expression_GetTypeName(p->ArgumentExpressionList.data[0]->pExpression);
+                        struct StrBuilder strtemp = STRBUILDER_INIT;
+                        struct StrBuilder instantiate = STRBUILDER_INIT;
+                        TExpression_CodePrint(pSyntaxTree, options, p->ArgumentExpressionList.data[0]->pExpression, &strtemp);
+                        InstanciateDestroy(pSyntaxTree,
+                                           options,
+                                           0,
+                                           &pTypeName->SpecifierQualifierList,
+                                           &pTypeName->Declarator,
+                                           strtemp.c_str,
+                                           false,
+                                           &instantiate);
+                        //imprimir espacos na frente
+                        TExpression_CodePrintSpaces(pSyntaxTree, options, p->pExpressionLeft, fp);
+                        if (instantiate.size > 0)
+                        {
+                            StrBuilder_Append(fp, instantiate.c_str);
+                        }
+                        /*se este cara for vazio nao precisaria fazer nada remover chamada*/
+                        StrBuilder_Destroy(&strtemp);
+                        StrBuilder_Destroy(&instantiate);
+                    }
+                    else
+                    {
+                        //wrong number of argument
+                    }
                 }
                 else
                 {
-                    //wrong number of argument
+                    bool bHandled = false;
+                    struct TypeName* pTypeName = NULL;
+                    if (p->ArgumentExpressionList.size == 1)
+                    {
+                        pTypeName = Expression_GetTypeName(p->ArgumentExpressionList.data[0]->pExpression);
+                        if (pTypeName)
+                        {
+                            struct StructUnionSpecifier* pStructUnionSpecifier =
+                                (struct StructUnionSpecifier*)
+                                DeclarationSpecifiers_GetMainSpecifier((struct DeclarationSpecifiers*)&pTypeName->SpecifierQualifierList, StructUnionSpecifier_ID);
+                            if (pStructUnionSpecifier)
+                            {
+                                if (pStructUnionSpecifier->Tag)
+                                {
+                                    pStructUnionSpecifier = FindStructUnionSpecifierByName(pSyntaxTree, pStructUnionSpecifier->Tag);
+                                }
+                                if (pStructUnionSpecifier->UnionSet.pHead != NULL)
+                                {
+                                    bHandled = true;
+                                    //imprimir espacos na frente
+                                    TExpression_CodePrintSpaces(pSyntaxTree, options, p->pExpressionLeft, fp);
+                                    //se nao tem nome vou gerar um nome com todos
+                                    char structTagName[1000] = { 0 };
+                                    GetOrGenerateStructTagName(pStructUnionSpecifier, structTagName, sizeof(structTagName));
+                                    //nome da funcao
+                                    Output_Append(fp, options, structTagName);
+                                    Output_Append(fp, options, "_");
+                                    Output_Append(fp, options, funcName);
+                                    UnionTypeDefault(pSyntaxTree,
+                                                     options,
+                                                     pStructUnionSpecifier,
+                                                     NULL,
+                                                     "p",
+                                                     funcName,
+                                                     &options->sbInstantiations,
+                                                     &options->sbPreDeclaration);
+                                }
+                            }
+                            else
+                            {
+                                if (pTypeName->Declarator.pDirectDeclarator &&
+                                    pTypeName->Declarator.pDirectDeclarator->DeclaratorType == TDirectDeclaratorTypeAutoArray &&
+                                    (funcName != NULL && strcmp(funcName, "push") == 0))
+                                {
+                                    //auto array
+                                    bHandled = true;
+                                    struct Declarator* pDeclarator = 0;
+                                    struct Declaration* pDecl = GetDeclaration(p->pExpressionRight, &pDeclarator);
+                                    struct StrBuilder strtemp = STRBUILDER_INIT;
+                                    struct StrBuilder instantiate = STRBUILDER_INIT;
+                                    TExpression_CodePrint(pSyntaxTree, options, p->pExpressionRight, &strtemp);
+                                    //TDeclarationSpecifiers_PrintNameMangling(&pDecl->Specifiers, &instantiate);
+                                    InstanciateVectorPush(pSyntaxTree,
+                                                          options,
+                                                          &pDecl->Specifiers,
+                                                          &instantiate);
+                                    /*
+                                    InstanciateDestroy(pSyntaxTree,
+                                                       options,
+                                                       0,
+                                                       (struct TSpecifierQualifierList*)(&pDecl->Specifiers),
+                                                       pDeclarator,
+                                                       strtemp.c_str,
+                                                       false,
+                                                       &instantiate);
+                                                       */
+                                                       //imprimir espacos na frente
+                                    TExpression_CodePrintSpaces(pSyntaxTree, options, p->pExpressionLeft, fp);
+                                    if (instantiate.size > 0)
+                                    {
+                                        StrBuilder_Append(fp, instantiate.c_str);
+                                        //StrBuilder_Append(fp, "&");
+                                    }
+                                    /*se este cara for vazio nao precisaria fazer nada remover chamada*/
+                                    StrBuilder_Destroy(&strtemp);
+                                    StrBuilder_Destroy(&instantiate);
+                                }
+                            }
+                        }
+                    }
+                    if (p->pExpressionLeft && !bHandled)
+                    {
+                        TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
+                    }
+                    //Do lado esquerdo vem o nome da funcao p->pExpressionLeft
+                    TNodeClueList_CodePrint(options, &p->ClueList0, fp);
+                    Output_Append(fp, options, "(");
+                    ArgumentExpressionList_CodePrint(pSyntaxTree, options, &p->ArgumentExpressionList, fp);
+                    TNodeClueList_CodePrint(options, &p->ClueList1, fp);
+                    Output_Append(fp, options, ")");
                 }
             }
             else
             {
-                bool bHandled = false;
-                struct TypeName* pTypeName = NULL;
-                if (p->ArgumentExpressionList.size == 1)
-                {
-                    pTypeName = Expression_GetTypeName(p->ArgumentExpressionList.data[0]->pExpression);
-                    if (pTypeName)
-                    {
-                        struct StructUnionSpecifier* pStructUnionSpecifier =
-                            (struct StructUnionSpecifier*)
-                            DeclarationSpecifiers_GetMainSpecifier((struct DeclarationSpecifiers*)&pTypeName->SpecifierQualifierList, StructUnionSpecifier_ID);
-                        if (pStructUnionSpecifier)
-                        {
-                            if (pStructUnionSpecifier->Tag)
-                            {
-                                pStructUnionSpecifier = FindStructUnionSpecifierByName(pSyntaxTree, pStructUnionSpecifier->Tag);
-                            }
-                            if (pStructUnionSpecifier->UnionSet.pHead != NULL)
-                            {
-                                bHandled = true;
-                                //imprimir espacos na frente
-                                TExpression_CodePrintSpaces(pSyntaxTree, options, p->pExpressionLeft, fp);
-                                //se nao tem nome vou gerar um nome com todos
-                                char structTagName[1000] = { 0 };
-                                GetOrGenerateStructTagName(pStructUnionSpecifier, structTagName, sizeof(structTagName));
-                                //nome da funcao
-                                Output_Append(fp, options, structTagName);
-                                Output_Append(fp, options, "_");
-                                Output_Append(fp, options, funcName);
-                                UnionTypeDefault(pSyntaxTree,
-                                                 options,
-                                                 pStructUnionSpecifier,
-                                                 NULL,
-                                                 "p",
-                                                 funcName,
-                                                 &options->sbInstantiations,
-                                                 &options->sbPreDeclaration);
-                            }
-                        }
-                        else
-                        {
-                            if (pTypeName->Declarator.pDirectDeclarator &&
-                                pTypeName->Declarator.pDirectDeclarator->DeclaratorType == TDirectDeclaratorTypeAutoArray &&
-                                (funcName != NULL && strcmp(funcName, "push") == 0))
-                            {
-                                //auto array
-                                bHandled = true;
-                                struct Declarator* pDeclarator = 0;
-                                struct Declaration* pDecl = GetDeclaration(p->pExpressionRight, &pDeclarator);
-                                struct StrBuilder strtemp = STRBUILDER_INIT;
-                                struct StrBuilder instantiate = STRBUILDER_INIT;
-                                TExpression_CodePrint(pSyntaxTree, options, p->pExpressionRight, &strtemp);
-                                //TDeclarationSpecifiers_PrintNameMangling(&pDecl->Specifiers, &instantiate);
-                                InstanciateVectorPush(pSyntaxTree,
-                                                      options,
-                                                      &pDecl->Specifiers,
-                                                      &instantiate);
-                                /*
-                                InstanciateDestroy(pSyntaxTree,
-                                                   options,
-                                                   0,
-                                                   (struct TSpecifierQualifierList*)(&pDecl->Specifiers),
-                                                   pDeclarator,
-                                                   strtemp.c_str,
-                                                   false,
-                                                   &instantiate);
-                                                   */
-                                                   //imprimir espacos na frente
-                                TExpression_CodePrintSpaces(pSyntaxTree, options, p->pExpressionLeft, fp);
-                                if (instantiate.size > 0)
-                                {
-                                    StrBuilder_Append(fp, instantiate.c_str);
-                                    //StrBuilder_Append(fp, "&");
-                                }
-                                /*se este cara for vazio nao precisaria fazer nada remover chamada*/
-                                StrBuilder_Destroy(&strtemp);
-                                StrBuilder_Destroy(&instantiate);
-                            }
-                        }
-                    }
-                }
-                if (p->pExpressionLeft && !bHandled)
-                {
-                    TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
-                }
-                //Do lado esquerdo vem o nome da funcao p->pExpressionLeft
-                TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-                Output_Append(fp, options, "(");
-                ArgumentExpressionList_CodePrint(pSyntaxTree, options, &p->ArgumentExpressionList, fp);
-                TNodeClueList_CodePrint(options, &p->ClueList1, fp);
-                Output_Append(fp, options, ")");
+                printf("expression null\n");
+                //              assert(false);
             }
         }
         break;
@@ -11403,6 +11433,8 @@ void BasicScanner_Next(struct BasicScanner* scanner)
     scanner->token = TK_NONE;
     ch = scanner->stream.Character;
     wchar_t ch1 = Stream_LookAhead(&scanner->stream);
+    wchar_t ch2 = Stream_LookAhead2(&scanner->stream);
+
     if (ch == '.' && ch1 == '.')
     {
         BasicScanner_MatchChar(scanner);
@@ -11452,9 +11484,15 @@ void BasicScanner_Next(struct BasicScanner* scanner)
     //Devido ao L' tem que vir antes do identificador
     //literal char
     if (ch == L'"' ||
-        (ch == L'L' && ch1 == L'"'))
+        (ch == L'L' && ch1 == L'"') ||
+        (ch == L'u' && ch1 == L'8') && ch2 == L'"')
     {
-        if (ch == 'L')
+        if (ch == 'u')
+        {
+            ch = BasicScanner_MatchChar(scanner); //u
+            ch = BasicScanner_MatchChar(scanner); //8
+        }
+        else if (ch == 'L')
         {
             ch = BasicScanner_MatchChar(scanner); //L
         }
@@ -15662,8 +15700,8 @@ bool Parser_InitFile(struct Parser* parser, const char* fileName)
       podemos pegar os includes da variavel de ambiente INCLUDE
     */
     unsigned long __stdcall GetEnvironmentVariableA(char* lpName, char* lpBuffer, unsigned long nSize);
-#if 0
-    const char* env = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29333\\ATLMFC\\include;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29333\\include;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
+#if 1
+    const char* env = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29910\\ATLMFC\\include;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29910\\include;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
 #else
     char env[2000];
     int n = GetEnvironmentVariableA("INCLUDE", env, sizeof(env));
@@ -16354,43 +16392,46 @@ void PostfixExpression(struct Parser* ctx, struct Expression** ppExpression)
                     ArgumentExpressionList(ctx, &pTPostfixExpressionBase->ArgumentExpressionList);
                 }
                 /*verificacao dos parametros da funcao*/
-                struct TypeName* pTypeName = Expression_GetTypeName(pTPostfixExpressionBase->pExpressionLeft);
-                if (pTypeName && pTypeName->Declarator.pDirectDeclarator)
+                if (pTPostfixExpressionBase->pExpressionLeft != NULL)
                 {
-                    bool bVariadicArgs = pTypeName->Declarator.pDirectDeclarator->Parameters.bVariadicArgs;
-                    bool bIsVoid = pTypeName->Declarator.pDirectDeclarator->Parameters.bIsVoid;
-                    bool bIsEmpty = pTypeName->Declarator.pDirectDeclarator->Parameters.ParameterList.pHead == NULL;
-                    int sz = pTPostfixExpressionBase->ArgumentExpressionList.size;
-                    int argcount = 0;
-                    if (!bIsVoid)
+                    struct TypeName* pTypeName = Expression_GetTypeName(pTPostfixExpressionBase->pExpressionLeft);
+                    if (pTypeName && pTypeName->Declarator.pDirectDeclarator)
                     {
-                        for (struct Parameter* pParameter = pTypeName->Declarator.pDirectDeclarator->Parameters.ParameterList.pHead;
-                             pParameter;
-                             pParameter = pParameter->pNext)
+                        bool bVariadicArgs = pTypeName->Declarator.pDirectDeclarator->Parameters.bVariadicArgs;
+                        bool bIsVoid = pTypeName->Declarator.pDirectDeclarator->Parameters.bIsVoid;
+                        bool bIsEmpty = pTypeName->Declarator.pDirectDeclarator->Parameters.ParameterList.pHead == NULL;
+                        int sz = pTPostfixExpressionBase->ArgumentExpressionList.size;
+                        int argcount = 0;
+                        if (!bIsVoid)
                         {
-                            argcount++;
-                            if (argcount > sz)
+                            for (struct Parameter* pParameter = pTypeName->Declarator.pDirectDeclarator->Parameters.ParameterList.pHead;
+                                 pParameter;
+                                 pParameter = pParameter->pNext)
                             {
-                                SetError(ctx, "too few arguments for call");
-                                break;
+                                argcount++;
+                                if (argcount > sz)
+                                {
+                                    SetError(ctx, "too few arguments for call");
+                                    break;
+                                }
                             }
+                        }
+                        else
+                        {
+                            argcount = 0;
+                        }
+                        if (!bIsEmpty && !bVariadicArgs && pTPostfixExpressionBase->ArgumentExpressionList.size > argcount)
+                        {
+                            SetError(ctx, "too many actual parameters");
                         }
                     }
                     else
                     {
-                        argcount = 0;
+                        //destroy ainda nao foi declarado por ex
+                        //assert(false);
+                        //SetWarning(ctx, "function cannot be verified");
                     }
-                    if (!bIsEmpty && !bVariadicArgs && pTPostfixExpressionBase->ArgumentExpressionList.size > argcount)
-                    {
-                        SetError(ctx, "too many actual parameters");
-                    }
-                }
-                else
-                {
-                    //destroy ainda nao foi declarado por ex
-                    //assert(false);
-                    //SetWarning(ctx, "function cannot be verified");
-                }
+                }//
                 Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS,
                                   &pTPostfixExpressionBase->ClueList1);
             }
