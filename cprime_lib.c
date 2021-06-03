@@ -8166,12 +8166,22 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
             //bIsPointer = TPointerList_IsPointer(&p->pTypeName->Declarator.PointerList);
             //falta imprimeir typename
             //TTypeName_Print*
+            if (p->InitializerList.pHead)
+            {
+                /*se for vazio ele gera a macro e nao precisa { */
+                Output_Append(fp, options, "{");
+            }
             TInitializerList_CodePrint(pSyntaxTree,
                                        options,
                                        (struct DeclarationSpecifiers*)&p->pTypeName->SpecifierQualifierList,
                                        NULL,
                                        &p->InitializerList,
                                        fp);
+            if (p->InitializerList.pHead)
+            {
+                /*se for vazio ele gera a macro e nao precisa { */
+                Output_Append(fp, options, "}");
+            }
         }
     }
     switch (p->token)
@@ -8923,6 +8933,7 @@ static void TInitializerList_CodePrint(struct SyntaxTree* pSyntaxTree,
         }
         else
         {
+            
             for (struct InitializerListItem* pItem = (p)->pHead; pItem != NULL; pItem = pItem->pNext)
             {
                 if (!List_IsFirstItem(p, pItem))
@@ -8934,6 +8945,7 @@ static void TInitializerList_CodePrint(struct SyntaxTree* pSyntaxTree,
                                                pItem,
                                                fp);
             }
+            
         }
     }
 }
