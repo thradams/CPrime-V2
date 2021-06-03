@@ -8168,7 +8168,10 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
             //TTypeName_Print*
             if (p->InitializerList.pHead)
             {
-                /*se for vazio ele gera a macro e nao precisa { */
+                /*
+                se for vazio ele gera a macro e nao precisa { 
+                case contrario precisa
+                */
                 Output_Append(fp, options, "{");
             }
             TInitializerList_CodePrint(pSyntaxTree,
