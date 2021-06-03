@@ -14500,6 +14500,25 @@ struct Declarator* Declaration_FindDeclarator(struct Declaration* p, const char*
                 break;
             }
         }
+        else if (pInitDeclarator->pDeclarator &&
+            pInitDeclarator->pDeclarator->pDirectDeclarator &&
+            pInitDeclarator->pDeclarator->pDirectDeclarator->pDeclarator &&
+            pInitDeclarator->pDeclarator->pDirectDeclarator->pDeclarator->pDirectDeclarator &&
+            pInitDeclarator->pDeclarator->pDirectDeclarator->pDeclarator->pDirectDeclarator->Identifier)
+        {
+            /*
+              This situation here:
+              void (*F)(void) = 0;
+              F();
+            */
+
+            if (strcmp(pInitDeclarator->pDeclarator->pDirectDeclarator->pDeclarator->pDirectDeclarator->Identifier, name) == 0)
+            {
+                pResult = pInitDeclarator->pDeclarator;
+                break;
+            }
+        }
+
     }
     return pResult;
 }
@@ -16435,7 +16454,7 @@ void PostfixExpression(struct Parser* ctx, struct Expression** ppExpression)
                 Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS,
                                   &pTPostfixExpressionBase->ClueList1);
             }
-            break;
+            break;            
             case TK_LEFT_SQUARE_BRACKET:
             {
                 assert(pTPostfixExpressionBase);
