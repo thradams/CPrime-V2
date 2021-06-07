@@ -7384,7 +7384,6 @@ static void TNodeClueList_CodePrint(struct PrintCodeOptions* options, struct Tok
 static void TCompoundStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
                                          struct PrintCodeOptions* options,
                                          struct CompoundStatement* p,
-
                                          struct StrBuilder* fp)
 {
 
@@ -7395,7 +7394,7 @@ static void TCompoundStatement_CodePrint(struct SyntaxTree* pSyntaxTree,
     struct StrBuilder  sbDeferGlobalCopy = { 0 };
     StrBuilder_Set(&sbDeferGlobalCopy, options->sbDeferGlobal.c_str);
 
-
+    TNodeClueList_CodePrint(options, &p->ClueList0, fp);
     Output_Append(fp, options, "{");
 
     for (int j = 0; j < p->BlockItemList.size; j++)
@@ -16028,7 +16027,6 @@ void PrimaryExpressionLiteral(struct Parser* ctx, struct Expression** ppPrimaryE
 }
 
 void Compound_Statement(struct Parser* ctx, struct CompoundStatement** ppStatement);
-void VirtualCompound_Statement(struct Parser* ctx, struct CompoundStatement** ppStatement);
 
 void Parameter_Type_List(struct Parser* ctx, struct ParameterTypeList* pParameterList);
 
@@ -18169,29 +18167,6 @@ void Block_Item_List(struct Parser* ctx, struct BlockItemList* pBlockItemList)
     }
 }
 
-void VirtualCompound_Statement(struct Parser* ctx, struct CompoundStatement** ppStatement)
-{
-    /*
-    compound-statement:
-    { block-item-listopt }
-    */
-    struct CompoundStatement* pCompoundStatement = NEW((struct CompoundStatement)COMPOUNDSTATEMENT_INIT);
-
-    *ppStatement = (struct Statement*)pCompoundStatement;
-    struct SymbolMap BlockScope = SYMBOLMAP_INIT;
-    BlockScope.pPrevious = ctx->pCurrentScope;
-    ctx->pCurrentScope = &BlockScope;
-    // Parser_MatchToken(ctx, TK_LEFT_CURLY_BRACKET, &pCompoundStatement->ClueList0);
-    enum TokenType token = Parser_CurrentTokenType(ctx);
-    if (token != TK_RIGHT_CURLY_BRACKET)
-    {
-        Block_Item_List(ctx, &pCompoundStatement->BlockItemList);
-    }
-    //Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET, &pCompoundStatement->ClueList1);
-    //SymbolMap_Print(ctx->pCurrentScope);
-    ctx->pCurrentScope = BlockScope.pPrevious;
-    SymbolMap_Destroy(&BlockScope);
-}
 
 void Compound_Statement(struct Parser* ctx, struct CompoundStatement** ppStatement)
 {
