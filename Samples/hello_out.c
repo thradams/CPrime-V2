@@ -1,14 +1,12 @@
 
-int main(){
-    
-    if (1) /*try*/{
-        int i;
-        //defer i = 1;
-            /*throw*/ goto _catch_label1;
-        
-    }
-    else /*catch*/ _catch_label1:{
 
-    }
 
+static int _lambda_0(void){ return 1; }
+int main()
+{
+    void (*F)(void);
+    F =_lambda_0;
+
+    F =(int(*) (void)){ 0} ;
 }
+

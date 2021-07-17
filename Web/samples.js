@@ -432,7 +432,7 @@ int main()
 
 
 
-sample["Lambdas"] =
+sample["Function Literal"] =
     `
 #include <stdio.h>
 
@@ -442,9 +442,9 @@ void Run(void (*callback)(void*), void* data) {
 
 int main()
 {  
-  Run([](void* data){
+  Run((void ()(void* data)){
     printf("first\\n");
-    Run([](void* data){
+    Run((void () (void* data) ){
       printf("second\\n");
     }, 0);     
   }, 0);

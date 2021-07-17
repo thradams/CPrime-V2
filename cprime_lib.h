@@ -1834,7 +1834,7 @@ struct PrimaryExpressionLambda
     enum Type Type;
 
     struct CompoundStatement* pCompoundStatement;
-    struct ParameterTypeList* pParameterTypeListOpt;
+    //struct ParameterTypeList* pParameterTypeListOpt;
     struct TokenList ClueList0; //[
     struct TokenList ClueList1; //]
     struct TokenList ClueList2; //(

@@ -7957,13 +7957,20 @@ static void TPrimaryExpressionLambda_CodePrint(struct SyntaxTree* pSyntaxTree,
     //Output_Append
     StrBuilder_AppendFmt(fp, "_lambda_%d", global_lambda_counter);
     struct StrBuilder sb = STRBUILDER_INIT;
-    if (p->pParameterTypeListOpt)
+    struct TParameterList* pParameterTypeListOpt = &p->TypeName.Declarator.pDirectDeclarator->Parameters.ParameterList;
+
+    if (pParameterTypeListOpt)
     {
         //TNodeClueList_CodePrint(options, &p->ClueList2, &sb);
         Output_Append(&sb, options, "\n");
-        StrBuilder_AppendFmt(&sb, "static void _lambda_%d(", global_lambda_counter);
+        
+        StrBuilder_AppendFmt(&sb, "static ");
+        TSpecifierQualifierList_CodePrint(pSyntaxTree, options, &p->TypeName.SpecifierQualifierList, &sb);
+        StrBuilder_AppendFmt(&sb, " ");
+
+        StrBuilder_AppendFmt(&sb, "_lambda_%d(", global_lambda_counter);
         //Output_Append(&sb, options, "static void func_l1(");
-        ParameterTypeList_CodePrint(pSyntaxTree, options, p->pParameterTypeListOpt, &sb);
+        ParameterTypeList_CodePrint(pSyntaxTree, options, pParameterTypeListOpt, &sb);
         //TNodeClueList_CodePrint(options, &p->ClueList3, &sb);
         Output_Append(&sb, options, ")");
     }
@@ -12455,7 +12462,7 @@ void PrimaryExpressionLambda_Delete(struct PrimaryExpressionLambda* p)
     if (p != NULL)
     {
         TypeName_Destroy(&p->TypeName);
-        ParameterTypeList_Delete(p->pParameterTypeListOpt);
+        
         TokenList_Destroy(&p->ClueList0);
         TokenList_Destroy(&p->ClueList1);
         TokenList_Destroy(&p->ClueList2);
@@ -16030,76 +16037,7 @@ void Compound_Statement(struct Parser* ctx, struct CompoundStatement** ppStateme
 
 void Parameter_Type_List(struct Parser* ctx, struct ParameterTypeList* pParameterList);
 
-void LambdaExpression(struct Parser* ctx, struct Expression** ppPrimaryExpression)
-{
-    //c++
-    /*
-    lambda-expression:
-    lambda-introducer lambda-declaratoropt compound-statement
 
-    lambda-introducer:
-    [ lambda-captureopt]
-
-    lambda-capture:
-    capture-default
-    capture-list
-    capture-default , capture-list
-
-    capture-default:
-    &=
-
-    capture-list:
-    capture ...opt
-    capture-list , capture ...opt
-
-    capture:
-    simple-capture
-    init-capture
-
-    simple-capture:
-    identifier
-    & identifier
-    this
-
-    init-capture:
-    identifier initializer
-    & identifier initializer
-
-    lambda-declarator:
-    ( parameter-declaration-clause ) mutableopt
-    exception-specificationopt attribute-specifier-seqopt trailing-return-typeopt
-    */
-    /*
-    lambda-expression:
-    [] ( parameters opt ) compound-statement
-    [] compound-statement
-    */
-    struct PrimaryExpressionLambda* pPrimaryExpressionLambda =
-        NEW((struct PrimaryExpressionLambda)PRIMARYEXPRESSIONLAMBDA_INIT);
-    *ppPrimaryExpression = (struct Expression*)pPrimaryExpressionLambda; //out
-    Parser_MatchToken(ctx,
-                      TK_LEFT_SQUARE_BRACKET,
-                      &pPrimaryExpressionLambda->ClueList0);
-    Parser_MatchToken(ctx,
-                      TK_RIGHT_SQUARE_BRACKET,
-                      &pPrimaryExpressionLambda->ClueList1);
-    enum TokenType token = Parser_CurrentTokenType(ctx);
-    if (token == TK_LEFT_PARENTHESIS)
-    {
-        token = Parser_MatchToken(ctx,
-                                  TK_LEFT_PARENTHESIS,
-                                  &pPrimaryExpressionLambda->ClueList2);
-        pPrimaryExpressionLambda->pParameterTypeListOpt = NEW((struct ParameterTypeList)PARAMETERTYPELIST_INIT);
-        if (token != TK_RIGHT_PARENTHESIS)
-        {
-            Parameter_Type_List(ctx, pPrimaryExpressionLambda->pParameterTypeListOpt);
-        }
-        Parser_MatchToken(ctx,
-                          TK_RIGHT_PARENTHESIS,
-                          &pPrimaryExpressionLambda->ClueList3);
-    }
-    Compound_Statement(ctx, &pPrimaryExpressionLambda->pCompoundStatement);
-}
 
 void PrimaryExpression(struct Parser* ctx, struct Expression** ppPrimaryExpression)
 {
@@ -16124,10 +16062,7 @@ void PrimaryExpression(struct Parser* ctx, struct Expression** ppPrimaryExpressi
         SetError(ctx, "unexpected error IsFirstOfPrimaryExpression");
     }
     switch (token)
-    {
-        case TK_LEFT_SQUARE_BRACKET:
-            LambdaExpression(ctx, ppPrimaryExpression);
-            break;
+    {        
         case TK_STRING_LITERAL:
             PrimaryExpressionLiteral(ctx, ppPrimaryExpression);
             break;
@@ -16758,6 +16693,22 @@ void UnaryExpression(struct Parser* ctx, struct Expression** ppExpression)
     }
 }
 
+static bool IsFunction(struct TypeName* typeName)
+{
+    if (typeName->Declarator.pDirectDeclarator == NULL)
+        return false;
+
+    if (typeName->Declarator.pDirectDeclarator->DeclaratorType != TDirectDeclaratorTypeFunction)
+        return false;
+
+    if (typeName->Declarator.pDirectDeclarator->pDeclarator == NULL)
+        return false;
+
+    if (typeName->Declarator.pDirectDeclarator->pDeclarator->PointerList.pHead != NULL)
+        return false;
+    return true;
+
+}
 void CastExpression(struct Parser* ctx, struct Expression** ppExpression)
 {
     *ppExpression = NULL; //out
@@ -16790,20 +16741,34 @@ void CastExpression(struct Parser* ctx, struct Expression** ppExpression)
                 ( type-name ) { initializer-list }
                 ( type-name ) { initializer-list , }
                 */
-                Parser_MatchToken(ctx, TK_LEFT_CURLY_BRACKET, NULL);
-                struct PostfixExpression* pTPostfixExpressionCore =
-                    NEW((struct PostfixExpression)POSTFIXEXPRESSIONCORE_INIT);
-                pTPostfixExpressionCore->pTypeName = NEW((struct TypeName)TYPENAME_INIT);
-                TypeName_Swap(pTPostfixExpressionCore->pTypeName, &typeName);
-                //pTPostfixExpressionCore->pInitializerList = TInitializerList_Create();
-                Initializer_List(ctx, &pTPostfixExpressionCore->InitializerList);
-                //Initializer_List(ctx, pTPostfixExpressionCore->pInitializerList);
-                if (Parser_CurrentTokenType(ctx) == TK_COMMA)
+                if (IsFunction(&typeName))
                 {
-                    Parser_Match(ctx, NULL);
+                    struct PrimaryExpressionLambda* pPrimaryExpressionLambda =
+                        NEW((struct PrimaryExpressionLambda)PRIMARYEXPRESSIONLAMBDA_INIT);
+                    TypeName_Swap(&pPrimaryExpressionLambda->TypeName, &typeName);
+                    Compound_Statement(ctx, &pPrimaryExpressionLambda->pCompoundStatement);
+                    *ppExpression = (struct Expression*)pPrimaryExpressionLambda;
                 }
-                Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET, NULL);
-                *ppExpression = (struct Expression*)pTPostfixExpressionCore;
+                else 
+                {
+                    Parser_MatchToken(ctx, TK_LEFT_CURLY_BRACKET, NULL);
+
+                    struct PostfixExpression* pTPostfixExpressionCore =
+                        NEW((struct PostfixExpression)POSTFIXEXPRESSIONCORE_INIT);
+                    pTPostfixExpressionCore->pTypeName = NEW((struct TypeName)TYPENAME_INIT);
+                    TypeName_Swap(pTPostfixExpressionCore->pTypeName, &typeName);
+                    //pTPostfixExpressionCore->pInitializerList = TInitializerList_Create();
+                    Initializer_List(ctx, &pTPostfixExpressionCore->InitializerList);
+                    //Initializer_List(ctx, pTPostfixExpressionCore->pInitializerList);
+                    if (Parser_CurrentTokenType(ctx) == TK_COMMA)
+                    {
+                        Parser_Match(ctx, NULL);
+                    }
+
+                    Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET, NULL);
+                    *ppExpression = (struct Expression*)pTPostfixExpressionCore;
+                }
+      
                 //PostfixExpressionCore(ctx, pTPostfixExpressionCore);
             }
             else
