@@ -26,20 +26,16 @@ int main()
 
 
 sample["Destructor"] =
-    `
+`
 #include <stdlib.h>
 #include <stdio.h>
 
 struct Person {
-  char* auto name;
+  char* name;
 };
 
 void destroy(struct Person* p) overload {
-    /*
-      this is a user defined function to receive an event
-      just before the object destruction.
-      This function is called indirectly by the destroy.
-    */
+    free(p->name);
     printf("person destructor called");
 }
 
@@ -50,41 +46,7 @@ struct House {
 int main()
 {
    struct House house = {};
-
    destroy(house);
-}
-`;
-
-
-sample["new operator"] =
-    `
-/*
-   New operator allocates the memory using malloc and initializes the
-   object using the compound literal.
-
-   There is no constructor. Apart of malloc it never fails. 
-   (no need for exceptions)
-   
-*/
-
-#include <stdlib.h>
-
-struct Point {
-  int x = 1;
-  int y = 2;
-};
-
-int main()
-{
-
-   struct Point * auto p1 = new (struct Point);
-   destroy(p1);
-
-   struct Point * auto p2 = new (struct Point) {};
-   destroy(p2);
-   
-   struct Point * auto p3 = new (struct Point) {.x = 3, .y = 4};
-   destroy(p3);
 }
 
 `;
@@ -123,15 +85,11 @@ sample["Defer + Destructor"] =
 #include <stdio.h>
 
 struct Person {
-  char* auto name;
+  char* name;
 };
 
 void destroy(struct Person* p) overload {
-    /*
-      this is a user defined function to receive an event
-      just before the object destruction.
-      This function is called indirectly by the destroy.
-    */
+    free(p->name);
     printf("person destructor called");
 }
 
@@ -150,39 +108,27 @@ int main()
 
 sample["If with initializer (Like C++ 17)"] =
     `
-#include <stdlib.h>
-
-struct Person {
-  char* auto name;
-};
+#include <stdio.h>
 
 int main()
 {
-   if (struct Person* auto p = new (struct Person); p)
+   if (FILE* f = fopen("f.txt", "r"); f)
    {
-     destroy(p);
+     fclose(f);
    }
 }
+
 `;
 
 
 
 sample["If with initializer and defer"] =
 `
-/***************************************************
-  We can include a expression that is executed if
-  the condition is true at the end of scope or before
-  jumps.
-****************************************************/
-#include <stdlib.h>
-
-struct Person {
-  char* auto name;
-};
+#include <stdio.h>
 
 int main()
 {
-   if (struct Person* auto p = new (struct Person); p; destroy(p))
+   if (FILE* f = fopen("f.txt", "r"); f; fclose(f))
    {
      
    }
@@ -322,7 +268,7 @@ int main()
 `;
 
 sample["Polimorphism"] =
-    `
+`
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -331,6 +277,12 @@ sample["Polimorphism"] =
 struct Box {
     int id = 1;
 };
+
+struct Box* New_Box() {
+  struct Box* p = malloc(sizeof * p);
+  if (p) *p = (struct Box) {};
+  return p;
+}
 
 void destroy(struct Box* pBox) overload {
       printf("dtor Box");
@@ -341,7 +293,7 @@ void draw(struct Box* pBox) overload {
 }
 
 struct Circle {
-    int id = 2; 
+    int id = 2;
 };
 
 void draw(struct Circle* pCircle) overload
@@ -353,82 +305,15 @@ struct <Box | Circle> Shape;
 
 int main()
 {
-    struct Shape * auto pShape = new (struct Box);
+    struct Shape * pShape = (struct Shape *)New_Box();
+
     draw(pShape);
-    destroy(pShape);
+
+    destroy(*pShape);
+    free((void*)pShape);
 }
 
 `;
-
-
-sample["Polimorphism 2"] =
-    `
-#include <stdio.h>
-#include <stdlib.h>
-
-struct Box {
-  int id = 1;
-};
-
-void draw(struct Box* pBox) overload {
-  printf("Box");
-}
-
-void box_serialize(struct Box* pBox) {
-  printf("Box");
-}
-
-struct Circle {
-  int id = 2;
-};
-
-void draw(struct Circle* pCircle) overload
-{
-  printf("Circle");
-}
-
-void circle_serialize(struct Circle* pBox) {
-  printf("Box");
-}
-
-struct Data {
-  int id = 3;
-};
-
-void data_serialize(struct Data* pData)
-{
-  printf("Data");
-}
-
-
-struct <Box | Circle> Shape;
-
-
-void serialize(struct Circle* pCircle) overload {
-  circle_serialize(pCircle);
-}
-
-void serialize(struct Box* pCircle) overload {
-  box_serialize(pCircle);
-}
-
-void serialize(struct Data* pData) overload {
-  data_serialize(pData);
-}
-
-struct <Shape | Data> Serializable;
-
-
-int main()
-{
-  struct Serializable* auto pSerializable = new (struct Box);
-  serialize(pSerializable);
-  destroy(pSerializable);
-}
-
-`;
-
-
 
 
 
