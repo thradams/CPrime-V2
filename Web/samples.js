@@ -442,9 +442,9 @@ void Run(void (*callback)(void*), void* data) {
 
 int main()
 {  
-  Run((void ()(void* data)){
+  Run((void (void* data)){
     printf("first\\n");
-    Run((void () (void* data) ){
+    Run((void (void* data) ){
       printf("second\\n");
     }, 0);     
   }, 0);

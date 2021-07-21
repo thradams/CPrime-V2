@@ -7955,6 +7955,7 @@ static void TPrimaryExpressionLambda_CodePrint(struct SyntaxTree* pSyntaxTree,
 {
     //Output_Append(fp, options, "l1");
     //Output_Append
+    TNodeClueList_CodePrint(options, &p->ClueList0, fp);
     StrBuilder_AppendFmt(fp, "_lambda_%d", global_lambda_counter);
     struct StrBuilder sb = STRBUILDER_INIT;
     struct TParameterList* pParameterTypeListOpt = &p->TypeName.Declarator.pDirectDeclarator->Parameters.ParameterList;
@@ -7963,6 +7964,8 @@ static void TPrimaryExpressionLambda_CodePrint(struct SyntaxTree* pSyntaxTree,
     {
         //TNodeClueList_CodePrint(options, &p->ClueList2, &sb);
         Output_Append(&sb, options, "\n");
+
+        //StrBuilder_AppendFmt(&sb, p->ClueList0);
         
         StrBuilder_AppendFmt(&sb, "static ");
         TSpecifierQualifierList_CodePrint(pSyntaxTree, options, &p->TypeName.SpecifierQualifierList, &sb);
@@ -12462,7 +12465,7 @@ void PrimaryExpressionLambda_Delete(struct PrimaryExpressionLambda* p)
     if (p != NULL)
     {
         TypeName_Destroy(&p->TypeName);
-        
+
         TokenList_Destroy(&p->ClueList0);
         TokenList_Destroy(&p->ClueList1);
         TokenList_Destroy(&p->ClueList2);
@@ -16062,7 +16065,7 @@ void PrimaryExpression(struct Parser* ctx, struct Expression** ppPrimaryExpressi
         SetError(ctx, "unexpected error IsFirstOfPrimaryExpression");
     }
     switch (token)
-    {        
+    {
         case TK_STRING_LITERAL:
             PrimaryExpressionLiteral(ctx, ppPrimaryExpression);
             break;
@@ -16229,6 +16232,262 @@ bool HasPostfixExpressionContinuation(enum TokenType token)
     return false;
 }
 
+static bool IsFunction(struct TypeName* typeName)
+{
+    if (typeName->Declarator.pDirectDeclarator == NULL)
+        return false;
+
+    if (typeName->Declarator.pDirectDeclarator->DeclaratorType != TDirectDeclaratorTypeFunction)
+        return false;
+
+    if (typeName->Declarator.pDirectDeclarator->pDeclarator != NULL)
+    {
+        if (typeName->Declarator.pDirectDeclarator->pDeclarator->PointerList.pHead != NULL)
+        {
+            //é um ponteiro para funcao
+            return false;
+        }
+    }
+
+
+
+    return true;
+
+}
+
+
+void PostfixExpressionJump(struct Parser* ctx,
+                           struct TypeName *typeName, 
+                           struct TokenList* tempList0,
+                           struct TokenList* tempList1,
+                           struct Expression** ppExpression)
+{
+    /*
+      chamado no cast expression quando entrou no caminho errado
+      entao tem que entrar em uma PostfixExpression ja sabendo que eh
+      (type - name)
+    */
+    *ppExpression = NULL;//out
+
+    /*
+      aterriza nesta sitacao
+      postfix-expression:
+        ( type-name ) { initializer-list }
+        ( type-name ) { initializer-list , }
+
+
+        CPRIME GRAMMAR EXTENSION
+        SE TYPE NAME FOR FUNCAO exemplo (void(int)) entao eh considerado
+        uma literal function (antigo lambda)
+        ( type-name ) compound-statement
+    */
+
+    struct PostfixExpression* pTPostfixExpressionBase = NULL;
+
+    //struct PostfixExpression* pTPostfixExpressionCore =
+        //NEW((struct PostfixExpression)POSTFIXEXPRESSIONCORE_INIT);
+
+    //pTPostfixExpressionCore->token = TK_LEFT_PARENTHESIS;
+    enum TokenType token2;
+
+    /*foram recolhidos lah fora*/
+    
+
+    if (IsFunction(typeName))
+    {
+        struct PrimaryExpressionLambda* pPrimaryExpressionLambda =
+            NEW((struct PrimaryExpressionLambda)PRIMARYEXPRESSIONLAMBDA_INIT);
+        TokenList_Swap(&pPrimaryExpressionLambda->ClueList0, tempList0);
+
+        TypeName_Swap(&pPrimaryExpressionLambda->TypeName, typeName);
+        Compound_Statement(ctx, &pPrimaryExpressionLambda->pCompoundStatement);
+
+        token2 = Parser_CurrentTokenType(ctx);
+        if (HasPostfixExpressionContinuation(token2))
+        {
+            pTPostfixExpressionBase =
+                NEW((struct PostfixExpression)POSTFIXEXPRESSIONCORE_INIT);
+            pTPostfixExpressionBase->pExpressionLeft = pPrimaryExpressionLambda;
+            *ppExpression = (struct Expression*)pTPostfixExpressionBase;
+        }
+        else
+        {
+            *ppExpression = pPrimaryExpressionLambda;
+        }
+
+    }
+    else
+    {
+        Parser_MatchToken(ctx, TK_LEFT_CURLY_BRACKET, NULL);
+
+        struct PostfixExpression* pTPostfixExpressionCore =
+            NEW((struct PostfixExpression)POSTFIXEXPRESSIONCORE_INIT);
+        pTPostfixExpressionCore->pTypeName = NEW((struct TypeName)TYPENAME_INIT);
+        TypeName_Swap(pTPostfixExpressionCore->pTypeName, typeName);
+        TokenList_Swap(&pTPostfixExpressionCore->ClueList0, tempList0);
+        TokenList_Swap(&pTPostfixExpressionCore->ClueList1, tempList1);
+        
+        // 
+        // 
+        //pTPostfixExpressionCore->pInitializerList = TInitializerList_Create();
+        Initializer_List(ctx, &pTPostfixExpressionCore->InitializerList);
+        //Initializer_List(ctx, pTPostfixExpressionCore->pInitializerList);
+        if (Parser_CurrentTokenType(ctx) == TK_COMMA)
+        {
+            Parser_Match(ctx, NULL);
+        }
+
+        Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET, NULL);
+        //*ppExpression = (struct Expression*)pTPostfixExpressionCore;
+        //..pTPostfixExpressionBase = pTPostfixExpressionCore;
+
+
+        token2 = Parser_CurrentTokenType(ctx);
+        if (HasPostfixExpressionContinuation(token2))
+        {
+            pTPostfixExpressionBase =
+                NEW((struct PostfixExpression)POSTFIXEXPRESSIONCORE_INIT);
+            pTPostfixExpressionBase->pExpressionLeft = pTPostfixExpressionCore;
+            *ppExpression = (struct Expression*)pTPostfixExpressionBase;
+        }
+        else
+        {
+            *ppExpression = pTPostfixExpressionCore;
+        }
+
+        //Parser_MatchToken(ctx, TK_LEFT_CURLY_BRACKET, &pTPostfixExpressionCore->ClueList2);
+        //Initializer_List(ctx, &pTPostfixExpressionCore->InitializerList);
+        //Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET, &pTPostfixExpressionCore->ClueList3);
+    }
+    
+    //if (Parser_CurrentTokenType(ctx) == TK_COMMA)
+    //{
+        //Parser_Match(ctx, &pTPostfixExpressionCore->ClueList4);
+    //}
+    //*ppExpression = (struct Expression*)pTPostfixExpressionCore;
+    
+   token2 = Parser_CurrentTokenType(ctx);
+    
+    //if (HasPostfixExpressionContinuation)
+    //struct PostfixExpression* pNext =
+      //  NEW((struct PostfixExpression)POSTFIXEXPRESSIONCORE_INIT);
+    //pTPostfixExpressionBase->pNext = pNext;
+    //pTPostfixExpressionBase = pNext;
+
+    
+    while (HasPostfixExpressionContinuation(token2))
+    {
+        switch (token2)
+        {
+            case TK_LEFT_PARENTHESIS:
+            {
+                assert(pTPostfixExpressionBase);
+                pTPostfixExpressionBase->token = token2;
+                //  postfix-expression ( argument-expression-listopt )
+                token2 = Parser_Match(ctx,
+                                      &pTPostfixExpressionBase->ClueList0);
+                if (token2 != TK_RIGHT_PARENTHESIS)
+                {
+                    ArgumentExpressionList(ctx, &pTPostfixExpressionBase->ArgumentExpressionList);
+                }
+                /*verificacao dos parametros da funcao*/
+                if (pTPostfixExpressionBase->pExpressionLeft != NULL)
+                {
+                    struct TypeName* pTypeName = Expression_GetTypeName(pTPostfixExpressionBase->pExpressionLeft);
+                    if (pTypeName && pTypeName->Declarator.pDirectDeclarator)
+                    {
+                        bool bVariadicArgs = pTypeName->Declarator.pDirectDeclarator->Parameters.bVariadicArgs;
+                        bool bIsVoid = pTypeName->Declarator.pDirectDeclarator->Parameters.bIsVoid;
+                        bool bIsEmpty = pTypeName->Declarator.pDirectDeclarator->Parameters.ParameterList.pHead == NULL;
+                        int sz = pTPostfixExpressionBase->ArgumentExpressionList.size;
+                        int argcount = 0;
+                        if (!bIsVoid)
+                        {
+                            for (struct Parameter* pParameter = pTypeName->Declarator.pDirectDeclarator->Parameters.ParameterList.pHead;
+                                 pParameter;
+                                 pParameter = pParameter->pNext)
+                            {
+                                argcount++;
+                                if (argcount > sz)
+                                {
+                                    SetError(ctx, "too few arguments for call");
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            argcount = 0;
+                        }
+                        if (!bIsEmpty && !bVariadicArgs && pTPostfixExpressionBase->ArgumentExpressionList.size > argcount)
+                        {
+                            SetError(ctx, "too many actual parameters");
+                        }
+                    }
+                    else
+                    {
+                        //destroy ainda nao foi declarado por ex
+                        //assert(false);
+                        //SetWarning(ctx, "function cannot be verified");
+                    }
+                }//
+                Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS,
+                                  &pTPostfixExpressionBase->ClueList1);
+            }
+            break;
+            case TK_LEFT_SQUARE_BRACKET:
+            {
+                assert(pTPostfixExpressionBase);
+                pTPostfixExpressionBase->token = token2;
+                // postfix-expression [ expression ]
+                Parser_MatchToken(ctx, TK_LEFT_SQUARE_BRACKET,
+                                  &pTPostfixExpressionBase->ClueList0);
+                Expression(ctx, &pTPostfixExpressionBase->pExpressionRight);
+                Parser_MatchToken(ctx, TK_RIGHT_SQUARE_BRACKET, &pTPostfixExpressionBase->ClueList1);
+            }
+            break;
+            case TK_FULL_STOP:
+            {
+                // postfix-expression . identifier
+                pTPostfixExpressionBase->token = token2;
+                Parser_Match(ctx, &pTPostfixExpressionBase->ClueList0);
+                pTPostfixExpressionBase->Identifier = strdup(Lexeme(ctx));
+                Parser_MatchToken(ctx, TK_IDENTIFIER, &pTPostfixExpressionBase->ClueList1);
+            }
+            break;
+            case TK_ARROW:
+            {
+                assert(pTPostfixExpressionBase);
+                pTPostfixExpressionBase->token = token2;
+                Parser_Match(ctx, &pTPostfixExpressionBase->ClueList0);
+                pTPostfixExpressionBase->Identifier = strdup(Lexeme(ctx));
+                Parser_MatchToken(ctx, TK_IDENTIFIER, &pTPostfixExpressionBase->ClueList1);
+            }
+            break;
+            case TK_MINUSMINUS:
+            case TK_PLUSPLUS:
+            {
+                assert(pTPostfixExpressionBase);
+                pTPostfixExpressionBase->token = token2;
+                Parser_Match(ctx, &pTPostfixExpressionBase->ClueList0);
+            }
+            break;
+            default:
+                break;
+        }
+        token2 = Parser_CurrentTokenType(ctx);
+        if (HasPostfixExpressionContinuation(token2))
+        {
+            struct PostfixExpression* pNext =
+                NEW((struct PostfixExpression)POSTFIXEXPRESSIONCORE_INIT);
+            pTPostfixExpressionBase->pNext = pNext;
+            pTPostfixExpressionBase = pNext;
+        }
+        else
+            break;
+    }
+}
+
 void PostfixExpression(struct Parser* ctx, struct Expression** ppExpression)
 {
     *ppExpression = NULL;//out
@@ -16256,6 +16515,9 @@ void PostfixExpression(struct Parser* ctx, struct Expression** ppExpression)
         enum TokenType lookAheadToken = Parser_LookAheadToken(ctx);
         if (IsTypeName(ctx, lookAheadToken, lookAheadlexeme))
         {
+            //o que parece eh que nunca cai aqui pq castexpression vem antes e depois chama o PostfixExpressionJump
+            assert(false);//chamar PostfixExpressionJump?
+
             // ( type-name ) { initializer-list }
             struct PostfixExpression* pTPostfixExpressionCore =
                 NEW((struct PostfixExpression)POSTFIXEXPRESSIONCORE_INIT);
@@ -16559,17 +16821,19 @@ int IsTypeName(struct Parser* ctx, enum TokenType token, const char* lexeme)
 void UnaryExpression(struct Parser* ctx, struct Expression** ppExpression)
 {
     *ppExpression = NULL; //out
-    /*(6.5.3) unary-expression:
-    postfix-expression
-    ++ unary-expression
-    -- unary-expression
-    unary-operator cast-expression
-    sizeof unary-expression
-    sizeof ( type-name )
-    alignof ( type-name )
 
-    unary-operator: one of
-    & * + - ~ !
+    /*
+     unary-expression:
+       postfix-expression
+       ++ unary-expression
+       -- unary-expression
+       unary-operator cast-expression
+       sizeof unary-expression
+       sizeof ( type-name )
+       alignof ( type-name )
+
+      unary-operator: one of
+        & * + - ~ !
     */
     enum TokenType token0 = Parser_CurrentTokenType(ctx);
     enum TokenType tokenAhead = Parser_LookAheadToken(ctx);
@@ -16693,22 +16957,8 @@ void UnaryExpression(struct Parser* ctx, struct Expression** ppExpression)
     }
 }
 
-static bool IsFunction(struct TypeName* typeName)
-{
-    if (typeName->Declarator.pDirectDeclarator == NULL)
-        return false;
 
-    if (typeName->Declarator.pDirectDeclarator->DeclaratorType != TDirectDeclaratorTypeFunction)
-        return false;
 
-    if (typeName->Declarator.pDirectDeclarator->pDeclarator == NULL)
-        return false;
-
-    if (typeName->Declarator.pDirectDeclarator->pDeclarator->PointerList.pHead != NULL)
-        return false;
-    return true;
-
-}
 void CastExpression(struct Parser* ctx, struct Expression** ppExpression)
 {
     *ppExpression = NULL; //out
@@ -16732,44 +16982,24 @@ void CastExpression(struct Parser* ctx, struct Expression** ppExpression)
             token = Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &tempList1);
             if (token == TK_LEFT_CURLY_BRACKET)
             {
-                //se isso acontecer, quer dizer que eh uma postfix-expression
-                //entao deveria ter sido expandido com
-                //unary-expression -> postfix-expression ->
+                PostfixExpressionJump(ctx, &typeName, &tempList0, &tempList1, ppExpression);
                 /*
-                (6.5.2) postfix-expression:
-                ...
-                ( type-name ) { initializer-list }
-                ( type-name ) { initializer-list , }
+                   Se isso acontecer quer dizer que pode enganho achou que era
+                   ( type-name ) cast-expression
+
+                   mas na verdade era postfix-expression:
+
+                     ( type-name ) { initializer-list }
+                     ( type-name ) { initializer-list , }
+
+                   postfix-expression:
+                     primary-expression
+                     ( type-name ) { initializer-list }
+                     ( type-name ) { initializer-list , }
+                     ...
                 */
-                if (IsFunction(&typeName))
-                {
-                    struct PrimaryExpressionLambda* pPrimaryExpressionLambda =
-                        NEW((struct PrimaryExpressionLambda)PRIMARYEXPRESSIONLAMBDA_INIT);
-                    TypeName_Swap(&pPrimaryExpressionLambda->TypeName, &typeName);
-                    Compound_Statement(ctx, &pPrimaryExpressionLambda->pCompoundStatement);
-                    *ppExpression = (struct Expression*)pPrimaryExpressionLambda;
-                }
-                else 
-                {
-                    Parser_MatchToken(ctx, TK_LEFT_CURLY_BRACKET, NULL);
 
-                    struct PostfixExpression* pTPostfixExpressionCore =
-                        NEW((struct PostfixExpression)POSTFIXEXPRESSIONCORE_INIT);
-                    pTPostfixExpressionCore->pTypeName = NEW((struct TypeName)TYPENAME_INIT);
-                    TypeName_Swap(pTPostfixExpressionCore->pTypeName, &typeName);
-                    //pTPostfixExpressionCore->pInitializerList = TInitializerList_Create();
-                    Initializer_List(ctx, &pTPostfixExpressionCore->InitializerList);
-                    //Initializer_List(ctx, pTPostfixExpressionCore->pInitializerList);
-                    if (Parser_CurrentTokenType(ctx) == TK_COMMA)
-                    {
-                        Parser_Match(ctx, NULL);
-                    }
-
-                    Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET, NULL);
-                    *ppExpression = (struct Expression*)pTPostfixExpressionCore;
-                }
-      
-                //PostfixExpressionCore(ctx, pTPostfixExpressionCore);
+        
             }
             else
             {
@@ -18838,17 +19068,29 @@ void Direct_Declarator(struct Parser* ctx, bool bAbstract, struct DirectDeclarat
     //https://docs.microsoft.com/pt-br/cpp/c-language/summary-of-declarations?view=msvc-160
     enum TokenType token = Parser_CurrentTokenType(ctx);
     //////////////////////////////////////////////////////////////////////////////
+
     /*
     direct-declarator:
-    identifier
-    ( declarator )
-    direct-declarator [ type-qualifier-listopt assignment-expressionopt ]
-    direct-declarator [ static type-qualifier-listopt assignment-expression ]
-    direct-declarator [ type-qualifier-list static assignment-expression ]
-    direct-declarator [ type-qualifier-listopt * ]
-    direct-declarator ( parameter-type-list )
-    direct-declarator ( identifier-listopt )
+      identifier
+      ( declarator )
+      direct-declarator [ type-qualifier-listopt assignment-expressionopt ]
+      direct-declarator [ static type-qualifier-listopt assignment-expression ]
+      direct-declarator [ type-qualifier-list static assignment-expression ]
+      direct-declarator [ type-qualifier-listopt * ]
+      direct-declarator ( parameter-type-list )
+      direct-declarator ( identifier-listopt )
     */
+
+    /*
+      direct-abstract-declarator:
+       ( abstract-declarator )
+       direct-abstract-declarator_opt [ type-qualifier-listopt    assignment-expressionopt ]
+       direct-abstract-declarator_opt [ static type-qualifier-listopt assignment-expression ]
+       direct-abstract-declarator_opt [ type-qualifier-list static assignment-expression ]
+       direct-abstract-declarator_opt [ * ]
+       direct-abstract-declarator_opt ( parameter-type-listopt )
+    */
+
     struct DirectDeclarator* pDirectDeclarator = NULL;
     if (ErrorOrEof(ctx))
         return;
@@ -18857,12 +19099,29 @@ void Direct_Declarator(struct Parser* ctx, bool bAbstract, struct DirectDeclarat
         case TK_LEFT_PARENTHESIS:
         {
             pDirectDeclarator = NEW((struct DirectDeclarator)TDIRECTDECLARATOR_INIT);
-            Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pDirectDeclarator->ClueList0);
-            Declarator(ctx, bAbstract, &pDirectDeclarator->pDeclarator);
+            token = Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pDirectDeclarator->ClueList0);
+
+            if (token == TK_ASTERISK || token == TK_IDENTIFIER)
+            {
+                pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeDeclarator;
+                Declarator(ctx, bAbstract, &pDirectDeclarator->pDeclarator);
+            }
+            else
+            {
+                if (bAbstract)
+                {
+                    pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeFunction;
+                    if (token != TK_RIGHT_PARENTHESIS)
+                        Parameter_Type_List(ctx, &pDirectDeclarator->Parameters.ParameterList);
+                }
+                else
+                {
+                    SetError(ctx, "Missing declarator name");
+                }
+            }
+
+
             Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pDirectDeclarator->ClueList1);
-            //Para indicar que eh uma ( declarator )
-            pDirectDeclarator->DeclaratorType = TDirectDeclaratorTypeDeclarator;
-            // ) para nao confundir com funcao (
         }
         break;
         case TK_IDENTIFIER:
