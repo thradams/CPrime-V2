@@ -7852,6 +7852,11 @@ static void TStatement_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCod
     }
 }
 
+static void TStaticAssertDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree,
+                                               struct PrintCodeOptions* options,
+                                               struct StaticAssertDeclaration* p,
+                                               struct StrBuilder* fp);
+
 static void TBlockItem_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct BlockItem* p, struct StrBuilder* fp)
 {
     if (p == NULL)
@@ -7864,6 +7869,7 @@ static void TBlockItem_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCod
         case EofDeclaration_ID:
             break;
         case StaticAssertDeclaration_ID:
+            TStaticAssertDeclaration_CodePrint(pSyntaxTree, options, (struct StaticAssertDeclaration*)p, fp);
             break;
         case SwitchStatement_ID:
             TSwitchStatement_CodePrint(pSyntaxTree, options, (struct SwitchStatement*)p, fp);
@@ -15739,7 +15745,7 @@ bool Parser_InitFile(struct Parser* parser, const char* fileName)
       podemos pegar os includes da variavel de ambiente INCLUDE
     */
     unsigned long __stdcall GetEnvironmentVariableA(char* lpName, char* lpBuffer, unsigned long nSize);
-#if 1
+#if 0
     const char* env = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29910\\ATLMFC\\include;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29910\\include;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
 #else
     char env[2000];
@@ -18307,6 +18313,7 @@ bool Statement(struct Parser* ctx, struct Statement** ppStatement)
         case TK_STRUCT:
         case TK_UNION:
         case TK_ENUM:
+        case TK__STATIC_ASSERT:
             bResult = false;
             break;
         default:
