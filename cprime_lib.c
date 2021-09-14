@@ -10686,7 +10686,6 @@ void InstanciateDestroy(struct SyntaxTree* pSyntaxTree,
         }
         else
         {
-            assert(pStructUnionSpecifier->Tag);
             char structTag[200] = { 0 };
             GetOrGenerateStructTagName(pStructUnionSpecifier, structTag, sizeof(structTag));
             char buffer[200] = { 0 };
@@ -15740,14 +15739,17 @@ bool Parser_InitFile(struct Parser* parser, const char* fileName)
     StrBuilder_Init(&parser->ErrorMessage);
     Scanner_Init(&parser->Scanner);
 #ifdef _WIN32
+    
+#if 0
+    /*emula para debug que pegou variavel de ambiente INCLUDE*/
+    const char* env = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29910\\ATLMFC\\include;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29910\\include;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
+#else
     /*
       quando estiver rodando dentro do command pronpt do VC++
       podemos pegar os includes da variavel de ambiente INCLUDE
     */
     unsigned long __stdcall GetEnvironmentVariableA(char* lpName, char* lpBuffer, unsigned long nSize);
-#if 0
-    const char* env = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29910\\ATLMFC\\include;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29910\\include;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
-#else
+
     char env[2000];
     int n = GetEnvironmentVariableA("INCLUDE", env, sizeof(env));
     if (n > 0 && n < sizeof(env))
