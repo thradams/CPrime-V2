@@ -8186,6 +8186,9 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
             //bIsPointer = TPointerList_IsPointer(&p->pTypeName->Declarator.PointerList);
             //falta imprimeir typename
             //TTypeName_Print*
+
+            TNodeClueList_CodePrint(options, &p->ClueList2, fp);
+
             if (p->InitializerList.pHead)
             {
                 /*
@@ -8200,6 +8203,9 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
                                        NULL,
                                        &p->InitializerList,
                                        fp);
+            
+            TNodeClueList_CodePrint(options, &p->ClueList4, fp);
+
             if (p->InitializerList.pHead)
             {
                 /*se for vazio ele gera a macro e nao precisa { */
@@ -16012,11 +16018,8 @@ bool IsFirstOfPrimaryExpression(enum TokenType token)
         case TK_HEX_INTEGER:
         case TK_FLOAT_NUMBER:
         case TK_LEFT_PARENTHESIS:
-            //////////
-            //extensions
-        case TK_LEFT_SQUARE_BRACKET: //lambda-expression
         /////////
-        //desde que nao seja cast
+        //desde que nao seja cast ???
         case TK__GENERIC:
             bResult = true;
             break;
@@ -16326,11 +16329,12 @@ void PostfixExpressionJump(struct Parser* ctx,
     }
     else
     {
-        Parser_MatchToken(ctx, TK_LEFT_CURLY_BRACKET, NULL);
-
         struct PostfixExpression* pTPostfixExpressionCore =
             NEW((struct PostfixExpression)POSTFIXEXPRESSIONCORE_INIT);
         pTPostfixExpressionCore->pTypeName = NEW((struct TypeName)TYPENAME_INIT);
+
+        Parser_MatchToken(ctx, TK_LEFT_CURLY_BRACKET, &pTPostfixExpressionCore->ClueList2);
+
         TypeName_Swap(pTPostfixExpressionCore->pTypeName, typeName);
         TokenList_Swap(&pTPostfixExpressionCore->ClueList0, tempList0);
         TokenList_Swap(&pTPostfixExpressionCore->ClueList1, tempList1);
@@ -16345,7 +16349,7 @@ void PostfixExpressionJump(struct Parser* ctx,
             Parser_Match(ctx, NULL);
         }
 
-        Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET, NULL);
+        Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET, &pTPostfixExpressionCore->ClueList4);
         //*ppExpression = (struct Expression*)pTPostfixExpressionCore;
         //..pTPostfixExpressionBase = pTPostfixExpressionCore;
 

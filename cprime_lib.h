@@ -1758,7 +1758,10 @@ struct PostfixExpression
        postfix-expression ++
        postfix-expression --
        ( type-name ) { initializer-list }
+       0           1 2                  3
+
        ( type-name ) { initializer-list , }
+       0           1 2                  3 4
     */
     enum Type Type;
     enum TokenType token;

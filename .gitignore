@@ -10,3 +10,7 @@
 *.orig
 /VC/printenum
 /VC/.vs/cprime/config
+/build.exe
+*.obj
+/cprime.exe
+/Samples/hello_out.exe

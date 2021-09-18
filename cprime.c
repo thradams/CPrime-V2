@@ -174,7 +174,10 @@ int main(int argc, char* argv[])
     }
     else
     {
-        Compile(cxconfigFileFullPath, inputFileFullPath, outputFileFullPath, &options);
+        if (!Compile(cxconfigFileFullPath, inputFileFullPath, outputFileFullPath, &options))
+        {
+            exit(1);
+        }    
     }
 
 
