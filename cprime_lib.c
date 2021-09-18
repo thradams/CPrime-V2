@@ -2395,6 +2395,8 @@ const char* TokenToNameString(enum TokenType tk)
             return "TK_PRE_ELSE";
         case TK_PRE_ERROR:
             return "TK_PRE_ERROR";
+        case TK_PRE_WARNING:
+            return "TK_PRE_WARNING";
         case TK_PRE_LINE:
             return "TK_PRE_LINE";
         case TK_PRE_UNDEF:
@@ -4145,8 +4147,8 @@ struct PrintCodeOptions
 void PrintCodeOptions_Destroy(struct PrintCodeOptions* options);
 
 int SyntaxTree_PrintCodeToFile(struct SyntaxTree* pSyntaxTree,
-                                struct CompilerOptions* options,
-                                const char* fileName);
+                               struct CompilerOptions* options,
+                               const char* fileName);
 
 void SyntaxTree_PrintCodeToString(struct SyntaxTree* pSyntaxTree,
                                   struct CompilerOptions* options,
@@ -4485,6 +4487,26 @@ void Scanner_GetFilePositionString(struct Scanner* pScanner, struct StrBuilder* 
     {
         StrBuilder_Append(sb, "(1): ");
     }
+}
+
+void Scanner_SetWarning(struct Scanner* pScanner, const char* fmt, ...)
+{
+    if (Scanner_Top(pScanner))
+    {
+        StrBuilder_AppendFmt(&pScanner->ErrorString, "%s(%d) :",
+                             Scanner_Top(pScanner)->NameOrFullPath,
+                             Scanner_Top(pScanner)->stream.Line);
+    }
+    else
+    {
+        StrBuilder_Append(&pScanner->ErrorString, "(0) :");
+    }
+    va_list args;
+    va_start(args, fmt);
+    StrBuilder_AppendFmtV(&pScanner->ErrorString, fmt, args);
+    va_end(args);
+
+    printf("%s\n", pScanner->ErrorString.c_str);
 }
 
 void Scanner_SetError(struct Scanner* pScanner, const char* fmt, ...)
@@ -5165,6 +5187,10 @@ enum TokenType FindPreToken(const char* lexeme)
     else if (strcmp(lexeme, "error") == 0)
     {
         token = TK_PRE_ERROR;
+    }
+    else if (strcmp(lexeme, "warning") == 0)
+    {
+        token = TK_PRE_WARNING;
     }
     else if (strcmp(lexeme, "line") == 0)
     {
@@ -5978,6 +6004,28 @@ void Scanner_BuyTokens(struct Scanner* pScanner)
                 Scanner_PushToken(pScanner, preToken, strBuilder.c_str, false, line, fileIndex);
             }
         }
+        else if (preToken == TK_PRE_WARNING)
+        {
+            // Match error
+            StrBuilder_Append(&strBuilder, lexeme);
+            BasicScanner_Match(pBasicScanner);
+            if (IsIncludeState(state))
+            {
+                struct StrBuilder str = STRBUILDER_INIT;
+                StrBuilder_Append(&str, " warning: #warning ");
+                GetDefineString(pScanner, &str);
+                //printf("%s\n", str.c_str);
+
+                Scanner_SetWarning(pScanner, str.c_str);
+                StrBuilder_Destroy(&str);
+                IgnorePreProcessorv2(pBasicScanner, &strBuilder);
+                Scanner_PushToken(pScanner, TK_PRE_WARNING, strBuilder.c_str, true, line, fileIndex);
+            }
+            else
+            {
+                Scanner_PushToken(pScanner, preToken, strBuilder.c_str, false, line, fileIndex);
+            }
+        }
         else if (preToken == TK_PRE_LINE)
         {
             if (IsIncludeState(state))
@@ -6083,6 +6131,7 @@ void PrintPreprocessedToFileCore(FILE* fp, struct Scanner* scanner)
                 case TK_PRE_ENDIF:
                 case TK_PRE_ELSE:
                 case TK_PRE_ERROR:
+                case TK_PRE_WARNING:
                 case TK_PRE_LINE:
                 case TK_PRE_UNDEF:
                 case TK_PRE_DEFINE:
@@ -6161,6 +6210,7 @@ void PrintPreprocessedToStringCore2(struct StrBuilder* fp, struct Scanner* scann
                 case TK_PRE_ENDIF:
                 case TK_PRE_ELSE:
                 case TK_PRE_ERROR:
+                case TK_PRE_WARNING:
                 case TK_PRE_LINE:
                 case TK_PRE_UNDEF:
                 case TK_PRE_DEFINE:
@@ -7962,7 +8012,7 @@ static void TPrimaryExpressionLambda_CodePrint(struct SyntaxTree* pSyntaxTree,
         Output_Append(&sb, options, "\n");
 
         //StrBuilder_AppendFmt(&sb, p->ClueList0);
-        
+
         StrBuilder_AppendFmt(&sb, "static ");
         TSpecifierQualifierList_CodePrint(pSyntaxTree, options, &p->TypeName.SpecifierQualifierList, &sb);
         StrBuilder_AppendFmt(&sb, " ");
@@ -8193,7 +8243,7 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
                                        NULL,
                                        &p->InitializerList,
                                        fp);
-            
+
             TNodeClueList_CodePrint(options, &p->ClueList4, fp);
 
             if (p->InitializerList.pHead)
@@ -10055,8 +10105,8 @@ void SyntaxTree_PrintCodeToString(struct SyntaxTree* pSyntaxTree,
 
 
 int SyntaxTree_PrintCodeToFile(struct SyntaxTree* pSyntaxTree,
-                                struct CompilerOptions* options,
-                                const char* outFileName)
+                               struct CompilerOptions* options,
+                               const char* outFileName)
 {
     FILE* fp = fopen(outFileName, "w");
     if (fp == NULL)
@@ -10070,7 +10120,7 @@ int SyntaxTree_PrintCodeToFile(struct SyntaxTree* pSyntaxTree,
                                  options,
                                  &output);
     fprintf(fp, "%s", output.c_str);
-    
+
 
     StrBuilder_Destroy(&output);
     fclose(fp);
@@ -12046,6 +12096,7 @@ static bool IsPreprocessorTokenPhase(enum TokenType token)
         token == TK_PRE_ENDIF ||
         token == TK_PRE_ELSE ||
         token == TK_PRE_ERROR ||
+        token == TK_PRE_WARNING ||
         token == TK_PRE_LINE ||
         token == TK_PRE_UNDEF ||
         token == TK_PRE_DEFINE ||
@@ -15962,8 +16013,8 @@ bool IsFirstOfPrimaryExpression(enum TokenType token)
         case TK_HEX_INTEGER:
         case TK_FLOAT_NUMBER:
         case TK_LEFT_PARENTHESIS:
-        /////////
-        //desde que nao seja cast ???
+            /////////
+            //desde que nao seja cast ???
         case TK__GENERIC:
             bResult = true;
             break;
@@ -16212,7 +16263,7 @@ static bool IsFunction(struct TypeName* typeName)
 
 
 void PostfixExpressionJump(struct Parser* ctx,
-                           struct TypeName *typeName, 
+                           struct TypeName* typeName,
                            struct TokenList* tempList0,
                            struct TokenList* tempList1,
                            struct Expression** ppExpression)
@@ -16246,7 +16297,7 @@ void PostfixExpressionJump(struct Parser* ctx,
     enum TokenType token2;
 
     /*foram recolhidos lah fora*/
-    
+
 
     if (IsFunction(typeName))
     {
@@ -16282,7 +16333,7 @@ void PostfixExpressionJump(struct Parser* ctx,
         TypeName_Swap(pTPostfixExpressionCore->pTypeName, typeName);
         TokenList_Swap(&pTPostfixExpressionCore->ClueList0, tempList0);
         TokenList_Swap(&pTPostfixExpressionCore->ClueList1, tempList1);
-        
+
         // 
         // 
         //pTPostfixExpressionCore->pInitializerList = TInitializerList_Create();
@@ -16315,22 +16366,22 @@ void PostfixExpressionJump(struct Parser* ctx,
         //Initializer_List(ctx, &pTPostfixExpressionCore->InitializerList);
         //Parser_MatchToken(ctx, TK_RIGHT_CURLY_BRACKET, &pTPostfixExpressionCore->ClueList3);
     }
-    
+
     //if (Parser_CurrentTokenType(ctx) == TK_COMMA)
     //{
         //Parser_Match(ctx, &pTPostfixExpressionCore->ClueList4);
     //}
     //*ppExpression = (struct Expression*)pTPostfixExpressionCore;
-    
-   token2 = Parser_CurrentTokenType(ctx);
-    
+
+    token2 = Parser_CurrentTokenType(ctx);
+
     //if (HasPostfixExpressionContinuation)
     //struct PostfixExpression* pNext =
       //  NEW((struct PostfixExpression)POSTFIXEXPRESSIONCORE_INIT);
     //pTPostfixExpressionBase->pNext = pNext;
     //pTPostfixExpressionBase = pNext;
 
-    
+
     while (HasPostfixExpressionContinuation(token2))
     {
         switch (token2)
@@ -16955,7 +17006,7 @@ void CastExpression(struct Parser* ctx, struct Expression** ppExpression)
                      ...
                 */
 
-        
+
             }
             else
             {
@@ -20095,7 +20146,7 @@ void GetDirForEnviroment(struct Parser* parser)
       quando estiver rodando dentro do command pronpt do VC++
       podemos pegar os includes da variavel de ambiente INCLUDE
     */
-    #define FASTCALL __stdcall
+#define FASTCALL __stdcall
     unsigned long FASTCALL GetEnvironmentVariableA(char* lpName, char* lpBuffer, unsigned long nSize);
 
     char env[2000];
@@ -20140,14 +20191,14 @@ bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
 {
     bool bResult = false;
     struct Parser parser;
-    
+
     char fullFileNamePath[CPRIME_MAX_PATH] = { 0 };
     GetFullPathS(filename, fullFileNamePath);
 
     if (filename != NULL)
     {
         Parser_InitFile(&parser, fullFileNamePath);
-                
+
 
         GetDirForEnviroment(&parser);
 
@@ -20169,9 +20220,9 @@ bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
             }
             else
             {
-                char name[100] = {0};
+                char name[100] = { 0 };
                 strncpy(name, options->Defines.data[i], p - options->Defines.data[i]);
-                AddStandardMacro(&parser.Scanner, name, p+1);
+                AddStandardMacro(&parser.Scanner, name, p + 1);
             }
         }
 
@@ -20425,7 +20476,7 @@ char* CompileText(int type, int bNoImplicitTag, const char* input)
 int Compile(struct CompilerOptions* options)
 {
     int bSuccess = 0;
-    
+
 
     for (int i = 0; i < options->SourceFiles.size; i++)
     {
@@ -20444,15 +20495,15 @@ int Compile(struct CompilerOptions* options)
         {
 
             bSuccess = 1;
-            
+
             if (options->SourceFiles.size == 1 && options->output[0] != '\0')
             {
                 char buffer[300] = { 0 };
 
-         
-                    snprintf(buffer, sizeof buffer, "%s", options->output);
-              
-                
+
+                snprintf(buffer, sizeof buffer, "%s", options->output);
+
+
                 if (SyntaxTree_PrintCodeToFile(&pSyntaxTree, options, buffer) == 0)
                 {
                     printf("out:%s\n", buffer);
@@ -20471,7 +20522,7 @@ int Compile(struct CompilerOptions* options)
                 {
                     snprintf(buffer, sizeof buffer, "%s%s%s", options->outputDir, fname, ext);
                 }
-                
+
                 if (SyntaxTree_PrintCodeToFile(&pSyntaxTree, options, buffer) == 0)
                 {
                     printf("out:%s\n", buffer);
@@ -20483,8 +20534,8 @@ int Compile(struct CompilerOptions* options)
         SyntaxTree_Destroy(&pSyntaxTree);
     }
 
-    
-    
+
+
     return bSuccess;
 }
 

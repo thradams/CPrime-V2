@@ -96,7 +96,7 @@ void GetOptions(int argc, char* argv[], struct CompilerOptions* options)
         else if (option[0] == '-' && option[1] =='I')
         {            
             char fileName[300];
-            GetFullPathS(argv[i], fileName+2);
+            GetFullPathS(argv[i]+2, fileName);
             StrArray_Push(&options->IncludeDir, fileName);
         }
         else if (option[0] == '-' && option[1] == 'D')
