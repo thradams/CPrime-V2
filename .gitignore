@@ -14,3 +14,4 @@
 *.obj
 /cprime.exe
 /Samples/hello_out.exe
+/Out

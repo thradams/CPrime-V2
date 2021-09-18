@@ -18,10 +18,7 @@ void PrintHelp()
 {
     printf("Syntax: " EXECUTABLE_NAME " [options] [file ...]\n");
     printf("\n");
-    printf("Examples: " EXECUTABLE_NAME " hello.c\n");
-    printf("          " EXECUTABLE_NAME " -config config.h hello.c\n");
-    printf("          " EXECUTABLE_NAME " -config config.h hello.c -o hello.c\n");
-    printf("          " EXECUTABLE_NAME " -config config.h -P hello.c\n");
+    printf("Examples: " EXECUTABLE_NAME " hello.c -o hello_out.c\n");
     printf("          " EXECUTABLE_NAME " -E hello.c\n");
     printf("          " EXECUTABLE_NAME " -P hello.c\n");
     printf("          " EXECUTABLE_NAME " -A hello.c\n");
@@ -40,6 +37,80 @@ void PrintHelp()
 }
 
 
+void GetOptions(int argc, char* argv[], struct CompilerOptions* options)
+{
+
+    for (int i = 1; i < argc; i++)
+    {
+        const char* option = argv[i];
+        if (strcmp(option, "-P") == 0)
+        {
+            options->Target = CompilerTarget_Preprocessed;            
+        }
+        else if (strcmp(option, "-E") == 0)
+        {
+            options->Target = CompilerTarget_Preprocessed;            
+        }
+        else if (strcmp(option, "-help") == 0)
+        {
+            PrintHelp();
+            return;
+        }
+        else if (strcmp(option, "-cx") == 0)
+        {
+            options->Target = CompilerTarget_CXX;
+        }
+        else if (strcmp(option, "-ca") == 0)
+        {
+            options->Target = CompilerTarget_C99;
+        }
+        else if (strcmp(option, "-removeComments") == 0)
+        {
+            options->bIncludeComments = false;
+        }
+        else if (strcmp(option, "-outDir") == 0)
+        {
+            if (i + 1 < argc)
+            {                
+                GetFullPathS(argv[i + 1], options->outputDir);
+                i++;
+            }
+            else
+            {
+                printf("missing file\n");
+                break;
+            }
+        }
+        else if (strcmp(option, "-o") == 0)
+        {
+            if (i + 1 < argc)
+            {
+                GetFullPathS(argv[i + 1], options->output);
+                i++;
+            }
+            else
+            {
+                printf("missing file\n");
+            }
+        }
+        else if (option[0] == '-' && option[1] =='I')
+        {            
+            char fileName[300];
+            GetFullPathS(argv[i], fileName+2);
+            StrArray_Push(&options->IncludeDir, fileName);
+        }
+        else if (option[0] == '-' && option[1] == 'D')
+        {
+            StrArray_Push(&options->Defines, argv[i]+2);
+        }
+        else
+        {
+            char fileName[300];
+            GetFullPathS(argv[i], fileName);
+            StrArray_Push(&options->SourceFiles, fileName);
+        }
+    }
+}
 
 int main(int argc, char* argv[])
 {
@@ -56,125 +127,23 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    char outputDirFullPath[250] = { 0 };
 
-    char cxconfigFileFullPath[250];
-    GetFullDirS(argv[0], cxconfigFileFullPath);
-    strcat(cxconfigFileFullPath, CONFIG_FILE_NAME);
-
-    
-    if (FileExists(cxconfigFileFullPath))
-    {
-        printf("using config file %s\n", cxconfigFileFullPath);
-    }
-    else
-    {
-        cxconfigFileFullPath[0] = 0;
-    }
-
-
-    char outputFileFullPath[250] = { 0 };
-    char inputFileFullPath[250] = { 0 };
-
-    struct OutputOptions options = OUTPUTOPTIONS_INIT;
+    struct CompilerOptions options = OUTPUTOPTIONS_INIT;
     options.Target = CompilerTarget_C99;
+    GetOptions(argc, argv , &options);
 
-    bool bPrintPreprocessedToFile = false;
-    bool bPrintPreprocessedToConsole = false;
 
-    for (int i = 1; i < argc; i++)
+    if (options.Target == CompilerTarget_Preprocessed)
     {
-        const char* option = argv[i];
-        if (strcmp(option, "-P") == 0)
-        {
-            options.Target = CompilerTarget_Preprocessed;
-            bPrintPreprocessedToFile = true;
-        }
-        else if (strcmp(option, "-E") == 0)
-        {
-            options.Target = CompilerTarget_Preprocessed;
-            bPrintPreprocessedToConsole = true;
-        }
-        else if (strcmp(option, "-r") == 0)
-        {
-            bPrintPreprocessedToConsole = true;
-        }
-        else if (strcmp(option, "-help") == 0)
-        {
-            PrintHelp();
-            return 0;
-        }
-        else if (strcmp(option, "-cx") == 0)
-        {
-            options.Target = CompilerTarget_CXX;
-        }
-        else if (strcmp(option, "-ca") == 0)
-        {
-            options.Target = CompilerTarget_C99;
-        }
-        else if (strcmp(option, "-removeComments") == 0)
-        {
-            options.bIncludeComments = false;
-        }
-        else if (strcmp(option, "-pr") == 0)
-        {
-            options.Target = CompilerTarget_Preprocessed;
-        }
-        else if (strcmp(option, "-outDir") == 0)
-        {
-            if (i + 1 < argc)
-            {
-                GetFullPathS(argv[i + 1], outputDirFullPath);
-                i++;
-            }
-            else
-            {
-                printf("missing file\n");
-                break;
-            }
-        }
-        else if (strcmp(option, "-config") == 0)
-        {
-            if (i + 1 < argc)
-            {
-                GetFullPathS(argv[i + 1], cxconfigFileFullPath);
-                i++;
-            }
-            else
-            {
-                printf("missing file\n");
-                break;
-            }
-        }
-        else if (strcmp(option, "-o") == 0)
-        {
-            if (i + 1 < argc)
-            {
-                GetFullPathS(argv[i + 1], outputFileFullPath);
-                i++;
-            }
-            else
-            {
-                printf("missing file\n");
-            }
-        }
-        else
-        {
-            GetFullPathS(argv[i], inputFileFullPath);
-        }
+       // PrintPreprocessedToFile(inputFileFullPath, cxconfigFileFullPath);
     }
-
-    if (bPrintPreprocessedToFile)
-    {
-        PrintPreprocessedToFile(inputFileFullPath, cxconfigFileFullPath);
-    }
-    else if (bPrintPreprocessedToConsole)
-    {
-        PrintPreprocessedToConsole(inputFileFullPath, cxconfigFileFullPath);
-    }
+    //else if (bPrintPreprocessedToConsole)
+    //{
+      //  PrintPreprocessedToConsole(inputFileFullPath, cxconfigFileFullPath);
+    //}
     else
     {
-        if (!Compile(cxconfigFileFullPath, inputFileFullPath, outputFileFullPath, &options))
+        if (!Compile(&options))
         {
             exit(1);
         }    

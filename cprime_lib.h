@@ -407,10 +407,6 @@ struct MacroMap
 };
 
 
-
-
-
-
 /*
 AST data structures
 */
@@ -1887,8 +1883,21 @@ enum CompilerTarget
     CompilerTarget_CXX
 };
 
-struct OutputOptions
+struct StrArray
 {
+    const char** data;
+    int size;
+    int capacity;
+};
+
+#define STRARRAY_INIT { 0 }
+int StrArray_Push(struct StrArray* p, const char* textSource);
+
+struct CompilerOptions
+{
+    char output[200];
+    char outputDir[200];
+
     bool bExpandMacros;
     bool bIncludeComments /*=1*/;
 
@@ -1896,16 +1905,17 @@ struct OutputOptions
 
     //imprime na forma para declarar um tipo, remove o resto
     bool bCannonical;
+
+    struct StrArray IncludeDir;
+    struct StrArray SourceFiles;
+    struct StrArray Defines; /*name=1*/
 };
 
 #define OUTPUTOPTIONS_INIT {false, true, CompilerTarget_C99,  false}
-void OutputOptions_Destroy(struct OutputOptions* options);
+void OutputOptions_Destroy(struct CompilerOptions* options);
 
 
-int Compile(const char* configFileName,
-            const char* inputFileName,
-            const char* outputFileName,
-            struct OutputOptions* options);
+int Compile(struct CompilerOptions* options);
 
 
 char* CompileText(int type, int bNoImplicitTag, const char* input);
@@ -1915,6 +1925,4 @@ void PrintPreprocessedToFile(const char* fileIn, const char* configFileName);
 void PrintPreprocessedToConsole(const char* fileIn, const char* configFileName);
 
 
-bool BuildSyntaxTreeFromFile(const char* filename,
-                             const char* configFileName,
-                             struct SyntaxTree* pSyntaxTree);
+

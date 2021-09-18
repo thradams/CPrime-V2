@@ -15,7 +15,7 @@
 #include <unistd.h>
 #endif
 
-#define HEADER_FILES "cprime_lib.h"
+#define HEADER_FILES " cprime_lib.h "
 
 #define SOURCE_FILES " cprime.c " \
                      " cprime_lib.c "
@@ -73,19 +73,21 @@ int main()
            " -D_CRT_SECURE_NO_WARNINGS "
            " -o cprime.exe") != 0) exit(1);
 
-    /*
-    * Compile cprime using cprime
-    */
-    if (system("cprime cprime_lib.c -o cprime_lib_out.c") != 0) exit(1);
-    if (system("cprime cprime.c -o cprime_out.c") != 0) exit(1);
-    
-    if(system("cl "
-           " cprime_lib_out.c cprime_out.c "
-           VC_RELEASE_OPTIONS
-           " -o cprime_out.exe") != 0) exit(1);
+    if (system("cprime "
+        SOURCE_FILES
+        HEADER_FILES
+        " -outDir Out") != 0) exit(1);
 
-    
+    chdir("Out");
+    if (system("cl "
+        SOURCE_FILES
+        VC_RELEASE_OPTIONS
+        " -D_CRT_SECURE_NO_WARNINGS "
+        " -lKernel32.lib -lUser32.lib -lAdvapi32.lib "
+        " -o cprime.exe") != 0) exit(1);
 
+    chdir("..");
+    
     /*
     * Compile sample using cprime
     */

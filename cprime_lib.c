@@ -56,16 +56,6 @@ static inline struct TO * FROM##_As_##TO(struct FROM* p) { return (struct TO * )
 static inline struct FROM * TO##_As_##FROM(struct TO* p) { return (struct FROM *) p; }
 
 
-
-struct StrArray
-{
-    const char** data;
-    int size;
-    int capacity;
-};
-
-#define STRARRAY_INIT { 0 }
-
 int StrArray_Push(struct StrArray* p, const char* textSource)
 {
     char* text = strdup(textSource);
@@ -4125,7 +4115,7 @@ struct IntegerStack
 
 struct PrintCodeOptions
 {
-    struct OutputOptions Options;
+    struct CompilerOptions Options;
 
     struct TryBlockStatement* pCurrentTryBlock;
 
@@ -4154,12 +4144,12 @@ struct PrintCodeOptions
 
 void PrintCodeOptions_Destroy(struct PrintCodeOptions* options);
 
-void SyntaxTree_PrintCodeToFile(struct SyntaxTree* pSyntaxTree,
-                                struct OutputOptions* options,
+int SyntaxTree_PrintCodeToFile(struct SyntaxTree* pSyntaxTree,
+                                struct CompilerOptions* options,
                                 const char* fileName);
 
 void SyntaxTree_PrintCodeToString(struct SyntaxTree* pSyntaxTree,
-                                  struct OutputOptions* options,
+                                  struct CompilerOptions* options,
                                   struct StrBuilder* output);
 
 
@@ -6887,7 +6877,7 @@ return d_first;
 */
 
 
-void OutputOptions_Destroy(struct OutputOptions* options)
+void OutputOptions_Destroy(struct CompilerOptions* options)
 {
     options;
 }
@@ -10016,7 +10006,7 @@ static void TInitializerListItem_CodePrint(struct SyntaxTree* pSyntaxTree,
 
 
 void SyntaxTree_PrintCodeToString(struct SyntaxTree* pSyntaxTree,
-                                  struct OutputOptions* options0,
+                                  struct CompilerOptions* options0,
                                   struct StrBuilder* output)
 {
     struct PrintCodeOptions options = CODE_PRINT_OPTIONS_INIT;
@@ -10064,24 +10054,27 @@ void SyntaxTree_PrintCodeToString(struct SyntaxTree* pSyntaxTree,
 }
 
 
-void SyntaxTree_PrintCodeToFile(struct SyntaxTree* pSyntaxTree,
-                                struct OutputOptions* options0,
+int SyntaxTree_PrintCodeToFile(struct SyntaxTree* pSyntaxTree,
+                                struct CompilerOptions* options,
                                 const char* outFileName)
 {
     FILE* fp = fopen(outFileName, "w");
     if (fp == NULL)
     {
         printf("cannot open output file %s", outFileName);
-        return;
+        return 1;
     }
     struct StrBuilder output = STRBUILDER_INIT;
     StrBuilder_Reserve(&output, 10000);
     SyntaxTree_PrintCodeToString(pSyntaxTree,
-                                 options0,
+                                 options,
                                  &output);
     fprintf(fp, "%s", output.c_str);
+    
+
     StrBuilder_Destroy(&output);
     fclose(fp);
+    return 0;
 }
 
 static const char* GetFreeStr(struct SyntaxTree* pSyntaxTree)
@@ -15744,58 +15737,9 @@ bool Parser_InitFile(struct Parser* parser, const char* fileName)
     parser->bError = false;
     StrBuilder_Init(&parser->ErrorMessage);
     Scanner_Init(&parser->Scanner);
-#ifdef _WIN32
-    
-#if 0
-    /*emula para debug que pegou variavel de ambiente INCLUDE*/
-    const char* env = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29910\\ATLMFC\\include;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29910\\include;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
-#else
-    /*
-      quando estiver rodando dentro do command pronpt do VC++
-      podemos pegar os includes da variavel de ambiente INCLUDE
-    */
-    unsigned long __stdcall GetEnvironmentVariableA(char* lpName, char* lpBuffer, unsigned long nSize);
 
-    char env[2000];
-    int n = GetEnvironmentVariableA("INCLUDE", env, sizeof(env));
-    if (n > 0 && n < sizeof(env))
-#endif
-    {
-        printf("INCLUDE variable found\n");
-        const char* p = env;
-        for (;;)
-        {
-            if (*p == '\0')
-            {
-                break;
-            }
-            char fileNameLocal[500] = { 0 };
-            int count = 0;
-            while (*p != '\0' && *p != ';')
-            {
-                fileNameLocal[count] = *p;
-                p++;
-                count++;
-            }
-            fileNameLocal[count] = 0;
-            if (count > 0)
-            {
-                printf("INCLUDE DIR = '%s'\n", fileNameLocal);
-                StrArray_Push(&parser->Scanner.IncludeDir, fileNameLocal);
-            }
-            if (*p == '\0')
-            {
-                break;
-            }
-            p++;
-        }
-    }
-#endif
     Scanner_IncludeFile(&parser->Scanner, fileName, FileIncludeTypeFullPath, false);
     //sair do BOF
-    struct TokenList clueList0 = { 0 };
-    Parser_Match(parser, &clueList0);
-    TokenList_Destroy(&clueList0);
     return true;
 }
 
@@ -15967,7 +15911,7 @@ enum TokenType Parser_MatchToken(struct Parser* parser,
 
 const char* GetCompletationMessage(struct Parser* parser)
 {
-    const char* pMessage = "ok";
+    const char* pMessage = "";
     if (Parser_HasError(parser))
     {
         if (parser->Scanner.bError)
@@ -20139,45 +20083,107 @@ void Parser_Main(struct Parser* ctx, struct Declarations* declarations)
     Parse_Declarations(ctx, declarations);
 }
 
+void GetDirForEnviroment(struct Parser* parser)
+{
+#ifdef _WIN32
 
-bool BuildSyntaxTreeFromFile(const char* filename,
-                             const char* configFileName /*optional*/,
+#if 0
+    /*emula para debug que pegou variavel de ambiente INCLUDE*/
+    const char* env = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30037\\ATLMFC\\include;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30037\\include;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
+#else
+    /*
+      quando estiver rodando dentro do command pronpt do VC++
+      podemos pegar os includes da variavel de ambiente INCLUDE
+    */
+    #define FASTCALL __stdcall
+    unsigned long FASTCALL GetEnvironmentVariableA(char* lpName, char* lpBuffer, unsigned long nSize);
+
+    char env[2000];
+    int n = GetEnvironmentVariableA("INCLUDE", env, sizeof(env));
+    if (n > 0 && n < sizeof(env))
+#endif
+    {
+        //printf("INCLUDE variable found\n");
+        const char* p = env;
+        for (;;)
+        {
+            if (*p == '\0')
+            {
+                break;
+            }
+            char fileNameLocal[500] = { 0 };
+            int count = 0;
+            while (*p != '\0' && *p != ';')
+            {
+                fileNameLocal[count] = *p;
+                p++;
+                count++;
+            }
+            fileNameLocal[count] = 0;
+            if (count > 0)
+            {
+                //printf("INCLUDE DIR = '%s'\n", fileNameLocal);
+                StrArray_Push(&parser->Scanner.IncludeDir, fileNameLocal);
+            }
+            if (*p == '\0')
+            {
+                break;
+            }
+            p++;
+        }
+    }
+#endif
+}
+bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
+                             const char* filename,
                              struct SyntaxTree* pSyntaxTree)
 {
     bool bResult = false;
     struct Parser parser;
-    const bool bHasConfigFile = configFileName != NULL && configFileName[0] != '\0';
-    if (bHasConfigFile)
-    {
-        //opcional
-        char fullConfigFilePath[CPRIME_MAX_PATH] = { 0 };
-        GetFullPathS(configFileName, fullConfigFilePath);
-        Parser_InitFile(&parser, fullConfigFilePath);
-        Parser_Main(&parser, &pSyntaxTree->Declarations);
-        //apaga declaracoes eof por ex
-        Declarations_Destroy(&pSyntaxTree->Declarations);
-        pSyntaxTree->Declarations = (struct Declarations)TDECLARATIONS_INIT;
-        //Some com o arquivo de configclea
-        TokenList_Clear(&parser.Scanner.PreviousList);
-        BasicScannerStack_Pop(&parser.Scanner.stack);
-        //Some com o arquivo de config
-    }
+    
     char fullFileNamePath[CPRIME_MAX_PATH] = { 0 };
     GetFullPathS(filename, fullFileNamePath);
+
     if (filename != NULL)
     {
-        if (!bHasConfigFile)
+        Parser_InitFile(&parser, fullFileNamePath);
+                
+
+        GetDirForEnviroment(&parser);
+
+        /*
+        * adicionar include dir
+        */
+        for (int i = 0; i < options->IncludeDir.size; i++)
         {
-            Parser_InitFile(&parser, fullFileNamePath);
+            StrArray_Push(&parser.Scanner.IncludeDir, options->IncludeDir.data[i]);
         }
-        else
+
+        for (int i = 0; i < options->Defines.size; i++)
         {
-            Parser_PushFile(&parser, fullFileNamePath);
+            /*adicionar defines*/
+            const char* p = strstr(options->Defines.data[i], "=");
+            if (p == NULL)
+            {
+                AddStandardMacro(&parser.Scanner, options->Defines.data[i], "");
+            }
+            else
+            {
+                char name[100] = {0};
+                strncpy(name, options->Defines.data[i], p - options->Defines.data[i]);
+                AddStandardMacro(&parser.Scanner, name, p+1);
+            }
         }
+
+
+        struct TokenList clueList0 = { 0 };
+        Parser_Match(&parser, &clueList0);
+        TokenList_Destroy(&clueList0);
         Parser_Main(&parser, &pSyntaxTree->Declarations);
     }
     TFileMapToStrArray(&parser.Scanner.FilesIncluded, &pSyntaxTree->Files);
     printf("%s\n", GetCompletationMessage(&parser));
+
     SymbolMap_Swap(&parser.GlobalScope, &pSyntaxTree->GlobalScope);
     if (Parser_HasError(&parser))
     {
@@ -20214,10 +20220,6 @@ bool BuildSyntaxTreeFromString(const char* sourceCode,
 #define _CRTDBG_MAP_ALLOC
 
 
-int Compile(const char* configFileName,
-            const char* inputFileName,
-            const char* outputFileName,
-            struct OutputOptions* options);
 
 char* CompileText(int type, int bNoImplicitTag, const char* input);
 
@@ -20399,7 +20401,7 @@ char* CompileText(int type, int bNoImplicitTag, const char* input)
     };
     s_emulatedFiles = files;
     char* output = NULL;
-    struct OutputOptions options2 = OUTPUTOPTIONS_INIT;
+    struct CompilerOptions options2 = OUTPUTOPTIONS_INIT;
     options2.Target = type == 0 ? CompilerTarget_Preprocessed : CompilerTarget_C99;
     struct SyntaxTree pSyntaxTree = SYNTAXTREE_INIT;
     if (BuildSyntaxTreeFromString(input, &pSyntaxTree))
@@ -20420,39 +20422,69 @@ char* CompileText(int type, int bNoImplicitTag, const char* input)
     return output;
 }
 
-int Compile(const char* configFileName,
-            const char* inputFileName,
-            const char* outputFileName,
-            struct OutputOptions* options)
+int Compile(struct CompilerOptions* options)
 {
     int bSuccess = 0;
-    struct SyntaxTree pSyntaxTree = SYNTAXTREE_INIT;
-    clock_t tstart = clock();
-    printf("Parsing...\n");
-    if (BuildSyntaxTreeFromFile(inputFileName, configFileName, &pSyntaxTree))
+    
+
+    for (int i = 0; i < options->SourceFiles.size; i++)
     {
-        bSuccess = 1;
+        struct SyntaxTree pSyntaxTree = SYNTAXTREE_INIT;
+        clock_t tstart = clock();
+        //printf("Parsing...\n");
+        const char* fileName = options->SourceFiles.data[i];
         char drive[CPRIME_MAX_DRIVE];
         char dir[CPRIME_MAX_DIR];
         char fname[CPRIME_MAX_FNAME];
         char ext[CPRIME_MAX_EXT];
-        SplitPath(inputFileName, drive, dir, fname, ext); // C4996
-        printf("Generating code for %s...\n", inputFileName);
-        if (outputFileName[0] != '\0')
+        SplitPath(fileName, drive, dir, fname, ext); // C4996
+        printf("%s%s\n", fname, ext);
+
+        if (BuildSyntaxTreeFromFile(options, fileName, &pSyntaxTree))
         {
-            SyntaxTree_PrintCodeToFile(&pSyntaxTree, options, outputFileName);
+
+            bSuccess = 1;
+            
+            if (options->SourceFiles.size == 1 && options->output[0] != '\0')
+            {
+                char buffer[300] = { 0 };
+
+         
+                    snprintf(buffer, sizeof buffer, "%s", options->output);
+              
+                
+                if (SyntaxTree_PrintCodeToFile(&pSyntaxTree, options, buffer) == 0)
+                {
+                    printf("out:%s\n", buffer);
+                }
+            }
+            else
+            {
+                char buffer[300] = { 0 };
+
+                int len = strlen(options->outputDir);
+                if (options->outputDir[len - 1] != '/')
+                {
+                    snprintf(buffer, sizeof buffer, "%s/%s%s", options->outputDir, fname, ext);
+                }
+                else
+                {
+                    snprintf(buffer, sizeof buffer, "%s%s%s", options->outputDir, fname, ext);
+                }
+                
+                if (SyntaxTree_PrintCodeToFile(&pSyntaxTree, options, buffer) == 0)
+                {
+                    printf("out:%s\n", buffer);
+                }
+            }
+            clock_t tend = clock();
+            printf(" %d second(s)\n", (int)((tend - tstart) / CLOCKS_PER_SEC));
         }
-        else
-        {
-            char outc[CPRIME_MAX_PATH] = { 0 };
-            //gera em cima do proprio arquivo
-            MakePath(outc, drive, dir, fname, ext);
-            SyntaxTree_PrintCodeToFile(&pSyntaxTree, options, outc);
-        }
-        clock_t tend = clock();
-        printf("Completed in %d second(s)\n", (int)((tend - tstart) / CLOCKS_PER_SEC));
+        SyntaxTree_Destroy(&pSyntaxTree);
     }
-    SyntaxTree_Destroy(&pSyntaxTree);
+
+    
+    
     return bSuccess;
 }
 
