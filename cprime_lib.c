@@ -2309,8 +2309,8 @@ const char* TokenToNameString(enum TokenType tk)
             return "TK__INT64";
         case TK__WCHAR_T:
             return "TK__WCHAR_T";
-        case TK___DECLSPEC:
-            return "TK___DECLSPEC";
+        //case TK___DECLSPEC:
+         //   return "TK___DECLSPEC";
         case TK_REGISTER:
             return "TK_REGISTER";
         case TK_RETURN:
@@ -2540,6 +2540,10 @@ const char* TokenToString(enum TokenType tk)
             return "inline";
         case TK__INLINE:
             return "_inline";
+        case TK__FORCEINLINE:
+            return "_forceinline";
+        case TK__THREAD_LOCAL:
+            return "_Thread_local";
         case TK__NORETURN:
             return "_Noreturn";
         case TK_DO:
@@ -2688,6 +2692,10 @@ const char* TokenToString(enum TokenType tk)
             //assert(false);
             break;
     }
+    
+    printf("token %d %snot found)\n", (int)tk, TokenToNameString(tk));
+    exit(1);
+
     return "???";
 }
 
@@ -4266,7 +4274,7 @@ enum PPTokenType TokenToPPToken(enum TokenType token)
         case TK__INT16:
         case TK__INT32:
         case TK__INT64:
-        case TK___DECLSPEC:
+        //case TK___DECLSPEC:
         case TK__WCHAR_T:
             ////////////////
         case TK_REGISTER:
@@ -4558,6 +4566,24 @@ static bool AddStandardMacro(struct Scanner* pScanner, const char* name,
     return true;
 }
 
+static bool AddStandardMacroFunction(struct Scanner* pScanner,
+                                     const char* name,
+                                     const char* value)
+{
+    struct Macro* pDefine1 = NEW((struct Macro)MACRO_INIT);
+    pDefine1->Name = strdup(name);
+    pDefine1->bIsFunction = true;
+    struct PPToken* ppToken = PPToken_Create("x", PPTokenType_Identifier);
+    PPTokenArray_PushBack(&pDefine1->FormalArguments, ppToken);
+
+
+    PPTokenArray_PushBack(&pDefine1->ReplacementList,
+                          PPToken_Create(value, PPTokenType_Other));
+    pDefine1->FileIndex = 0;
+    MacroMap_SetAt(&pScanner->Defines2, name, pDefine1);
+    return true;
+}
+
 
 static bool Scanner_InitCore(struct Scanner* pScanner)
 {
@@ -4584,12 +4610,27 @@ static bool Scanner_InitCore(struct Scanner* pScanner)
     //__STD_VERSION__
     //
     //https://docs.microsoft.com/pt-br/cpp/preprocessor/predefined-macros?view=msvc-160
+
+#ifdef _WIN32
+    AddStandardMacro(pScanner, "__asm", " ");
+    AddStandardMacro(pScanner, "__based", " ");
+    AddStandardMacro(pScanner, "__cdecl", " ");
+    AddStandardMacro(pScanner, "__clrcall", " ");
+    AddStandardMacro(pScanner, "__fastcall", " ");
+    AddStandardMacro(pScanner, "__inline", " ");
+    AddStandardMacro(pScanner, "__forceinline", " ");
+    AddStandardMacro(pScanner, "__stdcall", " ");
+    AddStandardMacro(pScanner, "__thiscall", " ");
+    AddStandardMacro(pScanner, "__vectorcall", " ");
+    AddStandardMacroFunction(pScanner, "__declspec", " ");
+#endif
+
     AddStandardMacro(pScanner, "__ptr64", " "); /*removing microsoft especific*/
     AddStandardMacro(pScanner, "__alignof", " "); /*removing microsoft especific*/
     AddStandardMacro(pScanner, "_M_IX86", "400"); /*platform*/
     AddStandardMacro(pScanner, "WIN32", "1");
-    AddStandardMacro(pScanner, "_CONSOLE", "1");
     AddStandardMacro(pScanner, "_WIN32", "1");
+    AddStandardMacro(pScanner, "_CONSOLE", "1");
     AddStandardMacro(pScanner, "__CPRIME__", "1");
     AddStandardMacro(pScanner, "__LINE__", "0");
     AddStandardMacro(pScanner, "__FILE__", "\"__FILE__\"");
@@ -6048,20 +6089,23 @@ void Scanner_BuyTokens(struct Scanner* pScanner)
         }
         else if (preToken == TK_PRE_UNDEF)
         {
-            if (IsIncludeState(state))
+            // Match undef
+            StrBuilder_Append(&strBuilder, lexeme);
+            BasicScanner_Match(pBasicScanner);
+
+            // Skip spaces
+            Scanner_MatchAllPreprocessorSpaces(pBasicScanner, &strBuilder);
+            const char * lexeme = pBasicScanner->lexeme.c_str;
+
+            bool bActive = IsIncludeState(state);
+            if (bActive)
             {
-                // Match undef
-                StrBuilder_Append(&strBuilder, pBasicScanner->lexeme.c_str);
-                BasicScanner_Match(pBasicScanner);
-                lexeme = BasicScanner_Lexeme(Scanner_Top(pScanner));
+
                 MacroMap_RemoveKey(&pScanner->Defines2, lexeme);
-                IgnorePreProcessorv2(pBasicScanner, &strBuilder);
-                Scanner_PushToken(pScanner, TK_PRE_UNDEF, strBuilder.c_str, true, line, fileIndex);
             }
-            else
-            {
-                Scanner_PushToken(pScanner, preToken, strBuilder.c_str, false, line, fileIndex);
-            }
+
+            IgnorePreProcessorv2(pBasicScanner, &strBuilder);
+            Scanner_PushToken(pScanner, TK_PRE_DEFINE, strBuilder.c_str, bActive, line, fileIndex);
         }
         else if (preToken == TK_PRE_DEFINE)
         {
@@ -6154,6 +6198,9 @@ void PrintPreprocessedToFileCore(FILE* fp, struct Scanner* scanner)
                 case TK_MACRO_CALL:
                 case TK_MACRO_EOF:
                 case TK_FILE_EOF:
+                    break;
+                case TK_BREAKLINE:
+                    fprintf(fp, "\n");
                     break;
                 default:
                     fprintf(fp, "%s", lexeme);
@@ -7346,6 +7393,7 @@ static void TNodeClueList_CodePrint(struct PrintCodeOptions* options, struct Tok
                 {
                     bIncludeFile = false;
                 }
+
                 if (bIncludeFile)
                 {
                     IntegerStack_PushBack(&options->Stack, bIncludeFile);
@@ -8072,7 +8120,7 @@ static void TPrimaryExpressionLambda_CodePrint(struct SyntaxTree* pSyntaxTree,
         ParameterTypeList_CodePrint(pSyntaxTree, options, p->pParameterTypeListOpt, fp);
         TNodeClueList_CodePrint(options, &p->ClueList3, fp);
         Output_Append(fp, options, ")");
-    }
+}
     TCompoundStatement_CodePrint(pSyntaxTree, options, p->pCompoundStatement, fp);
 #endif
 }
@@ -8307,7 +8355,7 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
                                            &p->pTypeName->Declarator,
                                            &p->InitializerList,
                                            fp);
-            }
+    }
             else
             {
                 Output_Append(fp, options, "{}");
@@ -8511,7 +8559,7 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
         default:
             //assert(false);
             break;
-    }
+}
     if (p->pNext)
     {
         TPostfixExpression_CodePrint(pSyntaxTree, options, p->pNext, fp);
@@ -10044,10 +10092,10 @@ static void TAnyDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree, struct Pri
 static void TDesignation_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct Designation* p, struct StrBuilder* fp)
 {
     for (struct Designator* pItem = (p)->pHead; pItem != NULL; pItem = pItem->pNext)
-    {        
+    {
         TDesignator_CodePrint(pSyntaxTree, options, pItem, fp);
     }
-    
+
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
     Output_Append(fp, options, "=");
 }
@@ -11457,7 +11505,7 @@ static struct TkPair keywords[] =
     {"__int32", TK__INT32},
     {"__int64", TK__INT64},
     {"__wchar_t", TK__WCHAR_T},
-    {"__declspec", TK___DECLSPEC},
+    //{"__declspec", TK___DECLSPEC},
     //
     {"register", TK_REGISTER},
     {"restrict", TK_RESTRICT},
@@ -11633,8 +11681,8 @@ void BasicScanner_Next(struct BasicScanner* scanner)
             ch = BasicScanner_MatchChar(scanner); //L
         }
         scanner->token = TK_CHAR_LITERAL;
-        
-        for (int k = 0 ; k < 4; k++)
+
+        for (int k = 0; k < 4; k++)
         {
             ch = BasicScanner_MatchChar(scanner); //'
             if (ch == '\\')
@@ -16841,7 +16889,7 @@ int IsTypeName(struct Parser* ctx, enum TokenType token, const char* lexeme)
         case TK__INT16:
         case TK__INT32:
         case TK__INT64:
-        case TK___DECLSPEC:
+        //case TK___DECLSPEC:
         case TK__WCHAR_T:
             //
         case TK_FLOAT:
@@ -18339,7 +18387,7 @@ bool Statement(struct Parser* ctx, struct Statement** ppStatement)
         case TK__INT16:
         case TK__INT32:
         case TK__INT64:
-        case TK___DECLSPEC:
+        
         case TK__WCHAR_T:
             /////////
         case TK_FLOAT:
@@ -18950,7 +18998,7 @@ bool TStorageSpecifier_IsFirst(enum TokenType token)
     */
     switch (token)
     {
-        case TK___DECLSPEC: //microsoft
+        //case TK___DECLSPEC: //microsoft
         case TK_TYPEDEF:
         case TK_EXTERN:
         case TK_STATIC:
@@ -18990,27 +19038,7 @@ void Storage_Class_Specifier(struct Parser* ctx,
     {
         //https://docs.microsoft.com/en-us/cpp/cpp/declspec?view=msvc-160
         //Microsoft extension
-        case TK___DECLSPEC:
-            pStorageSpecifier->Token = token;
-            Parser_Match(ctx, NULL);
-            int count = 0;
-            for (;;)
-            {
-                token = Parser_CurrentTokenType(ctx);
-                switch (token)
-                {
-                    case TK_RIGHT_PARENTHESIS:
-                        count--;
-                        break;
-                    case TK_LEFT_PARENTHESIS:
-                        count++;
-                        break;
-                }
-                Parser_Match(ctx, NULL);
-                if (count == 0 || Parser_HasError(ctx))
-                    break; //last parentesis closed
-            }
-            break;
+      
         case TK_TYPEDEF:
         case TK_EXTERN:
         case TK_STATIC:
@@ -19426,39 +19454,6 @@ void Pointer(struct Parser* ctx, struct PointerList* pPointerList)
     }
 }
 
-static bool IsVCAtributte(const char* lexeme)
-{
-    //https://docs.microsoft.com/pt-br/cpp/c-language/summary-of-declarations?view=msvc-160
-    if (strcmp(lexeme, "__asm") == 0 ||
-        strcmp(lexeme, "__based") == 0 ||
-        strcmp(lexeme, "__cdecl") == 0 ||
-        strcmp(lexeme, "__clrcall") == 0 ||
-        strcmp(lexeme, "__fastcall") == 0 ||
-        strcmp(lexeme, "__inline") == 0 ||
-        strcmp(lexeme, "__stdcall") == 0 ||
-        strcmp(lexeme, "__thiscall") == 0 ||
-        strcmp(lexeme, "__vectorcall") == 0)
-    {
-        return true;
-    }
-    return false;
-}
-
-static void AtributtesOptions(struct Parser* ctx)
-{
-    /////////////////////////////////////////////////////////////////////////
-    //ignoring fastcall etc...
-    //This is not the correct position...
-    //https://docs.microsoft.com/pt-br/cpp/c-language/summary-of-declarations?view=msvc-160
-    enum TokenType token = Parser_CurrentTokenType(ctx);
-    const char* lexeme = Lexeme(ctx);
-    while (token == TK_IDENTIFIER && IsVCAtributte(lexeme))
-    {
-        token = Parser_Match(ctx, NULL);
-        lexeme = Lexeme(ctx);
-    }
-    //////////////////////////////////////////////////////////////////////////////
-}
 
 void Declarator(struct Parser* ctx, bool bAbstract, struct Declarator** ppTDeclarator2)
 {
@@ -19467,14 +19462,14 @@ void Declarator(struct Parser* ctx, bool bAbstract, struct Declarator** ppTDecla
       pointer_opt direct-declarator
     */
     *ppTDeclarator2 = NULL; //out
-    AtributtesOptions(ctx);
+    
     struct Declarator* pDeclarator = NEW((struct Declarator)TDECLARATOR_INIT);
     enum TokenType token = Parser_CurrentTokenType(ctx);
     if (token == TK_ASTERISK)
     {
         Pointer(ctx, &pDeclarator->PointerList);
     }
-    AtributtesOptions(ctx);
+    
     Direct_Declarator(ctx, bAbstract, &pDeclarator->pDirectDeclarator);
     *ppTDeclarator2 = pDeclarator;
 }
@@ -20276,7 +20271,7 @@ bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
     printf("%s\n", GetCompletationMessage(&parser));
 
     SymbolMap_Swap(&parser.GlobalScope, &pSyntaxTree->GlobalScope);
-    
+
     if (Parser_HasError(&parser))
     {
         Scanner_PrintDebug(&parser.Scanner);
@@ -20520,20 +20515,14 @@ int Compile(struct CompilerOptions* options)
 
 
 
-    
-    if (options->Target == CompilerTarget_Preprocessed)
-    {
-        char buffer[300] = { 0 };
-        snprintf(buffer, sizeof buffer, "%s", options->output);
-        PrintPreprocessedToFile(options->output, options);
-        return 0;
-    }
+
+
 
     int bSuccess = 0;
 
     for (int i = 0; i < options->SourceFiles.size; i++)
     {
-        
+
         struct SyntaxTree pSyntaxTree = SYNTAXTREE_INIT;
         clock_t tstart = clock();
         //printf("Parsing...\n");
@@ -20545,7 +20534,11 @@ int Compile(struct CompilerOptions* options)
         SplitPath(fileName, drive, dir, fname, ext); // C4996
         printf(" input: %s\n", fileName);
 
-        if (BuildSyntaxTreeFromFile(options, fileName, &pSyntaxTree))
+        if (options->Target == CompilerTarget_Preprocessed)
+        {
+            PrintPreprocessedToFile(fileName, options);
+        }
+        else if (BuildSyntaxTreeFromFile(options, fileName, &pSyntaxTree))
         {
 
             bSuccess = 1;

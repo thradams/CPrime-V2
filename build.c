@@ -76,7 +76,8 @@ int main()
     if (system("cprime "
         SOURCE_FILES
         HEADER_FILES
-        " -outDir Out") != 0) exit(1);
+        " -outDir Out") != 0) {
+    }
 
     chdir("Out");
     if (system("cl "

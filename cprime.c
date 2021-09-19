@@ -39,69 +39,72 @@ void PrintHelp()
 
 void GetOptions(int argc, char* argv[], struct CompilerOptions* options)
 {
-
+    //https://docs.microsoft.com/pt-br/cpp/build/reference/compiler-options-listed-by-category?view=msvc-160
     for (int i = 1; i < argc; i++)
     {
         const char* option = argv[i];
-        if (strcmp(option, "-P") == 0)
+        if (option[0] == '-' || option[0] == '/')
         {
-            options->Target = CompilerTarget_Preprocessed;            
-        }
-        else if (strcmp(option, "-E") == 0)
-        {
-            options->Target = CompilerTarget_Preprocessed;            
-        }
-        else if (strcmp(option, "-help") == 0)
-        {
-            PrintHelp();
-            return;
-        }
-        else if (strcmp(option, "-cx") == 0)
-        {
-            options->Target = CompilerTarget_CXX;
-        }
-        else if (strcmp(option, "-ca") == 0)
-        {
-            options->Target = CompilerTarget_C99;
-        }
-        else if (strcmp(option, "-removeComments") == 0)
-        {
-            options->bIncludeComments = false;
-        }
-        else if (strcmp(option, "-outDir") == 0)
-        {
-            if (i + 1 < argc)
-            {                
-                GetFullPathS(argv[i + 1], options->outputDir);
-                i++;
-            }
-            else
+            if (option[1] == 'P')
             {
-                printf("missing file\n");
-                break;
+                options->Target = CompilerTarget_Preprocessed;
             }
-        }
-        else if (strcmp(option, "-o") == 0)
-        {
-            if (i + 1 < argc)
+            else if (option[1] == 'E')
             {
-                GetFullPathS(argv[i + 1], options->output);
-                i++;
+                options->Target = CompilerTarget_Preprocessed;
             }
-            else
+            else if (strcmp(option, "-help") == 0)
             {
-                printf("missing file\n");
+                PrintHelp();
+                return;
             }
-        }
-        else if (option[0] == '-' && option[1] =='I')
-        {            
-            char fileName[300];
-            GetFullPathS(argv[i]+2, fileName);
-            StrArray_Push(&options->IncludeDir, fileName);
-        }
-        else if (option[0] == '-' && option[1] == 'D')
-        {
-            StrArray_Push(&options->Defines, argv[i]+2);
+            else if (strcmp(option, "-cx") == 0)
+            {
+                options->Target = CompilerTarget_CXX;
+            }
+            else if (strcmp(option, "-ca") == 0)
+            {
+                options->Target = CompilerTarget_C99;
+            }
+            else if (strcmp(option, "-removeComments") == 0)
+            {
+                options->bIncludeComments = false;
+            }
+            else if (strcmp(option, "-outDir") == 0)
+            {
+                if (i + 1 < argc)
+                {
+                    GetFullPathS(argv[i + 1], options->outputDir);
+                    i++;
+                }
+                else
+                {
+                    printf("missing file\n");
+                    break;
+                }
+            }
+            else if (option[1] == 'o')
+            {
+                if (i + 1 < argc)
+                {
+                    GetFullPathS(argv[i + 1], options->output);
+                    i++;
+                }
+                else
+                {
+                    printf("missing file\n");
+                }
+            }
+            else if (option[1] == 'I')
+            {
+                char fileName[300];
+                GetFullPathS(argv[i] + 2, fileName);
+                StrArray_Push(&options->IncludeDir, fileName);
+            }
+            else if (option[1] == 'D')
+            {
+                StrArray_Push(&options->Defines, argv[i] + 2);
+            }
         }
         else
         {
@@ -130,16 +133,18 @@ int main(int argc, char* argv[])
 
     struct CompilerOptions options = OUTPUTOPTIONS_INIT;
     options.Target = CompilerTarget_C99;
-    GetOptions(argc, argv , &options);
+    options.bIncludeComments = true;
+
+    GetOptions(argc, argv, &options);
 
 
-    
-    
-        if (!Compile(&options))
-        {
-            exit(1);
-        }    
-    
+
+
+    if (!Compile(&options))
+    {
+        exit(1);
+    }
+
 
 
 #ifdef WIN32

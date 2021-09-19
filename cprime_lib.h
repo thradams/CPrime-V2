@@ -205,7 +205,7 @@ enum TokenType
     TK__INT32,
     TK__INT64,
     TK__WCHAR_T,
-    TK___DECLSPEC,
+    //TK___DECLSPEC,
     ////////////////
     TK_REGISTER,
     TK_RETURN,
