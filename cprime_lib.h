@@ -1931,7 +1931,7 @@ int Compile(struct CompilerOptions* options);
 
 char* CompileText(int type, int bNoImplicitTag, const char* input);
 
-void PrintPreprocessedToFile(const char* fileIn, const char* configFileName);
+void PrintPreprocessedToFile(const char* fileIn, struct CompilerOptions* options);
 
 void PrintPreprocessedToConsole(const char* fileIn, const char* configFileName);
 

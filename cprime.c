@@ -133,21 +133,13 @@ int main(int argc, char* argv[])
     GetOptions(argc, argv , &options);
 
 
-    if (options.Target == CompilerTarget_Preprocessed)
-    {
-       // PrintPreprocessedToFile(inputFileFullPath, cxconfigFileFullPath);
-    }
-    //else if (bPrintPreprocessedToConsole)
-    //{
-      //  PrintPreprocessedToConsole(inputFileFullPath, cxconfigFileFullPath);
-    //}
-    else
-    {
+    
+    
         if (!Compile(&options))
         {
             exit(1);
         }    
-    }
+    
 
 
 #ifdef WIN32

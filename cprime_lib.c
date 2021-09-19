@@ -4210,9 +4210,10 @@ bool Parser_HasError(struct Parser* pParser);
 
 const char* GetCompletationMessage(struct Parser* parser);
 
-bool BuildSyntaxTreeFromFile(const char* filename,
-                             const char* configFileName,
+bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
+                             const char* filename,
                              struct SyntaxTree* pSyntaxTree);
+
 
 void ConstantExpression(struct Parser* ctx, struct Expression** ppExpression);
 enum TokenType Parser_MatchToken(struct Parser* parser, enum TokenType tk, struct TokenList* listOpt);
@@ -6163,22 +6164,45 @@ void PrintPreprocessedToFileCore(FILE* fp, struct Scanner* scanner)
     }
 }
 
-void PrintPreprocessedToFile(const char* fileIn, const char* configFileName)
+void GetDirForEnviroment(struct Scanner* scanner);
+
+void PrintPreprocessedToFile(const char* fileIn, struct CompilerOptions* options)
 {
     char fullFileNamePath[CPRIME_MAX_PATH] = { 0 };
     GetFullPathS(fileIn, fullFileNamePath);
     struct Scanner scanner;
     Scanner_Init(&scanner);
+
+    GetDirForEnviroment(&scanner);
+
+    /*
+    * adicionar include dir
+    */
+    for (int i = 0; i < options->IncludeDir.size; i++)
+    {
+        StrArray_Push(&scanner.IncludeDir, options->IncludeDir.data[i]);
+    }
+
+    for (int i = 0; i < options->Defines.size; i++)
+    {
+        /*adicionar defines*/
+        const char* p = strstr(options->Defines.data[i], "=");
+        if (p == NULL)
+        {
+            AddStandardMacro(&scanner, options->Defines.data[i], "");
+        }
+        else
+        {
+            char name[100] = { 0 };
+            strncpy(name, options->Defines.data[i], p - options->Defines.data[i]);
+            AddStandardMacro(&scanner, name, p + 1);
+        }
+    }
+
+
     Scanner_IncludeFile(&scanner, fullFileNamePath, FileIncludeTypeFullPath,
                         false);
-    if (configFileName != NULL)
-    {
-        char configFullPath[CPRIME_MAX_PATH] = { 0 };
-        GetFullPathS(configFileName, configFullPath);
-        Scanner_IncludeFile(&scanner, configFullPath, FileIncludeTypeFullPath,
-                            true);
-        Scanner_Match(&scanner);
-    }
+
     ///
     char drive[CPRIME_MAX_DRIVE];
     char dir[CPRIME_MAX_DIR];
@@ -7176,6 +7200,10 @@ void IntegerStack_Pop(struct IntegerStack* pItems)
 {
     if (pItems->Size > 0)
         pItems->Size--;
+    else
+    {
+        assert(false);
+    }
     //else
     //assert(false);
 }
@@ -7342,11 +7370,11 @@ static void TNodeClueList_CodePrint(struct PrintCodeOptions* options, struct Tok
                 Output_Append(fp, options, "\n");
                 break;
             case TK_PRE_PRAGMA:
-                if (strcmp(pNodeClue->lexeme.c_str, "#pragma expand on") == 0)
+                if (pNodeClue->lexeme.c_str != NULL && strcmp(pNodeClue->lexeme.c_str, "#pragma expand on") == 0)
                 {
                     options->Options.bExpandMacros = true;
                 }
-                else if (strcmp(pNodeClue->lexeme.c_str, "#pragma expand off") == 0)
+                else if (pNodeClue->lexeme.c_str != NULL && strcmp(pNodeClue->lexeme.c_str, "#pragma expand off") == 0)
                 {
                     options->Options.bExpandMacros = false;
                 }
@@ -9641,21 +9669,7 @@ void StrBuilder_Template(struct StrBuilder* p,
     }
 }
 
-void GetPrefixSuffix(const char* psz, struct StrBuilder* prefix, struct StrBuilder* suffix)
-{
-    while (*psz && *psz != '_')
-    {
-        StrBuilder_AppendChar(prefix, *psz);
-        psz++;
-    }
-    if (*psz == '_')
-        psz++;
-    while (*psz)
-    {
-        StrBuilder_AppendChar(suffix, *psz);
-        psz++;
-    }
-}
+
 
 
 static int FindRuntimeID(struct SyntaxTree* pSyntaxTree,
@@ -12054,7 +12068,6 @@ void BasicScanner_Next(struct BasicScanner* scanner)
         //printf("invalid char, scanner");
         assert(false);
     }
-    //assert(false);
 }
 
 
@@ -20148,7 +20161,13 @@ void Parser_Main(struct Parser* ctx, struct Declarations* declarations)
     Parse_Declarations(ctx, declarations);
 }
 
-void GetDirForEnviroment(struct Parser* parser)
+#ifdef _WIN32
+
+#define FASTCALL __stdcall
+unsigned long FASTCALL GetEnvironmentVariableA(char* lpName, char* lpBuffer, unsigned long nSize);
+#endif
+
+void GetDirForEnviroment(struct Scanner* scanner)
 {
 #ifdef _WIN32
 
@@ -20160,9 +20179,6 @@ void GetDirForEnviroment(struct Parser* parser)
       quando estiver rodando dentro do command pronpt do VC++
       podemos pegar os includes da variavel de ambiente INCLUDE
     */
-#define FASTCALL __stdcall
-    unsigned long FASTCALL GetEnvironmentVariableA(char* lpName, char* lpBuffer, unsigned long nSize);
-
     char env[2000];
     int n = GetEnvironmentVariableA("INCLUDE", env, sizeof(env));
     if (n > 0 && n < sizeof(env))
@@ -20188,7 +20204,7 @@ void GetDirForEnviroment(struct Parser* parser)
             if (count > 0)
             {
                 //printf("INCLUDE DIR = '%s'\n", fileNameLocal);
-                StrArray_Push(&parser->Scanner.IncludeDir, fileNameLocal);
+                StrArray_Push(&scanner->IncludeDir, fileNameLocal);
             }
             if (*p == '\0')
             {
@@ -20214,7 +20230,7 @@ bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
         Parser_InitFile(&parser, fullFileNamePath);
 
 
-        GetDirForEnviroment(&parser);
+        GetDirForEnviroment(&parser.Scanner);
 
         /*
         * adicionar include dir
@@ -20493,6 +20509,15 @@ int Compile(struct CompilerOptions* options)
 {
     int bSuccess = 0;
 
+
+    
+    if (options->Target == CompilerTarget_Preprocessed)
+    {
+        char buffer[300] = { 0 };
+        snprintf(buffer, sizeof buffer, "%s", options->output);
+        PrintPreprocessedToFile(options->output, options);
+        return 0;
+    }
 
     for (int i = 0; i < options->SourceFiles.size; i++)
     {
