@@ -4094,6 +4094,8 @@ struct Scanner
     //True indica error
     bool bError;
 
+    bool bWarning;
+
     /*estes tokens sao acumulados quando se olha a frente do cursor*/
     struct TokenList AcumulatedTokens;
 
@@ -4491,6 +4493,7 @@ void Scanner_GetFilePositionString(struct Scanner* pScanner, struct StrBuilder* 
 
 void Scanner_SetWarning(struct Scanner* pScanner, const char* fmt, ...)
 {
+    pScanner->bWarning = true;
     if (Scanner_Top(pScanner))
     {
         StrBuilder_AppendFmt(&pScanner->ErrorString, "%s(%d) :",
@@ -4567,6 +4570,7 @@ static bool Scanner_InitCore(struct Scanner* pScanner)
     StrBuilder_Init(&pScanner->DebugString);
     StrBuilder_Init(&pScanner->ErrorString);
     pScanner->bError = false;
+    pScanner->bWarning = false;
     PPStateStack_Init(&pScanner->StackIfDef);
     BasicScannerStack_Init(&pScanner->stack);
     pScanner->IncludeDir = (struct StrArray)STRARRAY_INIT;
@@ -8925,8 +8929,8 @@ static void TDesignator_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCo
         TNodeClueList_CodePrint(options, &p->ClueList0, fp);
         Output_Append(fp, options, ".");
         Output_Append(fp, options, p->Name);
-        Output_Append(fp, options, "=");
-        TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
+        //Output_Append(fp, options, "=");
+        //TExpression_CodePrint(pSyntaxTree, options, p->pExpression, fp);
     }
     else
     {
@@ -8999,7 +9003,11 @@ static void TInitializerList_CodePrint(struct SyntaxTree* pSyntaxTree,
             for (struct InitializerListItem* pItem = (p)->pHead; pItem != NULL; pItem = pItem->pNext)
             {
                 if (!List_IsFirstItem(p, pItem))
+                {
+                    TNodeClueList_CodePrint(options, &pItem->ClueList, fp);
                     Output_Append(fp, options, ",");
+                }
+
                 TInitializerListItem_CodePrint(pSyntaxTree,
                                                options,
                                                pDeclatator,
@@ -10019,16 +10027,15 @@ static void TAnyDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree, struct Pri
     }
 }
 
-static void TDesignatorList_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct DesignatorList* p, struct StrBuilder* fp)
+static void TDesignation_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct Designation* p, struct StrBuilder* fp)
 {
     for (struct Designator* pItem = (p)->pHead; pItem != NULL; pItem = pItem->pNext)
-    {
-        if (!List_IsFirstItem(p, pItem))
-        {
-            Output_Append(fp, options, ",");
-        }
+    {        
         TDesignator_CodePrint(pSyntaxTree, options, pItem, fp);
     }
+    
+    TNodeClueList_CodePrint(options, &p->ClueList0, fp);
+    Output_Append(fp, options, "=");
 }
 
 
@@ -10040,10 +10047,11 @@ static void TInitializerListItem_CodePrint(struct SyntaxTree* pSyntaxTree,
 
                                            struct StrBuilder* fp)
 {
-    if (p->DesignatorList.pHead != NULL)
+    if (p->DesignationOpt.pHead != NULL)
     {
-        TDesignatorList_CodePrint(pSyntaxTree, options, &p->DesignatorList, fp);
+        TDesignation_CodePrint(pSyntaxTree, options, &p->DesignationOpt, fp);
     }
+
     TInitializer_CodePrint(pSyntaxTree,
                            options,
                            pDeclarator,
@@ -14970,7 +14978,7 @@ void Initializer_Delete(struct Initializer* p)
     }
 }
 
-void DesignatorList_Destroy(struct DesignatorList* pDesignatorList)
+void Designation_Destroy(struct Designation* pDesignatorList)
 {
     struct Designator* pCurrent = pDesignatorList->pHead;
     while (pCurrent)
@@ -14979,9 +14987,10 @@ void DesignatorList_Destroy(struct DesignatorList* pDesignatorList)
         pCurrent = pCurrent->pNext;
         Designator_Delete(p);
     }
+    TokenList_Destroy(&pDesignatorList->ClueList0);
 }
 
-void DesignatorList_PushBack(struct DesignatorList* pList, struct Designator* pItem)
+void Designation_PushBack(struct Designation* pList, struct Designator* pItem)
 {
     if (pList->pHead == NULL)
     {
@@ -14996,7 +15005,7 @@ void DesignatorList_PushBack(struct DesignatorList* pList, struct Designator* pI
 
 void TInitializerListItem_Destroy(struct InitializerListItem* p)
 {
-    DesignatorList_Destroy(&p->DesignatorList);
+    Designation_Destroy(&p->DesignationOpt);
     Initializer_Delete(p->pInitializer);
     TokenList_Destroy(&p->ClueList);
 }
@@ -15814,6 +15823,11 @@ bool Parser_HasError(struct Parser* pParser)
 {
     return pParser->bError || pParser->Scanner.bError;
 }
+bool Parser_HasErrorOrWarning(struct Parser* pParser)
+{
+    return pParser->bError || pParser->Scanner.bError || pParser->Scanner.bWarning;
+}
+
 
 void SetWarning(struct Parser* parser, const char* fmt, ...)
 {
@@ -17704,8 +17718,8 @@ void ConstantExpression(struct Parser* ctx, struct Expression** ppExpression)
 
 
 void Designator(struct Parser* ctx, struct Designator* pDesignator);
-void Designator_List(struct Parser* ctx, struct DesignatorList* pDesignatorList);
-void Designation(struct Parser* ctx, struct DesignatorList* pDesignatorList);
+void Designator_List(struct Parser* ctx, struct Designation* pDesignatorList);
+void Designation(struct Parser* ctx, struct Designation* pDesignatorList);
 void Initializer_List(struct Parser* ctx, struct InitializerList* pInitializerList);
 bool Statement(struct Parser* ctx, struct Statement** ppStatement);
 void Compound_Statement(struct Parser* ctx, struct CompoundStatement** ppStatement);
@@ -19799,7 +19813,7 @@ void Initializer_List(struct Parser* ctx, struct InitializerList* pInitializerLi
         if (token == TK_LEFT_SQUARE_BRACKET ||
             token == TK_FULL_STOP)
         {
-            Designation(ctx, &pTInitializerListItem->DesignatorList);
+            Designation(ctx, &pTInitializerListItem->DesignationOpt);
         }
         Initializer(ctx, &pTInitializerListItem->pInitializer);
         token = Parser_CurrentTokenType(ctx);
@@ -19814,17 +19828,17 @@ void Initializer_List(struct Parser* ctx, struct InitializerList* pInitializerLi
     }
 }
 
-void Designation(struct Parser* ctx, struct DesignatorList* pDesignatorList)
+void Designation(struct Parser* ctx, struct Designation* pDesignatorList)
 {
     /*
     designation:
     designator-list =
     */
     Designator_List(ctx, pDesignatorList);
-    Parser_MatchToken(ctx, TK_EQUALS_SIGN, NULL);//tODO
+    Parser_MatchToken(ctx, TK_EQUALS_SIGN, &pDesignatorList->ClueList0);
 }
 
-void Designator_List(struct Parser* ctx, struct DesignatorList* pDesignatorList)
+void Designator_List(struct Parser* ctx, struct Designation* pDesignatorList)
 {
     // http://www.drdobbs.com/the-new-c-declarations-initializations/184401377
     /*
@@ -20236,10 +20250,12 @@ bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
     printf("%s\n", GetCompletationMessage(&parser));
 
     SymbolMap_Swap(&parser.GlobalScope, &pSyntaxTree->GlobalScope);
+    
     if (Parser_HasError(&parser))
     {
         Scanner_PrintDebug(&parser.Scanner);
     }
+
     MacroMap_Swap(&parser.Scanner.Defines2, &pSyntaxTree->Defines);
     bResult = !Parser_HasError(&parser);
     Parser_Destroy(&parser);
@@ -20489,7 +20505,7 @@ int Compile(struct CompilerOptions* options)
         char fname[CPRIME_MAX_FNAME];
         char ext[CPRIME_MAX_EXT];
         SplitPath(fileName, drive, dir, fname, ext); // C4996
-        printf("%s%s\n", fname, ext);
+        printf(" input: %s\n", fileName);
 
         if (BuildSyntaxTreeFromFile(options, fileName, &pSyntaxTree))
         {
@@ -20506,7 +20522,7 @@ int Compile(struct CompilerOptions* options)
 
                 if (SyntaxTree_PrintCodeToFile(&pSyntaxTree, options, buffer) == 0)
                 {
-                    printf("out:%s\n", buffer);
+                    printf("output: %s\n", buffer);
                 }
             }
             else
@@ -20525,11 +20541,11 @@ int Compile(struct CompilerOptions* options)
 
                 if (SyntaxTree_PrintCodeToFile(&pSyntaxTree, options, buffer) == 0)
                 {
-                    printf("out:%s\n", buffer);
+                    printf("output: %s\n", buffer);
                 }
             }
             clock_t tend = clock();
-            printf(" %d second(s)\n", (int)((tend - tstart) / CLOCKS_PER_SEC));
+            printf("%d second(s)\n", (int)((tend - tstart) / CLOCKS_PER_SEC));
         }
         SyntaxTree_Destroy(&pSyntaxTree);
     }

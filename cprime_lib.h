@@ -1156,9 +1156,11 @@ struct Designator
     /*
     designator:
       [ constant-expression ]
+      0                     1
       . identifier
+      0
     */
-    char* Name;
+    char* Name; /*se tem name quer dizer que eh .identifer*/
     struct Expression* pExpression;
     struct Designator* pNext;
     struct TokenList ClueList0; //. ou [
@@ -1168,7 +1170,7 @@ struct Designator
 void Designator_Delete(struct Designator* p);
 
 
-struct DesignatorList
+struct Designation
 {
     /*
     designator-list:
@@ -1176,11 +1178,19 @@ struct DesignatorList
       designator-list designator
     */
     struct Designator* pHead, * pTail;
+
+    /*
+    designation:
+    designator-list =
+                    0
+    */
+
+    struct TokenList ClueList0;
 };
 #define DESIGNATORLIST_INIT {0}
 
-void DesignatorList_Destroy(struct DesignatorList* p);
-void DesignatorList_PushBack(struct DesignatorList* p, struct Designator* pItem);
+void Designation_Destroy(struct Designation* p);
+void Designation_PushBack(struct Designation* p, struct Designator* pItem);
 
 struct Initializer;
 
@@ -1193,7 +1203,7 @@ struct InitializerListItem
       designationopt initializer
       initializer-list , designationopt initializer
     */
-    struct DesignatorList  DesignatorList;
+    struct Designation  DesignationOpt;
     struct Initializer* pInitializer;
     struct InitializerListItem* pNext;
     struct TokenList ClueList;
