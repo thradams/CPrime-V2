@@ -21,19 +21,17 @@ void PrintHelp()
     printf("Examples: " EXECUTABLE_NAME " hello.c -o hello_out.c\n");
     printf("          " EXECUTABLE_NAME " -E hello.c\n");
     printf("          " EXECUTABLE_NAME " -P hello.c\n");
-    printf("          " EXECUTABLE_NAME " -A hello.c\n");
     printf("\n");
-    printf("struct PrintCodeOptions:\n");
-    printf("-config FILE                          Configuration file.\n");
+    printf("Options:\n");
     printf("-outDir                               Set the directory for output.\n");
     printf("-help                                 Print this message.\n");
     printf("-o FILE                               Sets ouput file name.\n");
     printf("-E                                    Preprocess to console.\n");
     printf("-P                                    Preprocess to file.\n");
-    printf("-cx                                   Generate C'.\n");
-    printf("-ca                                   Generated C annotated\n");
-    printf("-removeComments                       Remove comments from output\n");
-    printf("                                      -outDir can define build output\n");
+    printf("-I                                    Include dir.\n");
+    printf("-D                                    -DMACRO -DM=1\n");
+    printf("-cx                                   Generate C'.\n");    
+    printf("-removeComments                       Remove comments from output\n");    
 }
 
 
