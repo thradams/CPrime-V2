@@ -11633,18 +11633,28 @@ void BasicScanner_Next(struct BasicScanner* scanner)
             ch = BasicScanner_MatchChar(scanner); //L
         }
         scanner->token = TK_CHAR_LITERAL;
-        ch = BasicScanner_MatchChar(scanner); //'
-        if (ch == '\\')
+        
+        for (int k = 0 ; k < 4; k++)
         {
-            //escape
-            ch = BasicScanner_MatchChar(scanner); //
-            ch = BasicScanner_MatchChar(scanner); //caractere
+            ch = BasicScanner_MatchChar(scanner); //'
+            if (ch == '\\')
+            {
+                //escape
+                ch = BasicScanner_MatchChar(scanner); //
+                ch = BasicScanner_MatchChar(scanner); //caractere
+            }
+            else
+            {
+                ch = BasicScanner_MatchChar(scanner);//caractere
+            }
+            if (ch == '\'')
+            {
+                ch = BasicScanner_MatchChar(scanner);//'
+                break;
+            }
+            ch = BasicScanner_MatchChar(scanner);//'            
         }
-        else
-        {
-            ch = BasicScanner_MatchChar(scanner);//caractere
-        }
-        ch = BasicScanner_MatchChar(scanner);//'
+        //TODO ERRO SE FOR MAIS 4
         scanner->bLineStart = false;
         return;
     }
@@ -20171,7 +20181,7 @@ void GetDirForEnviroment(struct Scanner* scanner)
 {
 #ifdef _WIN32
 
-#if 0
+#if 1
     /*emula para debug que pegou variavel de ambiente INCLUDE*/
     const char* env = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30037\\ATLMFC\\include;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30037\\include;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
 #else
@@ -20507,7 +20517,7 @@ char* CompileText(int type, int bNoImplicitTag, const char* input)
 
 int Compile(struct CompilerOptions* options)
 {
-    int bSuccess = 0;
+
 
 
     
@@ -20519,8 +20529,11 @@ int Compile(struct CompilerOptions* options)
         return 0;
     }
 
+    int bSuccess = 0;
+
     for (int i = 0; i < options->SourceFiles.size; i++)
     {
+        
         struct SyntaxTree pSyntaxTree = SYNTAXTREE_INIT;
         clock_t tstart = clock();
         //printf("Parsing...\n");
@@ -20572,11 +20585,17 @@ int Compile(struct CompilerOptions* options)
             clock_t tend = clock();
             printf("%d second(s)\n", (int)((tend - tstart) / CLOCKS_PER_SEC));
         }
+        else
+        {
+            bSuccess = false;
+        }
         SyntaxTree_Destroy(&pSyntaxTree);
+        if (!bSuccess)
+            break;
     }
 
 
 
-    return bSuccess;
+    return bSuccess ? 0 : 1;
 }
 
