@@ -2309,8 +2309,8 @@ const char* TokenToNameString(enum TokenType tk)
             return "TK__INT64";
         case TK__WCHAR_T:
             return "TK__WCHAR_T";
-        //case TK___DECLSPEC:
-         //   return "TK___DECLSPEC";
+            //case TK___DECLSPEC:
+             //   return "TK___DECLSPEC";
         case TK_REGISTER:
             return "TK_REGISTER";
         case TK_RETURN:
@@ -2692,7 +2692,7 @@ const char* TokenToString(enum TokenType tk)
             //assert(false);
             break;
     }
-    
+
     printf("token %d %snot found)\n", (int)tk, TokenToNameString(tk));
     exit(1);
 
@@ -4274,7 +4274,7 @@ enum PPTokenType TokenToPPToken(enum TokenType token)
         case TK__INT16:
         case TK__INT32:
         case TK__INT64:
-        //case TK___DECLSPEC:
+            //case TK___DECLSPEC:
         case TK__WCHAR_T:
             ////////////////
         case TK_REGISTER:
@@ -6095,7 +6095,7 @@ void Scanner_BuyTokens(struct Scanner* pScanner)
 
             // Skip spaces
             Scanner_MatchAllPreprocessorSpaces(pBasicScanner, &strBuilder);
-            const char * lexeme = pBasicScanner->lexeme.c_str;
+            const char* lexeme = pBasicScanner->lexeme.c_str;
 
             bool bActive = IsIncludeState(state);
             if (bActive)
@@ -8120,7 +8120,7 @@ static void TPrimaryExpressionLambda_CodePrint(struct SyntaxTree* pSyntaxTree,
         ParameterTypeList_CodePrint(pSyntaxTree, options, p->pParameterTypeListOpt, fp);
         TNodeClueList_CodePrint(options, &p->ClueList3, fp);
         Output_Append(fp, options, ")");
-}
+    }
     TCompoundStatement_CodePrint(pSyntaxTree, options, p->pCompoundStatement, fp);
 #endif
 }
@@ -8355,7 +8355,7 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
                                            &p->pTypeName->Declarator,
                                            &p->InitializerList,
                                            fp);
-    }
+            }
             else
             {
                 Output_Append(fp, options, "{}");
@@ -8559,7 +8559,7 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
         default:
             //assert(false);
             break;
-}
+    }
     if (p->pNext)
     {
         TPostfixExpression_CodePrint(pSyntaxTree, options, p->pNext, fp);
@@ -9078,12 +9078,6 @@ static void TInitializerList_CodePrint(struct SyntaxTree* pSyntaxTree,
 
             for (struct InitializerListItem* pItem = (p)->pHead; pItem != NULL; pItem = pItem->pNext)
             {
-                if (!List_IsFirstItem(p, pItem))
-                {
-                    TNodeClueList_CodePrint(options, &pItem->ClueList, fp);
-                    Output_Append(fp, options, ",");
-                }
-
                 TInitializerListItem_CodePrint(pSyntaxTree,
                                                options,
                                                pDeclatator,
@@ -10056,7 +10050,7 @@ static void TStaticAssertDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree,
                                                struct StrBuilder* fp)
 {
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-    Output_Append(fp, options, "_StaticAssert");
+    Output_Append(fp, options, "_Static_assert");
     TNodeClueList_CodePrint(options, &p->ClueList1, fp);
     Output_Append(fp, options, "(");
     TExpression_CodePrint(pSyntaxTree, options, p->pConstantExpression, fp);
@@ -10109,6 +10103,12 @@ static void TInitializerListItem_CodePrint(struct SyntaxTree* pSyntaxTree,
 
                                            struct StrBuilder* fp)
 {
+    if (p->bContinuation)
+    {
+        TNodeClueList_CodePrint(options, &p->ClueList, fp);
+        Output_Append(fp, options, ",");
+    }
+
     if (p->DesignationOpt.pHead != NULL)
     {
         TDesignation_CodePrint(pSyntaxTree, options, &p->DesignationOpt, fp);
@@ -10120,7 +10120,7 @@ static void TInitializerListItem_CodePrint(struct SyntaxTree* pSyntaxTree,
                            pDeclarationSpecifiers,
                            p->pInitializer,
                            fp);
-    TNodeClueList_CodePrint(options, &p->ClueList, fp);
+    //TNodeClueList_CodePrint(options, &p->ClueList, fp);
 }
 
 
@@ -16889,7 +16889,7 @@ int IsTypeName(struct Parser* ctx, enum TokenType token, const char* lexeme)
         case TK__INT16:
         case TK__INT32:
         case TK__INT64:
-        //case TK___DECLSPEC:
+            //case TK___DECLSPEC:
         case TK__WCHAR_T:
             //
         case TK_FLOAT:
@@ -18387,7 +18387,7 @@ bool Statement(struct Parser* ctx, struct Statement** ppStatement)
         case TK__INT16:
         case TK__INT32:
         case TK__INT64:
-        
+
         case TK__WCHAR_T:
             /////////
         case TK_FLOAT:
@@ -19038,7 +19038,7 @@ void Storage_Class_Specifier(struct Parser* ctx,
     {
         //https://docs.microsoft.com/en-us/cpp/cpp/declspec?view=msvc-160
         //Microsoft extension
-      
+
         case TK_TYPEDEF:
         case TK_EXTERN:
         case TK_STATIC:
@@ -19462,14 +19462,14 @@ void Declarator(struct Parser* ctx, bool bAbstract, struct Declarator** ppTDecla
       pointer_opt direct-declarator
     */
     *ppTDeclarator2 = NULL; //out
-    
+
     struct Declarator* pDeclarator = NEW((struct Declarator)TDECLARATOR_INIT);
     enum TokenType token = Parser_CurrentTokenType(ctx);
     if (token == TK_ASTERISK)
     {
         Pointer(ctx, &pDeclarator->PointerList);
     }
-    
+
     Direct_Declarator(ctx, bAbstract, &pDeclarator->pDirectDeclarator);
     *ppTDeclarator2 = pDeclarator;
 }
@@ -19814,30 +19814,46 @@ void Initializer_List(struct Parser* ctx, struct InitializerList* pInitializerLi
     /*
     initializer-list:
       designation_opt initializer
+      ---------------------------
       initializer-list , designation_opt initializer
+                       ----------------------------
     */
+    enum TokenType token = Parser_CurrentTokenType(ctx);
+    if (token == TK_RIGHT_CURLY_BRACKET)
+    {
+        //Empty initializer
+        return;
+    }
+
+    /*
+    Tem pelo menos 1
+    */
+    struct InitializerListItem* pTInitializerListItem = NEW((struct InitializerListItem)INITIALIZERLISTITEM_INIT);
+
     for (; ;)
     {
+        token = Parser_CurrentTokenType(ctx);
+
         if (ErrorOrEof(ctx))
             break;
-        enum TokenType token = Parser_CurrentTokenType(ctx);
-        if (token == TK_RIGHT_CURLY_BRACKET)
-        {
-            //Empty initializer
-            break;
-        }
-        struct InitializerListItem* pTInitializerListItem = NEW((struct InitializerListItem)INITIALIZERLISTITEM_INIT);
+
         List_Add(pInitializerList, pTInitializerListItem);
         if (token == TK_LEFT_SQUARE_BRACKET ||
             token == TK_FULL_STOP)
         {
             Designation(ctx, &pTInitializerListItem->DesignationOpt);
         }
+
         Initializer(ctx, &pTInitializerListItem->pInitializer);
+
         token = Parser_CurrentTokenType(ctx);
         if (token == TK_COMMA)
         {
+            /*inicia o proximo*/
+            pTInitializerListItem = NEW((struct InitializerListItem)INITIALIZERLISTITEM_INIT);
+            pTInitializerListItem->bContinuation = true;
             Parser_Match(ctx, &pTInitializerListItem->ClueList);
+            
         }
         else
         {

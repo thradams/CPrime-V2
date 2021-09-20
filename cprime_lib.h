@@ -1200,13 +1200,19 @@ struct InitializerListItem
 {
     /*
     initializer-list:
-      designationopt initializer
-      initializer-list , designationopt initializer
+      designation_opt initializer
+      ----------------------------
+      initializer-list , designation_opt initializer
+                       ------------------------------
     */
     struct Designation  DesignationOpt;
     struct Initializer* pInitializer;
     struct InitializerListItem* pNext;
     struct TokenList ClueList;
+    
+    /*indica que eh a continuacao e q temos que imprimir virgula */
+    bool bContinuation; // , designation_opt initializer
+
     bool bDefault;
 };
 
