@@ -159,6 +159,13 @@ int main()
            SOURCE_FILES
            " -DNDEBUG"
            " -o cprime");
+
+    if (system("./cprime "
+        SOURCE_FILES
+        HEADER_FILES
+        " -outDir Out") != 0) {
+    }
+
 #else 
  #error Unknown Platform/Compiler
 #endif

@@ -1893,11 +1893,13 @@ void GetTypeName(struct Expression* pExpression, struct StrBuilder* str);
 
 
 
-enum CompilerTarget
+enum LanguageStandard
 {
-    CompilerTarget_C99,
-    CompilerTarget_Preprocessed,
-    CompilerTarget_CXX
+    LanguageStandard_C99,
+    LanguageStandard_C11,
+    LanguageStandard_C17,
+    LanguageStandard_C23,
+    LanguageStandard_CX    
 };
 
 struct StrArray
@@ -1918,7 +1920,10 @@ struct CompilerOptions
     bool bExpandMacros;
     bool bIncludeComments /*=1*/;
 
-    enum CompilerTarget Target;
+    bool bOutputPreprocessor;
+
+    enum LanguageStandard Target; /*output*/
+    enum LanguageStandard InputLanguage; /*input*/
 
     //imprime na forma para declarar um tipo, remove o resto
     bool bCannonical;
@@ -1928,7 +1933,7 @@ struct CompilerOptions
     struct StrArray Defines; /*name=1*/
 };
 
-#define OUTPUTOPTIONS_INIT {false, true, CompilerTarget_C99,  false}
+#define OUTPUTOPTIONS_INIT {false, true, LanguageStandard_C99,  false}
 void OutputOptions_Destroy(struct CompilerOptions* options);
 
 

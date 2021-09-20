@@ -8845,7 +8845,7 @@ static void TUnionSetItem_CodePrint(struct PrintCodeOptions* options, struct Uni
 static void TUnionSet_CodePrint(struct PrintCodeOptions* options, struct UnionSet* p, struct StrBuilder* fp)
 {
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-    if (options->Options.Target == CompilerTarget_C99)
+    if (options->Options.Target == LanguageStandard_C99)
     {
         Output_Append(fp, options, "/*");
     }
@@ -8858,7 +8858,7 @@ static void TUnionSet_CodePrint(struct PrintCodeOptions* options, struct UnionSe
     }
     TNodeClueList_CodePrint(options, &p->ClueList1, fp);
     Output_Append(fp, options, ">");
-    if (options->Options.Target == CompilerTarget_C99)
+    if (options->Options.Target == LanguageStandard_C99)
     {
         Output_Append(fp, options, "*/");
     }
@@ -9120,14 +9120,14 @@ static void TInitializerListType_CodePrint(struct SyntaxTree* pSyntaxTree,
         struct Initializer* pInitializer = NULL;
         //p->InitializerList.pHead ?
         //p->InitializerList.pHead->pInitializer : NULL;
-        if (options->Options.Target == CompilerTarget_CXX)
+        if (options->Options.Target == LanguageStandard_CX)
         {
             TNodeClueList_CodePrint(options, &p->ClueList1, fp);
             Output_Append(fp, options, "{");
             TNodeClueList_CodePrint(options, &p->ClueList2, fp);
             Output_Append(fp, options, "}");
         }
-        else  if (options->Options.Target == CompilerTarget_C99)
+        else  if (options->Options.Target == LanguageStandard_C99)
         {
             TNodeClueList_CodePrint(options, &p->ClueList0, fp);
             //if (options->Options.Target == CompilerTarget_Annotated)
@@ -9299,7 +9299,7 @@ static void TDirectDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
         Output_Append(fp, options, ")");
         if (pDirectDeclarator->bOverload)
         {
-            if (options->Options.Target == CompilerTarget_CXX)
+            if (options->Options.Target == LanguageStandard_CX)
             {
                 TNodeClueList_CodePrint(options, &pDirectDeclarator->ClueList4, fp);
                 Output_Append(fp, options, "overload");
@@ -9335,7 +9335,7 @@ void TStructDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
     if (p->pInitializer)
     {
         TNodeClueList_CodePrint(options, &p->ClueList1, fp);
-        if (options->Options.Target == CompilerTarget_C99)
+        if (options->Options.Target == LanguageStandard_C99)
         {
             Output_Append(fp, options, "/*");
         }
@@ -9349,7 +9349,7 @@ void TStructDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
                                (struct DeclarationSpecifiers*)pSpecifierQualifierList,
                                p->pInitializer,
                                fp);
-        if (options->Options.Target == CompilerTarget_C99)
+        if (options->Options.Target == LanguageStandard_C99)
         {
             Output_Append(fp, options, "*/");
         }
@@ -9418,12 +9418,12 @@ static void TTypeQualifier_CodePrint(struct PrintCodeOptions* options, struct Ty
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
     if (p->Token == TK_AUTO)
     {
-        if (options->Options.Target == CompilerTarget_C99)
+        if (options->Options.Target == LanguageStandard_C99)
         {
             Output_Append(fp, options, "/*");
         }
         Output_Append(fp, options, "auto");
-        if (options->Options.Target == CompilerTarget_C99)
+        if (options->Options.Target == LanguageStandard_C99)
         {
             Output_Append(fp, options, "*/");
         }
@@ -9439,7 +9439,7 @@ static void TTypeQualifier_CodePrint(struct PrintCodeOptions* options, struct Ty
         //Output_Append(fp, options, "(");
         //Output_Append(fp, options, p->SizeIdentifier);
         //Output_Append(fp, options, ")");
-        if (options->Options.Target == CompilerTarget_C99)
+        if (options->Options.Target == LanguageStandard_C99)
         {
             //Output_Append(fp, options, "@*/");
         }
@@ -20506,13 +20506,19 @@ char* CompileText(int type, int bNoImplicitTag, const char* input)
     s_emulatedFiles = files;
     char* output = NULL;
     struct CompilerOptions options2 = OUTPUTOPTIONS_INIT;
-    options2.Target = type == 0 ? CompilerTarget_Preprocessed : CompilerTarget_C99;
+    if (type == 0)
+    {
+        options2.bOutputPreprocessor = true;
+    }
+
+    options2.Target = LanguageStandard_C99;
+
     struct SyntaxTree pSyntaxTree = SYNTAXTREE_INIT;
     if (BuildSyntaxTreeFromString(input, &pSyntaxTree))
     {
         struct StrBuilder sb = STRBUILDER_INIT;
         StrBuilder_Reserve(&sb, 500);
-        if (options2.Target == CompilerTarget_Preprocessed)
+        if (options2.bOutputPreprocessor)
         {
             PrintPreprocessedToString2(&sb, input, NULL);
         }
@@ -20550,7 +20556,7 @@ int Compile(struct CompilerOptions* options)
         SplitPath(fileName, drive, dir, fname, ext); // C4996
         printf(" input: %s\n", fileName);
 
-        if (options->Target == CompilerTarget_Preprocessed)
+        if (options->bOutputPreprocessor)
         {
             PrintPreprocessedToFile(fileName, options);
         }

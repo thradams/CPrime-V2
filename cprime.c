@@ -30,7 +30,8 @@ void PrintHelp()
     printf("-P                                    Preprocess to file.\n");
     printf("-I                                    Include dir.\n");
     printf("-D                                    -DMACRO -DM=1\n");
-    printf("-cx                                   Generate C'.\n");    
+    printf("-std:cx                               Latest C input'.\n");    
+    printf("-std:c99                              C99 input'.\n");
     printf("-removeComments                       Remove comments from output\n");    
 }
 
@@ -45,24 +46,26 @@ void GetOptions(int argc, char* argv[], struct CompilerOptions* options)
         {
             if (option[1] == 'P')
             {
-                options->Target = CompilerTarget_Preprocessed;
+                options->bOutputPreprocessor = true;
             }
             else if (option[1] == 'E')
             {
-                options->Target = CompilerTarget_Preprocessed;
+                options->bOutputPreprocessor = true;
             }
             else if (strcmp(option, "-help") == 0)
             {
                 PrintHelp();
                 return;
             }
-            else if (strcmp(option, "-cx") == 0)
+            else if (strcmp(option, "-std:cx") == 0)
             {
-                options->Target = CompilerTarget_CXX;
+                options->InputLanguage = LanguageStandard_CX;
+                options->Target = LanguageStandard_C99;
             }
-            else if (strcmp(option, "-ca") == 0)
+            else if (strcmp(option, "-std:c99") == 0)
             {
-                options->Target = CompilerTarget_C99;
+                options->InputLanguage = LanguageStandard_C99;
+                options->Target = LanguageStandard_C99;                
             }
             else if (strcmp(option, "-removeComments") == 0)
             {
@@ -130,7 +133,7 @@ int main(int argc, char* argv[])
 
 
     struct CompilerOptions options = OUTPUTOPTIONS_INIT;
-    options.Target = CompilerTarget_C99;
+    options.Target = LanguageStandard_C99;
     options.bIncludeComments = true;
 
     GetOptions(argc, argv, &options);
