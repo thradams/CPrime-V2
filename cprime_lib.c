@@ -20325,7 +20325,7 @@ bool BuildSyntaxTreeFromString(const char* sourceCode,
 
 
 
-char* CompileText(int type, int bNoImplicitTag, const char* input);
+char* CompileText(int inputLanguage, int outputLanguage, const char* options, const char* input);
 
 
 
@@ -20489,7 +20489,7 @@ char* CompileText(int type, int bNoImplicitTag, const char* input);
 "#define ENOTEMPTY       41\n"\
 "\n"
 
-char* CompileText(int type, int bNoImplicitTag, const char* input)
+char* CompileText(int inputLanguage, int outputLanguage, const char* options, const char* input)
 {
     struct EmulatedFile* files[] =
     {
@@ -20506,12 +20506,19 @@ char* CompileText(int type, int bNoImplicitTag, const char* input)
     s_emulatedFiles = files;
     char* output = NULL;
     struct CompilerOptions options2 = OUTPUTOPTIONS_INIT;
-    if (type == 0)
+    options2.bIncludeComments = true;
+
+    if (outputLanguage == 0)
     {
         options2.bOutputPreprocessor = true;
     }
-
-    options2.Target = LanguageStandard_C99;
+    else
+    {
+        //C99 eh 1
+        options2.Target = outputLanguage - 1;
+    }
+    
+    options2.InputLanguage = inputLanguage;
 
     struct SyntaxTree pSyntaxTree = SYNTAXTREE_INIT;
     if (BuildSyntaxTreeFromString(input, &pSyntaxTree))

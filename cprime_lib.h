@@ -1940,7 +1940,7 @@ void OutputOptions_Destroy(struct CompilerOptions* options);
 int Compile(struct CompilerOptions* options);
 
 
-char* CompileText(int type, int bNoImplicitTag, const char* input);
+char* CompileText(int inputLanguage, int outputLanguage, const char* options, const char* input);
 
 void PrintPreprocessedToFile(const char* fileIn, struct CompilerOptions* options);
 
