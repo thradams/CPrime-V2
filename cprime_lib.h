@@ -48,9 +48,9 @@ void SymbolMap_Print(struct SymbolMap* pMap);
 bool SymbolMap_IsTypeName(struct SymbolMap* pMap, const char* identifierName);
 
 struct SymbolMapItem* SymbolMap_GetAssocAt(struct SymbolMap* pMap,
-        const char* Key,
-        unsigned int* nHashBucket,
-        unsigned int* HashValue);
+    const char* Key,
+                                           unsigned int* nHashBucket,
+                                           unsigned int* HashValue);
 
 struct StructUnionSpecifier* SymbolMap_FindCompleteStructUnionSpecifier(struct SymbolMap* pMap, const char* structTagName);
 
@@ -98,6 +98,7 @@ enum TokenType
     TK_DECIMAL_INTEGER,
     TK_HEX_INTEGER,
     TK_OCTAL_INTEGER,
+    TK_BINARY_INTEGER,
     TK_FLOAT_NUMBER,
     TK_MACROPLACEHOLDER,
     TK_BREAKLINE,
@@ -241,7 +242,7 @@ enum TokenType
     ///
     TK__ASM, //visual c++
     TK__PRAGMA, //visual c++
-    TK__C99PRAGMA, 
+    TK__C99PRAGMA,
 
     //enum Tokens para linhas do pre processador
     TK_PRE_INCLUDE,
@@ -311,7 +312,7 @@ struct FileArray
 
 struct PPTokenArray
 {
-    struct PPToken* *   pItems;
+    struct PPToken** pItems;
     int Size;
     int Capacity;
 };
@@ -322,7 +323,7 @@ struct TokenArrayMapItem
 {
     struct TokenArrayMapItem* pNext;
     unsigned int HashValue;
-    char*  Key;
+    char* Key;
     struct PPTokenArray* pValue;
 };
 
@@ -337,7 +338,7 @@ struct TokenArrayMap
 
 struct PPTokenSet
 {
-    struct PPToken**  pItems;
+    struct PPToken** pItems;
     int Size;
     int Capacity;
 };
@@ -441,7 +442,7 @@ enum Type
     WhileStatement_ID,
     DoStatement_ID,
     TryBlockStatement_ID,
-    
+
     IfStatement_ID,
     TypeName_ID,
     Enumerator_ID,
@@ -474,6 +475,83 @@ struct FilePos
 
 #define FILEPOS_INIT {0,0}
 
+struct Attribute
+{
+    /*
+     attribute:
+      attribute-token attribute-argument-clause_opt
+
+    attribute-token:
+      standard-attribute
+      attribute-prefixed-token
+
+    standard-attribute:
+      identifier
+
+    attribute-prefixed-token:
+       attribute-prefix :: identifier
+
+     attribute-prefix:
+       identifier
+
+     attribute-argument-clause:
+        ( balanced-token-sequenceopt )
+
+     balanced-token-sequence:
+        balanced-token
+        balanced-token-sequence balanced-token
+
+    balanced-token:
+       ( balanced-token-sequenceopt )
+       [ balanced-token-sequenceopt ]
+       { balanced-token-sequenceopt }
+       any token other than a parenthesis, a bracket, or a brace
+
+    */
+    struct Attribute* pNext;
+    struct TokenList ClueList0;
+};
+#define ATTRIBUTE_INIT {0}
+
+struct AttributeList
+{
+    /*
+      attribute-list:
+        attribute_opt
+        attribute-list , attribute_opt
+    */
+    struct Attribute* pHead, * pTail;
+};
+
+struct AttributeSpecifier
+{
+    /*
+     attribute-specifier:
+        [ [ attribute-list ] ]
+    */
+
+    struct AttributeList attribute_list;
+
+
+
+    struct AttributeSpecifier* pNext;
+
+    struct TokenList ClueList0;
+    struct TokenList ClueList1;
+    struct TokenList ClueList2;
+    struct TokenList ClueList3;
+};
+#define ATTRIBUTESPECIFIER_INIT {0}
+
+struct AttributeSpecifierSequence
+{
+    /*
+    attribute-specifier-sequence:
+      attribute-specifier-sequenceopt attribute-specifier
+    */
+
+    struct AttributeSpecifier* pHead, * pTail;
+};
 
 struct StaticAssertDeclaration
 {
@@ -541,7 +619,7 @@ struct CompoundStatement
     enum Type Type;
     struct BlockItemList BlockItemList;
     struct TokenList ClueList0;
-    struct TokenList ClueList1;    
+    struct TokenList ClueList1;
 };
 
 #define COMPOUNDSTATEMENT_INIT {CompoundStatement_ID}
@@ -615,11 +693,11 @@ struct DeferStatement
 {
     /*
     jump-statement:
-       defer statement;       
+       defer statement;
     */
     enum Type Type;
     struct Statement* pStatement;
-    struct TokenList ClueList0;      
+    struct TokenList ClueList0;
 };
 #define DEFERSTATEMENT_INIT  {DeferStatement_ID}
 void DeferStatement_Delete(struct DeferStatement* p);
@@ -701,14 +779,14 @@ struct TryBlockStatement
     */
 
     enum Type Type;
-    
+
     struct CompoundStatement* pCompoundStatement;
     struct CompoundStatement* pCompoundCatchStatement;
-    struct TokenList ClueListTry;    
+    struct TokenList ClueListTry;
     struct TokenList ClueListCatch;
     struct TokenList ClueListLeftPar;
     struct TokenList ClueListRightPar;
-    
+
 
 };
 #define TRYBLOCKSTATEMENT_INIT {TryBlockStatement_ID}
@@ -764,7 +842,7 @@ struct IfStatement
     /*
     selection-statement:
      try (condition-expression) ;
-     try (declaration or expression ; condition-expression; defer optional) ;     
+     try (declaration or expression ; condition-expression; defer optional) ;
     */
 
     enum Type Type;
@@ -1034,8 +1112,8 @@ struct DeclarationSpecifier
 
 struct SpecifierQualifier
 {
-    /* 
-     TypeSpecifier 
+    /*
+     TypeSpecifier
      TypeQualifier
     */
     enum Type Type;
@@ -1209,7 +1287,7 @@ struct InitializerListItem
     struct Initializer* pInitializer;
     struct InitializerListItem* pNext;
     struct TokenList ClueList;
-    
+
     /*indica que eh a continuacao e q temos que imprimir virgula */
     bool bContinuation; // , designation_opt initializer
 
@@ -1504,10 +1582,10 @@ void GetOrGenerateStructTagName(struct StructUnionSpecifier* p, char* out, int s
 
 struct TypeSpecifier
 {
-    /* 
-      SingleTypeSpecifier 
-      AtomicTypeSpecifier 
-      EnumSpecifier 
+    /*
+      SingleTypeSpecifier
+      AtomicTypeSpecifier
+      EnumSpecifier
       StructUnionSpecifier
     */
     enum Type Type;
@@ -1829,13 +1907,13 @@ void UnaryExpressionOperator_Delete(struct UnaryExpressionOperator* p);
 struct Expression
 {
     /*
-      PrimaryExpressionLiteral 
-      PrimaryExpressionValue 
-      BinaryExpression 
-      UnaryExpressionOperator 
-      PostfixExpression 
-      CastExpressionType 
-      TernaryExpression 
+      PrimaryExpressionLiteral
+      PrimaryExpressionValue
+      BinaryExpression
+      UnaryExpressionOperator
+      PostfixExpression
+      CastExpressionType
+      TernaryExpression
       PrimaryExpressionLambda
     */
 
@@ -1899,7 +1977,7 @@ enum LanguageStandard
     LanguageStandard_C11,
     LanguageStandard_C17,
     LanguageStandard_C23,
-    LanguageStandard_CX    
+    LanguageStandard_C_EXPERIMENTAL
 };
 
 struct StrArray

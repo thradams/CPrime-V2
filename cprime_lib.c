@@ -2117,6 +2117,8 @@ const char* TokenToNameString(enum TokenType tk)
             return "TK_HEX_INTEGER";
         case TK_OCTAL_INTEGER:
             return "TK_OCTAL_INTEGER";
+        case TK_BINARY_INTEGER:
+            return "TK_BINARY_INTEGER";
         case TK_FLOAT_NUMBER:
             return "TK_FLOAT_NUMBER";
         case TK_MACROPLACEHOLDER:
@@ -2445,6 +2447,10 @@ const char* TokenToString(enum TokenType tk)
             return "TK_DECIMAL_INTEGER";
         case TK_HEX_INTEGER:
             return "TK_HEX_INTEGER";
+        case TK_OCTAL_INTEGER:
+            return "TK_OCTAL_INTEGER";
+        case TK_BINARY_INTEGER:
+            return "TK_BINARY_INTEGER";
         case TK_FLOAT_NUMBER:
             return "TK_FLOAT_NUMBER";
         case TK_BREAKLINE:
@@ -4187,6 +4193,8 @@ void TDeclarationSpecifiers_CodePrint(struct SyntaxTree* pSyntaxTree, struct Pri
 
 struct Parser
 {
+    enum LanguageStandard languageVersion;
+
     // indica presenca de erro no parser
     bool bError;
 
@@ -4228,7 +4236,9 @@ enum TokenType Parser_MatchToken(struct Parser* parser, enum TokenType tk, struc
 
 enum TokenType Parser_LookAheadToken(struct Parser* parser);
 
-bool BuildSyntaxTreeFromString(const char* sourceCode, struct SyntaxTree* pSyntaxTree);
+bool BuildSyntaxTreeFromString(struct CompilerOptions* options,
+                               const char* sourceCode,
+                               struct SyntaxTree* pSyntaxTree);
 
 
 static void Scanner_PushToken(struct Scanner* pScanner,
@@ -4318,6 +4328,8 @@ enum PPTokenType TokenToPPToken(enum TokenType token)
             result = PPTokenType_Spaces;
             break;
         case TK_HEX_INTEGER:
+        case TK_OCTAL_INTEGER:
+        case TK_BINARY_INTEGER:
         case TK_DECIMAL_INTEGER:
         case TK_FLOAT_NUMBER:
             result = PPTokenType_Number;
@@ -8707,7 +8719,26 @@ static void TExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
             else
             {
                 TNodeClueList_CodePrint(options, &pPrimaryExpressionValue->ClueList0, fp);
-                Output_Append(fp, options, pPrimaryExpressionValue->lexeme);
+                if (pPrimaryExpressionValue->token == TK_BINARY_INTEGER)
+                {
+                    if (options->Options.Target < LanguageStandard_C23)
+                    {
+                        /*vamos imprimir em hexa se for anterior c23*/
+                        int value = (int)strtol(pPrimaryExpressionValue->lexeme+2, NULL, 2);
+                        char buffer[33];
+                        snprintf(buffer, sizeof buffer, "0x%x", value);
+                        Output_Append(fp, options, buffer);
+                    }
+                    else
+                    {
+                        Output_Append(fp, options, pPrimaryExpressionValue->lexeme);
+                    }
+                }
+                else
+                {
+                    Output_Append(fp, options, pPrimaryExpressionValue->lexeme);
+                }
+                
             }
         }
         ///true;
@@ -8845,7 +8876,7 @@ static void TUnionSetItem_CodePrint(struct PrintCodeOptions* options, struct Uni
 static void TUnionSet_CodePrint(struct PrintCodeOptions* options, struct UnionSet* p, struct StrBuilder* fp)
 {
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-    if (options->Options.Target == LanguageStandard_C99)
+    if (options->Options.Target < LanguageStandard_C_EXPERIMENTAL)
     {
         Output_Append(fp, options, "/*");
     }
@@ -8858,7 +8889,7 @@ static void TUnionSet_CodePrint(struct PrintCodeOptions* options, struct UnionSe
     }
     TNodeClueList_CodePrint(options, &p->ClueList1, fp);
     Output_Append(fp, options, ">");
-    if (options->Options.Target == LanguageStandard_C99)
+    if (options->Options.Target < LanguageStandard_C_EXPERIMENTAL)
     {
         Output_Append(fp, options, "*/");
     }
@@ -9120,14 +9151,14 @@ static void TInitializerListType_CodePrint(struct SyntaxTree* pSyntaxTree,
         struct Initializer* pInitializer = NULL;
         //p->InitializerList.pHead ?
         //p->InitializerList.pHead->pInitializer : NULL;
-        if (options->Options.Target == LanguageStandard_CX)
+        if (options->Options.Target == LanguageStandard_C_EXPERIMENTAL)
         {
             TNodeClueList_CodePrint(options, &p->ClueList1, fp);
             Output_Append(fp, options, "{");
             TNodeClueList_CodePrint(options, &p->ClueList2, fp);
             Output_Append(fp, options, "}");
         }
-        else  if (options->Options.Target == LanguageStandard_C99)
+        else  if (options->Options.Target < LanguageStandard_C_EXPERIMENTAL)
         {
             TNodeClueList_CodePrint(options, &p->ClueList0, fp);
             //if (options->Options.Target == CompilerTarget_Annotated)
@@ -9299,7 +9330,7 @@ static void TDirectDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
         Output_Append(fp, options, ")");
         if (pDirectDeclarator->bOverload)
         {
-            if (options->Options.Target == LanguageStandard_CX)
+            if (options->Options.Target == LanguageStandard_C_EXPERIMENTAL)
             {
                 TNodeClueList_CodePrint(options, &pDirectDeclarator->ClueList4, fp);
                 Output_Append(fp, options, "overload");
@@ -9335,7 +9366,7 @@ void TStructDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
     if (p->pInitializer)
     {
         TNodeClueList_CodePrint(options, &p->ClueList1, fp);
-        if (options->Options.Target == LanguageStandard_C99)
+        if (options->Options.Target < LanguageStandard_C_EXPERIMENTAL)
         {
             Output_Append(fp, options, "/*");
         }
@@ -9349,7 +9380,7 @@ void TStructDeclarator_CodePrint(struct SyntaxTree* pSyntaxTree,
                                (struct DeclarationSpecifiers*)pSpecifierQualifierList,
                                p->pInitializer,
                                fp);
-        if (options->Options.Target == LanguageStandard_C99)
+        if (options->Options.Target < LanguageStandard_C_EXPERIMENTAL)
         {
             Output_Append(fp, options, "*/");
         }
@@ -9418,12 +9449,12 @@ static void TTypeQualifier_CodePrint(struct PrintCodeOptions* options, struct Ty
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
     if (p->Token == TK_AUTO)
     {
-        if (options->Options.Target == LanguageStandard_C99)
+        if (options->Options.Target <= LanguageStandard_C_EXPERIMENTAL)
         {
             Output_Append(fp, options, "/*");
         }
         Output_Append(fp, options, "auto");
-        if (options->Options.Target == LanguageStandard_C99)
+        if (options->Options.Target < LanguageStandard_C_EXPERIMENTAL)
         {
             Output_Append(fp, options, "*/");
         }
@@ -9432,19 +9463,7 @@ static void TTypeQualifier_CodePrint(struct PrintCodeOptions* options, struct Ty
     {
         Output_Append(fp, options, TokenToString(p->Token));
     }
-#ifdef LANGUAGE_EXTENSIONS
-    if (p->Token == TK_SIZEOF)
-    {
-        //tODO ja esta nos comentarios
-        //Output_Append(fp, options, "(");
-        //Output_Append(fp, options, p->SizeIdentifier);
-        //Output_Append(fp, options, ")");
-        if (options->Options.Target == LanguageStandard_C99)
-        {
-            //Output_Append(fp, options, "@*/");
-        }
-    }
-#endif
+
 }
 
 
@@ -10049,19 +10068,46 @@ static void TStaticAssertDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree,
 
                                                struct StrBuilder* fp)
 {
+    
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
-    Output_Append(fp, options, "_Static_assert");
-    TNodeClueList_CodePrint(options, &p->ClueList1, fp);
-    Output_Append(fp, options, "(");
-    TExpression_CodePrint(pSyntaxTree, options, p->pConstantExpression, fp);
-    Output_Append(fp, options, ",");
-    TNodeClueList_CodePrint(options, &p->ClueList2, fp);
-    TNodeClueList_CodePrint(options, &p->ClueList3, fp);
-    Output_Append(fp, options, p->Text);
-    TNodeClueList_CodePrint(options, &p->ClueList4, fp);
-    Output_Append(fp, options, ")");
-    TNodeClueList_CodePrint(options, &p->ClueList5, fp);
-    Output_Append(fp, options, ";");
+
+    if (options->Options.Target >= LanguageStandard_C11)
+    {
+        Output_Append(fp, options, "_Static_assert");
+        TNodeClueList_CodePrint(options, &p->ClueList1, fp);
+        Output_Append(fp, options, "(");
+        TExpression_CodePrint(pSyntaxTree, options, p->pConstantExpression, fp);
+
+        if (p->Text != NULL)
+        {
+            /*opcional C23*/
+            Output_Append(fp, options, ",");
+            TNodeClueList_CodePrint(options, &p->ClueList2, fp);
+            TNodeClueList_CodePrint(options, &p->ClueList3, fp);
+            Output_Append(fp, options, p->Text);
+            TNodeClueList_CodePrint(options, &p->ClueList4, fp);
+        }
+        else
+        {
+            if (options->Options.Target < LanguageStandard_C23)
+            {
+                /*vou adicionar um comentario vazio*/
+                Output_Append(fp, options, ",\"\"");
+            }
+        }
+
+
+        Output_Append(fp, options, ")");
+        TNodeClueList_CodePrint(options, &p->ClueList5, fp);
+        Output_Append(fp, options, ";");
+    }
+    else
+    {
+        /*não existia vou inserir espaço.*/
+        /*macro?*/
+        Output_Append(fp, options, " ");        
+    }
+  
 }
 
 static void TAnyDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct AnyDeclaration* pDeclaration, struct StrBuilder* fp)
@@ -11674,9 +11720,17 @@ void BasicScanner_Next(struct BasicScanner* scanner)
     //Devido ao L' tem que vir antes do identificador
     //literal
     if (ch == L'\'' ||
-        (ch == L'L' && ch1 == L'\''))
+        (ch == L'L' && ch1 == L'"') ||
+        (ch == L'u' && ch1 == L'8') && ch2 == L'\'')
     {
-        if (ch == 'L')
+        //u8 C23
+
+        if (ch == 'u')
+        {
+            ch = BasicScanner_MatchChar(scanner); //u
+            ch = BasicScanner_MatchChar(scanner); //8
+        }
+        else if (ch == 'L')
         {
             ch = BasicScanner_MatchChar(scanner); //L
         }
@@ -11737,6 +11791,7 @@ void BasicScanner_Next(struct BasicScanner* scanner)
     //TODO binarios
     if (ch == '0' &&
         (
+        (ch1 == 'b' || ch1 == 'B') || //binary C23
         (ch1 == 'x' || ch1 == 'X') || //hex
         (ch1 >= '0' && ch1 <= '9')) //octal
         )
@@ -11746,11 +11801,15 @@ void BasicScanner_Next(struct BasicScanner* scanner)
         {
             scanner->token = TK_HEX_INTEGER;
         }
+        else if (ch == 'b' || ch == 'B')
+        {
+            scanner->token = TK_BINARY_INTEGER;
+        }
         else if (ch1 >= '0' && ch1 <= '9')
         {
             scanner->token = TK_OCTAL_INTEGER;
         }
-        else
+        else 
         {
             assert(false);
         }
@@ -15319,10 +15378,22 @@ bool EvaluateConstantExpression(struct Expression* p, int* pResult)
                         result = atoi(pPrimaryExpressionValue->lexeme);
                         b = true;
                         break;
+
+                    case TK_BINARY_INTEGER:
+                        result = (int)strtol(pPrimaryExpressionValue->lexeme, NULL, 2);
+                        b = true;
+                        break;
+
+                    case TK_OCTAL_INTEGER:
+                        result = (int)strtol(pPrimaryExpressionValue->lexeme, NULL, 8);
+                        b = true;
+                        break;
+
                     case TK_HEX_INTEGER:
                         result = (int)strtol(pPrimaryExpressionValue->lexeme, NULL, 16);
                         b = true;
                         break;
+
                     case TK_CHAR_LITERAL:
                         if (pPrimaryExpressionValue->lexeme != NULL)
                         {
@@ -16096,6 +16167,8 @@ bool IsFirstOfPrimaryExpression(enum TokenType token)
         case TK_CHAR_LITERAL:
         case TK_DECIMAL_INTEGER:
         case TK_HEX_INTEGER:
+        case TK_BINARY_INTEGER:
+        case TK_OCTAL_INTEGER:
         case TK_FLOAT_NUMBER:
         case TK_LEFT_PARENTHESIS:
             /////////
@@ -16209,6 +16282,8 @@ void PrimaryExpression(struct Parser* ctx, struct Expression** ppPrimaryExpressi
         case TK_CHAR_LITERAL:
         case TK_DECIMAL_INTEGER:
         case TK_HEX_INTEGER:
+        case TK_BINARY_INTEGER:
+        case TK_OCTAL_INTEGER:
         case TK_FLOAT_NUMBER:
         {
             struct PrimaryExpressionValue* pPrimaryExpressionValue
@@ -18504,11 +18579,165 @@ void Struct_Or_Union(struct Parser* ctx,
     }
 }
 
+//C23
+
+void Attribute(struct Parser* ctx, struct Attribute* pAttribute)
+{
+    /*
+    attribute:
+     attribute-token attribute-argument-clause_opt
+
+   attribute-token:
+     standard-attribute
+     attribute-prefixed-token
+
+   standard-attribute:
+     identifier
+
+   attribute-prefixed-token:
+      attribute-prefix :: identifier
+
+    attribute-prefix:
+      identifier
+
+    attribute-argument-clause:
+       ( balanced-token-sequenceopt )
+
+    balanced-token-sequence:
+       balanced-token
+       balanced-token-sequence balanced-token
+
+   balanced-token:
+      ( balanced-token-sequence_opt )
+      [ balanced-token-sequence_opt ]
+      { balanced-token-sequence_opt }
+      any token other than a parenthesis, a bracket, or a brace
+
+   */
+
+    enum TokenType token = Parser_CurrentTokenType(ctx);
+    if (token == TK_IDENTIFIER)
+    {
+        token = Parser_Match(pAttribute, &pAttribute->ClueList0);        
+    }
+
+    if (token == TK_COLON)
+    {
+        token = Parser_Match(ctx, &pAttribute->ClueList0);
+        if (token == TK_IDENTIFIER)
+        {
+            token = Parser_Match(ctx, &pAttribute->ClueList0);
+        }
+    }
+
+    if (token == TK_LEFT_PARENTHESIS)
+    {
+        /*agora qualquer coisa balanceada*/
+        /*ou vazio*/
+    }
+}
+
+void AttributeList(struct Parser* ctx, struct AttributeList* pAttributeList)
+{
+    /*
+     attribute-list:
+        attribute_opt
+        attribute-list , attribute_opt
+    */
+
+    for (;;)
+    {
+        enum TokenType token = Parser_CurrentTokenType(ctx);
+        if (token == TK_IDENTIFIER)
+        {
+            struct Attribute* pAttribute = NEW((struct Attribute)ATTRIBUTE_INIT);
+            if (pAttribute)
+            {
+                Attribute(ctx, pAttribute);
+                List_Add(pAttributeList, pAttribute);
+            }
+
+        }
+        else if (token == TK_COMMA)
+        {
+            /*vou usar um Attribute só para guardar a virgula*/
+            struct Attribute* pAttribute = NEW((struct Attribute)ATTRIBUTE_INIT);
+            if (pAttribute)
+            {
+                Parser_Match(ctx, &pAttribute->ClueList0);
+                List_Add(pAttributeList, pAttribute);
+            }
+        }
+        else
+            break;     
+
+        if (Parser_HasError(ctx))
+            break;
+    }
+
+}
+
+void AttributeSpecifier(struct Parser* ctx, struct AttributeSpecifier* pAttributeSpecifier)
+{
+    /*     
+     attribute-specifier:
+        [ [ attribute-list ] ]    
+    */
+    Parser_MatchToken(ctx, TK_LEFT_SQUARE_BRACKET, &pAttributeSpecifier->ClueList0);
+    Parser_MatchToken(ctx, TK_LEFT_SQUARE_BRACKET, &pAttributeSpecifier->ClueList1);
+
+    AttributeList(ctx, &pAttributeSpecifier->attribute_list);
+
+    Parser_MatchToken(ctx, TK_RIGHT_SQUARE_BRACKET, &pAttributeSpecifier->ClueList2);
+    Parser_MatchToken(ctx, TK_RIGHT_SQUARE_BRACKET, &pAttributeSpecifier->ClueList3);
+}
+
+void AttributeSpecifierSequence(struct Parser* ctx, struct AttributeSpecifierSequence* pAttributeSpecifierSequence)
+{
+    /*
+      attribute-specifier-sequence:
+        attribute-specifier-sequence_opt attribute-specifier
+    */
+    for (;;)
+    {
+        enum TokenType token1 = Parser_CurrentTokenType(ctx);
+        if (token1 == TK_LEFT_SQUARE_BRACKET)
+        {
+            enum TokenType token2 = Parser_LookAheadToken(ctx);
+            if (token2 == TK_LEFT_SQUARE_BRACKET)
+            {
+                struct AttributeSpecifier* pAttributeSpecifier = NEW((struct AttributeSpecifier)ATTRIBUTESPECIFIER_INIT);
+                AttributeSpecifier(ctx, pAttributeSpecifier);
+                List_Add(pAttributeSpecifierSequence, pAttributeSpecifier);
+            }
+            else 
+                break;
+        }
+        else
+            break;
+        if (Parser_HasError(ctx))
+            break;
+    }
+}
+
+void AttributeSpecifierSequenceOpt(struct Parser* ctx, struct AttributeSpecifierSequence* pAttributeSpecifierSequence)
+{
+    enum TokenType token1 = Parser_CurrentTokenType(ctx);
+    if (token1 == TK_LEFT_SQUARE_BRACKET)
+    {
+        enum TokenType token2 = Parser_LookAheadToken(ctx);
+        if (token2 == TK_LEFT_SQUARE_BRACKET)
+        {
+            AttributeSpecifierSequence(ctx, pAttributeSpecifierSequence);
+        }
+    }
+}
+
 void Static_Assert_Declaration(struct Parser* ctx, struct StaticAssertDeclaration* pStaticAssertDeclaration)
 {
     /*
-    static_assert-declaration:
-    _Static_assert ( constant-expression , char-literal ) ;
+     _Static_assert ( constant-expression , char-literal ) 		(since C11)
+     _Static_assert ( expression ) 		(since C23)
     */
     enum TokenType token = Parser_CurrentTokenType(ctx);
     if (token == TK__STATIC_ASSERT)
@@ -18517,10 +18746,27 @@ void Static_Assert_Declaration(struct Parser* ctx, struct StaticAssertDeclaratio
         Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pStaticAssertDeclaration->ClueList1);
         ConstantExpression(ctx,
                            &pStaticAssertDeclaration->pConstantExpression);
-        Parser_MatchToken(ctx, TK_COMMA, &pStaticAssertDeclaration->ClueList2);
-        free(pStaticAssertDeclaration->Text);
-        pStaticAssertDeclaration->Text = strdup(Lexeme(ctx));
-        Parser_MatchToken(ctx, TK_STRING_LITERAL, &pStaticAssertDeclaration->ClueList3);
+
+        token = Parser_CurrentTokenType(ctx);
+        
+        if (ctx->languageVersion >= LanguageStandard_C23)
+        {
+            if (token == TK_COMMA) //C23 optional
+            {
+                Parser_MatchToken(ctx, TK_COMMA, &pStaticAssertDeclaration->ClueList2);
+                free(pStaticAssertDeclaration->Text);
+                pStaticAssertDeclaration->Text = strdup(Lexeme(ctx));
+                Parser_MatchToken(ctx, TK_STRING_LITERAL, &pStaticAssertDeclaration->ClueList3);
+            }
+        }
+        else
+        {
+            Parser_MatchToken(ctx, TK_COMMA, &pStaticAssertDeclaration->ClueList2);
+            free(pStaticAssertDeclaration->Text);
+            pStaticAssertDeclaration->Text = strdup(Lexeme(ctx));
+            Parser_MatchToken(ctx, TK_STRING_LITERAL, &pStaticAssertDeclaration->ClueList3);
+        }
+
         Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pStaticAssertDeclaration->ClueList4);
         Parser_MatchToken(ctx, TK_SEMICOLON, &pStaticAssertDeclaration->ClueList5);
     }
@@ -20241,7 +20487,8 @@ bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
                              struct SyntaxTree* pSyntaxTree)
 {
     bool bResult = false;
-    struct Parser parser;
+    struct Parser parser = {0};
+    
 
     char fullFileNamePath[CPRIME_MAX_PATH] = { 0 };
     GetFullPathS(filename, fullFileNamePath);
@@ -20249,7 +20496,7 @@ bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
     if (filename != NULL)
     {
         Parser_InitFile(&parser, fullFileNamePath);
-
+        parser.languageVersion = options->InputLanguage;
 
         GetDirForEnviroment(&parser.Scanner);
 
@@ -20300,12 +20547,15 @@ bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
 }
 
 
-bool BuildSyntaxTreeFromString(const char* sourceCode,
+bool BuildSyntaxTreeFromString(struct CompilerOptions* options, 
+                               const char* sourceCode,
                                struct SyntaxTree* pSyntaxTree)
 {
     bool bResult = false;
     struct Parser parser;
     Parser_InitString(&parser, "source", sourceCode);
+    parser.languageVersion = options->InputLanguage;
+
     Parser_Main(&parser, &pSyntaxTree->Declarations);
     TFileMapToStrArray(&parser.Scanner.FilesIncluded, &pSyntaxTree->Files);
     printf("%s\n", GetCompletationMessage(&parser));
@@ -20521,7 +20771,7 @@ char* CompileText(int inputLanguage, int outputLanguage, const char* options, co
     options2.InputLanguage = inputLanguage;
 
     struct SyntaxTree pSyntaxTree = SYNTAXTREE_INIT;
-    if (BuildSyntaxTreeFromString(input, &pSyntaxTree))
+    if (BuildSyntaxTreeFromString(&options2, input, &pSyntaxTree))
     {
         struct StrBuilder sb = STRBUILDER_INIT;
         StrBuilder_Reserve(&sb, 500);
@@ -20541,11 +20791,6 @@ char* CompileText(int inputLanguage, int outputLanguage, const char* options, co
 
 int Compile(struct CompilerOptions* options)
 {
-
-
-
-
-
 
     int bSuccess = 0;
 

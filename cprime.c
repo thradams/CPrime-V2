@@ -59,7 +59,7 @@ void GetOptions(int argc, char* argv[], struct CompilerOptions* options)
             }
             else if (strcmp(option, "-std:cx") == 0)
             {
-                options->InputLanguage = LanguageStandard_CX;
+                options->InputLanguage = LanguageStandard_C_EXPERIMENTAL;
                 options->Target = LanguageStandard_C99;
             }
             else if (strcmp(option, "-std:c99") == 0)

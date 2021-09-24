@@ -15,12 +15,20 @@
         <h2>CPrime V2 online</h2>
 
         <p>
-            CPrime is a compiler that extends the C language with new features.<br />
-            It generates C code.
-
-
-            See more at <a href="http://thradams.com/clang.htm" target="_blank">site</a>
+            CPrime is a C-source to C-source compiler and library created by
+            (twitter @thradams) (hobby project)
+            <br />
         </p>
+        <p>
+            I am using this compiler to experiment new ideas that could be added
+            into C language. See more at <a href="http://thradams.com/clang.htm" target="_blank">site</a>
+            <br />
+            I am also adapting CPrime to be used as language conversion for C. For instance convert source code from C23 to C99.<br />
+            ..and I want to make static analisys with it.
+        </p>
+        
+
+
 
         <select id="samples" onchange="OnChangeSelection(this.value)">
             <option>Select...</option>
@@ -31,20 +39,20 @@
             <option value="1">C11</option>
             <option value="2">C17</option>
             <option value="3">C23</option>
-            <option value="4">CX</option>            
+            <option value="4">C23 + extensions</option>
         </select>
 
         <button onclick="OnCompileButton()">Compile To</button>
 
 
         <select id="outtype" style="margin-left:auto;margin-right: 10px">
-            
+
             <option value="0">Preprocessed</option>
             <option value="1">C99</option>
             <option value="2">C11</option>
             <option value="3">C17</option>
             <option value="4">C23</option>
-            <option value="5">CX</option>            
+            <option value="5">C23 + extensions</option>
 
         </select>
 
@@ -60,6 +68,8 @@
         <p>ouput</p>
 
         <textarea id="output" rows="8" style="width: 100%"></textarea>
+
+        <p>CPrime was compiled with emscripten and it is running in your browser.</p>
 
 
         <script type='text/javascript'>
@@ -127,7 +137,7 @@
                 se.appendChild(o);
             }
 
-            function CompileText(inputLang, outputLang,  optionsText, source)
+            function CompileText(inputLang, outputLang, optionsText, source)
             {
                 //var ptr = allocate(intArrayFromString(inputText), 'i8', ALLOC_NORMAL);
                 var resValue = Module.ccall('CompileText', // name of C function
@@ -204,6 +214,8 @@
                 inputEditor.setValue(sample[index], -1);
             }
         </script>
+
+
 
     </body>
 
