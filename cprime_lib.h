@@ -254,7 +254,7 @@ enum TokenType
     TK_PRE_ENDIF,
     TK_PRE_ELSE,
     TK_PRE_ERROR,
-    TK_PRE_WARNING, /*warning*/
+    TK_PRE_WARNING, /*C23 warning*/
     TK_PRE_LINE,
     TK_PRE_UNDEF,
     TK_PRE_DEFINE,

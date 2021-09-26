@@ -6069,15 +6069,13 @@ void Scanner_BuyTokens(struct Scanner* pScanner)
             BasicScanner_Match(pBasicScanner);
             if (IsIncludeState(state))
             {
-                struct StrBuilder str = STRBUILDER_INIT;
-                StrBuilder_Append(&str, " warning: #warning ");
-                GetDefineString(pScanner, &str);
-                //printf("%s\n", str.c_str);
+                GetDefineString(pScanner, &strBuilder);
 
-                Scanner_SetWarning(pScanner, str.c_str);
-                StrBuilder_Destroy(&str);
+                Scanner_SetWarning(pScanner, strBuilder.c_str);
+
                 IgnorePreProcessorv2(pBasicScanner, &strBuilder);
                 Scanner_PushToken(pScanner, TK_PRE_WARNING, strBuilder.c_str, true, line, fileIndex);
+
             }
             else
             {
@@ -7444,6 +7442,8 @@ static void TNodeClueList_CodePrint(struct PrintCodeOptions* options, struct Tok
                 }
                 Output_Append(fp, options, "\n");
                 break;
+            case TK_ERROR:
+            case TK_PRE_WARNING:
             case TK_PRE_UNDEF:
             case TK_PRE_IF:
             case TK_PRE_ENDIF:
@@ -8651,6 +8651,25 @@ void TExpression_CodePrintSpaces(struct SyntaxTree* pSyntaxTree,
     }
 }
 
+static void RemoveDigitSeparators(const char* in, char out[33])
+{
+    /*
+    * We removes ' when printing to std < C23
+    */
+    int count = 0;
+    const char* s = in;
+    while (*s)
+    {
+        if (*s != '\'')
+        {
+            out[count] = *s;
+            count++;
+        }
+        s++;
+    }
+    out[count] = '\0';
+}
+
 /*
  dada uma expressao retorn o tipo da expressao na forma de string
  mangled;
@@ -8723,8 +8742,11 @@ static void TExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
                 {
                     if (options->Options.Target < LanguageStandard_C23)
                     {
+                        char out[33];
+                        RemoveDigitSeparators(pPrimaryExpressionValue->lexeme + 2, out);
+
                         /*vamos imprimir em hexa se for anterior c23*/
-                        int value = (int)strtol(pPrimaryExpressionValue->lexeme+2, NULL, 2);
+                        int value = (int)strtol(out, NULL, 2);
                         char buffer[33];
                         snprintf(buffer, sizeof buffer, "0x%x", value);
                         Output_Append(fp, options, buffer);
@@ -8736,7 +8758,16 @@ static void TExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
                 }
                 else
                 {
-                    Output_Append(fp, options, pPrimaryExpressionValue->lexeme);
+                    if (options->Options.Target < LanguageStandard_C23)
+                    { 
+                        char out[33];
+                        RemoveDigitSeparators(pPrimaryExpressionValue->lexeme, out);
+                        Output_Append(fp, options, out);
+                    }
+                    else
+                    {
+                        Output_Append(fp, options, pPrimaryExpressionValue->lexeme);
+                    }
                 }
                 
             }
@@ -11639,6 +11670,7 @@ void BasicScanner_Next(struct BasicScanner* scanner)
         scanner->token = TK_DOTDOTDOT;
         return;
     }
+
     //procura por puncturares com 2 caracteres
     for (int i = 0; i < sizeof(doubleoperators) / sizeof(doubleoperators[0]); i++)
     {
@@ -11780,15 +11812,13 @@ void BasicScanner_Next(struct BasicScanner* scanner)
             if (BasicScanner_IsLexeme(scanner, keywords[i].lexeme))
             {
                 scanner->token = keywords[i].token;
-                //StrBuilder_Append(&scanner->lexeme, keywords[i].lexeme);
-                //Stream_Next(&scanner->stream);
                 break;
             }
         }
         scanner->bLineStart = false;
         return;
     }
-    //TODO binarios
+    
     if (ch == '0' &&
         (
         (ch1 == 'b' || ch1 == 'B') || //binary C23
@@ -11819,6 +11849,10 @@ void BasicScanner_Next(struct BasicScanner* scanner)
                (ch >= 'a' && ch <= 'f'))
         {
             ch = BasicScanner_MatchChar(scanner);
+            if (ch == '\'') /*C23 optional digit separator*/
+            {
+                ch = BasicScanner_MatchChar(scanner);
+            }
         }
         //integer suffix
         if (ch == 'u' || ch == 'U')
@@ -11887,15 +11921,28 @@ void BasicScanner_Next(struct BasicScanner* scanner)
         }
         return;
     }
-    //numero
+    
+    /*integer-constant or floating-constant*/
     if (ch >= '0' && ch <= '9')
     {
         scanner->token = TK_DECIMAL_INTEGER;
+                
         ch = BasicScanner_MatchChar(scanner);
-        while ((ch >= '0' && ch <= '9'))
+        
+        if (ch == '\'') /*C23 optional digit separator*/
         {
             ch = BasicScanner_MatchChar(scanner);
         }
+
+        while ((ch >= '0' && ch <= '9'))
+        {
+            ch = BasicScanner_MatchChar(scanner);
+            if (ch == '\'') /*C23 optional digit separator*/
+            {
+                ch = BasicScanner_MatchChar(scanner);
+            }
+        }
+
         //integer suffix
         if (ch == 'u' || ch == 'U')
         {
@@ -11963,6 +12010,7 @@ void BasicScanner_Next(struct BasicScanner* scanner)
         }
         else
         {
+            /*floating-constant*/
             if (ch == '.')
             {
                 ch = BasicScanner_MatchChar(scanner);
