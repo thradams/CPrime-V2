@@ -127,6 +127,7 @@ enum TokenType
     TK_SOLIDUS,// = '/';
 
     TK_COLON,// = ':';
+    TK_COLONCOLON, // '::' C23
     TK_SEMICOLON,// = ';';
     TK_LESS_THAN_SIGN,// = '<';
     TK_EQUALS_SIGN,// = '=';
@@ -508,6 +509,8 @@ struct Attribute
        any token other than a parenthesis, a bracket, or a brace
 
     */
+    char* AttributePrefix;
+    char* Identifier;
     struct Attribute* pNext;
     struct TokenList ClueList0;
 };
@@ -1565,6 +1568,7 @@ struct StructUnionSpecifier
 
     enum TokenType Token;
 
+    struct AttributeSpecifierSequence Attributes;
 
     struct UnionSet UnionSet;
     struct TokenList ClueList0; //struct-or-union

@@ -2169,6 +2169,8 @@ const char* TokenToNameString(enum TokenType tk)
             return "TK_SOLIDUS";
         case TK_COLON:
             return "TK_COLON";
+        case TK_COLONCOLON:
+            return "TK_COLONCOLON";
         case TK_SEMICOLON:
             return "TK_SEMICOLON";
         case TK_LESS_THAN_SIGN:
@@ -2493,6 +2495,8 @@ const char* TokenToString(enum TokenType tk)
             return "/";//,// = '/';
         case TK_COLON:
             return ":";//,// = ':';
+        case TK_COLONCOLON:
+            return "::"; //C23
         case TK_SEMICOLON:
             return ";";//,// = ';';
         case TK_LESS_THAN_SIGN:
@@ -11543,7 +11547,7 @@ static struct TkPair doubleoperators[] =
     {"<%", TK_LESSPERCENT},
     {"%>", TK_PERCENTGREATER},
     {"%:", TK_PERCENTCOLON},
-
+    {"::", TK_COLONCOLON},
     {"...", TK_DOTDOTDOT},//50
     {"%:%:", TK_PERCENTCOLONPERCENTCOLON},
     {"<<=", TK_LESSLESSEQUAL},
@@ -18666,22 +18670,49 @@ void Attribute(struct Parser* ctx, struct Attribute* pAttribute)
     enum TokenType token = Parser_CurrentTokenType(ctx);
     if (token == TK_IDENTIFIER)
     {
-        token = Parser_Match(pAttribute, &pAttribute->ClueList0);        
+        pAttribute->Identifier = strdup(Lexeme(ctx));
+        token = Parser_Match(ctx, &pAttribute->ClueList0);        
+    }
+    else
+    {
+        SetError(ctx, "expected identifier");
     }
 
-    if (token == TK_COLON)
+    if (token == TK_COLONCOLON)
     {
         token = Parser_Match(ctx, &pAttribute->ClueList0);
         if (token == TK_IDENTIFIER)
         {
+            pAttribute->AttributePrefix = pAttribute->Identifier;
+            pAttribute->Identifier = strdup(Lexeme(ctx));
             token = Parser_Match(ctx, &pAttribute->ClueList0);
+        }
+        else
+        {
+            SetError(ctx, "expected identifier");
         }
     }
 
     if (token == TK_LEFT_PARENTHESIS)
     {
-        /*agora qualquer coisa balanceada*/
-        /*ou vazio*/
+        assert(false);//TODO
+        /*attribute-argument-clause_opt*/
+        token = Parser_Match(ctx, &pAttribute->ClueList0); // (
+
+        if (token == TK_LEFT_PARENTHESIS ||
+            token == TK_LEFT_CURLY_BRACKET ||
+            token == TK_LEFT_SQUARE_BRACKET)
+        {
+            token = Parser_Match(ctx, &pAttribute->ClueList0); // (
+            for (;;)
+            {
+            }
+            token = Parser_Match(ctx, &pAttribute->ClueList0); // ) ] }
+        }
+
+        
+
+        token = Parser_Match(ctx, &pAttribute->ClueList0); // )
     }
 }
 
@@ -19095,13 +19126,26 @@ void Struct_Or_Union_Specifier(struct Parser* ctx,
     struct-or-union identifieropt { struct-declaration-list }
     struct-or-union identifier
     */
+
+    /*C23
+       struct-or-union-specifier:
+          struct-or-union attribute-specifier-sequence_opt identifier_opt { member-declaration-list }
+           struct-or-union attribute-specifier-sequence_opt identifier
+    */
+
     /*
     struct-or-union-specifier:
     struct-or-union )opt identifieropt { struct-declaration-list }
     struct-or-union )opt identifier
     */
     //aqui teria que ativar o flag
-    Struct_Or_Union(ctx, pStructUnionSpecifier);//TODO
+    Struct_Or_Union(ctx, pStructUnionSpecifier);
+
+    //C23  attribute-specifier-sequence-opt
+    AttributeSpecifierSequenceOpt(ctx, &pStructUnionSpecifier->Attributes);
+    
+
+
     enum TokenType token = Parser_CurrentTokenType(ctx);
     const char* lexeme = Lexeme(ctx);
     if (token == TK_LESS_THAN_SIGN)
