@@ -30,8 +30,12 @@ void PrintHelp()
     printf("-P                                    Preprocess to file.\n");
     printf("-I                                    Include dir.\n");
     printf("-D                                    -DMACRO -DM=1\n");
-    printf("-std:cx                               Latest C input'.\n");    
-    printf("-std:c99                              C99 input'.\n");
+    printf("-std=c99 -std=c11 -std=c17            C standard input'.\n");    
+    printf("-std=c23 -std=c2x                     '.\n");
+    
+    printf("-ostd=c99 -ostd=c11 -ostd=c17         C standard output'.\n");
+    printf("-ostd=c23 -ostd=c2x                   '.\n");
+    
     printf("-removeComments                       Remove comments from output\n");    
 }
 
@@ -57,16 +61,47 @@ void GetOptions(int argc, char* argv[], struct CompilerOptions* options)
                 PrintHelp();
                 return;
             }
-            else if (strcmp(option, "-std:cx") == 0)
-            {
-                options->InputLanguage = LanguageStandard_C_EXPERIMENTAL;
-                options->Target = LanguageStandard_C99;
-            }
-            else if (strcmp(option, "-std:c99") == 0)
+            else if (strcmp(option, "-std=c99") == 0)
             {
                 options->InputLanguage = LanguageStandard_C99;
-                options->Target = LanguageStandard_C99;                
             }
+            else if (strcmp(option, "-std=c11") == 0)
+            {
+                options->InputLanguage = LanguageStandard_C11;
+            }
+            else if (strcmp(option, "-std=c17") == 0)
+            {
+                options->InputLanguage = LanguageStandard_C17;
+            }
+            else if (strcmp(option, "-std=c23") == 0)
+            {
+                options->InputLanguage = LanguageStandard_C23;
+            }
+            else if (strcmp(option, "-std=c2x") == 0)
+            {
+                options->InputLanguage = LanguageStandard_C_EXPERIMENTAL;                
+            }
+            else if (strcmp(option, "-ostd=c99") == 0)
+            {
+                options->Target = LanguageStandard_C99;
+            }
+            else if (strcmp(option, "-ostd=c11") == 0)
+            {
+                options->Target = LanguageStandard_C11;
+            }
+            else if (strcmp(option, "-ostd=c17") == 0)
+            {
+                options->Target = LanguageStandard_C17;
+            }
+            else if (strcmp(option, "-ostd=c23") == 0)
+            {
+                options->Target = LanguageStandard_C23;
+            }
+            else if (strcmp(option, "-ostd=c2x") == 0)
+            {
+                options->Target = LanguageStandard_C_EXPERIMENTAL;
+            }
+
             else if (strcmp(option, "-removeComments") == 0)
             {
                 options->bIncludeComments = false;

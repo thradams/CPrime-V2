@@ -459,7 +459,8 @@ enum Type
     BinaryExpression_ID,
     TernaryExpression_ID,
     PrimaryExpressionLambda_ID,
-    Parameter_ID
+    Parameter_ID,
+    Generic_ID
 };
 
 struct TypePointer
@@ -1703,6 +1704,49 @@ void TypeName_Destroy(struct TypeName* p);
 void TypeName_Delete(struct TypeName* p);
 void TypeName_Swap(struct TypeName* a, struct TypeName* b);
 
+struct GenericAssociation
+{
+    /* 
+      generic-association:
+       type-name : assignment-expression
+                 2
+       default : assignment-expression
+       1       2
+    */
+
+    struct TypeName TypeName;
+    struct Expression* pAssignmentExpression;
+    struct TokenList ClueList0;
+    struct TokenList ClueList1;
+    struct TokenList ClueList2;
+    struct GenericAssociation* pNext;
+    bool bComma; /*virgula separando (a primeira nao tem)*/
+    bool bDefault;
+};
+#define GENERICASSOCIATION_INIT {.TypeName = TYPENAME_INIT}
+
+struct Generic
+{
+    enum Type Type; /*Generic_ID*/ 
+    /*
+    generic-selection:
+       _Generic ( assignment-expression , generic-assoc-list )
+      0         1                       2                    3  
+    */
+    struct Expression* pAssignmentExpression;
+    struct TokenList ClueList0; /*default*/
+    struct TokenList ClueList1;
+    struct TokenList ClueList2;
+    struct TokenList ClueList3;
+    /*
+    generic-assoc-list:
+      generic-association
+      generic-assoc-list , generic-association
+    */
+    struct GenericAssociation* pHead, *pTail;
+
+};
+#define GENERIC_INIT { .Type = Generic_ID}
 
 struct AtomicTypeSpecifier
 {
@@ -1919,6 +1963,7 @@ struct Expression
       CastExpressionType
       TernaryExpression
       PrimaryExpressionLambda
+      Generic
     */
 
     enum Type Type;

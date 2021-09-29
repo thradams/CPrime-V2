@@ -8089,6 +8089,105 @@ bool GetTypeAndFunction(const char* source,
 
 static void ParameterTypeList_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct ParameterTypeList* p, struct StrBuilder* fp);
 
+void GenericAssociation_Delete(struct GenericAssociation* pGenericAssociation)
+{
+    if (pGenericAssociation)
+    {
+        Expression_Delete(pGenericAssociation->pAssignmentExpression);
+        TypeName_Destroy(&pGenericAssociation->TypeName);
+
+        TokenList_Destroy(&pGenericAssociation->ClueList0);
+        TokenList_Destroy(&pGenericAssociation->ClueList1);
+        TokenList_Destroy(&pGenericAssociation->ClueList2);
+
+        free(pGenericAssociation);
+    }
+}
+
+void Generic_Delete(struct Generic* pGeneric)
+{
+    if (pGeneric != NULL)
+    {
+        Expression_Delete(pGeneric->pAssignmentExpression);
+        TokenList_Destroy(&pGeneric->ClueList0);
+        TokenList_Destroy(&pGeneric->ClueList1);
+        TokenList_Destroy(&pGeneric->ClueList2);
+        TokenList_Destroy(&pGeneric->ClueList3);
+
+        struct GenericAssociation* pCurrent = pGeneric->pHead;
+        while (pCurrent)
+        {
+            struct GenericAssociation* pItem = pCurrent;
+            pCurrent = pCurrent->pNext;
+            GenericAssociation_Delete(pItem);
+        }
+
+        free(pGeneric);
+    }
+}
+
+static void GenericAssociation_CodePrint(struct SyntaxTree* pSyntaxTree,
+                                         struct PrintCodeOptions* options,
+                                         struct GenericAssociation* pGenericAssociation,
+                                         struct StrBuilder* fp)
+{
+    if (pGenericAssociation->bComma)
+    {
+        TNodeClueList_CodePrint(options, &pGenericAssociation->ClueList0, fp);
+        Output_Append(fp, options, ",");
+    }
+
+    if (pGenericAssociation->bDefault)
+    {
+        TNodeClueList_CodePrint(options, &pGenericAssociation->ClueList1, fp);
+        Output_Append(fp, options, "default");
+    }
+    else
+    {
+        TTypeName_CodePrint(pSyntaxTree, options, &pGenericAssociation->TypeName, fp);
+    }
+
+    TNodeClueList_CodePrint(options, &pGenericAssociation->ClueList2, fp);
+    Output_Append(fp, options, ":");
+
+    TExpression_CodePrint(pSyntaxTree, options, pGenericAssociation->pAssignmentExpression, fp);
+}
+
+static void Generic_CodePrint(struct SyntaxTree* pSyntaxTree,
+                              struct PrintCodeOptions* options,
+                              struct Generic* pGeneric,
+                              struct StrBuilder* fp)
+{
+    TNodeClueList_CodePrint(options, &pGeneric->ClueList0, fp);
+
+    if (options->Options.Target >= LanguageStandard_C11)
+    {
+        Output_Append(fp, options, "_Generic");
+
+        TNodeClueList_CodePrint(options, &pGeneric->ClueList1, fp); //(
+        Output_Append(fp, options, "(");
+        TExpression_CodePrint(pSyntaxTree, options, pGeneric->pAssignmentExpression, fp);
+
+        TNodeClueList_CodePrint(options, &pGeneric->ClueList2, fp); //,
+        Output_Append(fp, options, ",");
+
+        for (struct GenericAssociation* pItem = pGeneric->pHead; pItem != NULL; pItem = pItem->pNext)
+        {
+            GenericAssociation_CodePrint(pSyntaxTree, options, pItem, fp);
+        }
+
+        TNodeClueList_CodePrint(options, &pGeneric->ClueList3, fp); //,
+        Output_Append(fp, options, ")");
+    }
+    else
+    {
+        /*not implemented*/
+        //TODO ver o tipo da expressao e so imprimir o que combinar.
+        Output_Append(fp, options, "\n");
+        Output_Append(fp, options, "#error _Generic not implemented for target < C11");
+        Output_Append(fp, options, "\n)");
+    }
+}
 
 static void TPrimaryExpressionLambda_CodePrint(struct SyntaxTree* pSyntaxTree,
                                                struct PrintCodeOptions* options,
@@ -8382,7 +8481,7 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
             if (p->pExpressionLeft)
             {
                 TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
-            }
+    }
             TNodeClueList_CodePrint(options, &p->ClueList0, fp);
             Output_Append(fp, options, ".");
             TNodeClueList_CodePrint(options, &p->ClueList1, fp);
@@ -8575,7 +8674,7 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
         default:
             //assert(false);
             break;
-    }
+}
     if (p->pNext)
     {
         TPostfixExpression_CodePrint(pSyntaxTree, options, p->pNext, fp);
@@ -8763,7 +8862,7 @@ static void TExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
                 else
                 {
                     if (options->Options.Target < LanguageStandard_C23)
-                    { 
+                    {
                         char out[33];
                         RemoveDigitSeparators(pPrimaryExpressionValue->lexeme, out);
                         Output_Append(fp, options, out);
@@ -8773,11 +8872,20 @@ static void TExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
                         Output_Append(fp, options, pPrimaryExpressionValue->lexeme);
                     }
                 }
-                
+
             }
         }
         ///true;
         break;
+
+        case Generic_ID:
+        {
+            struct Generic* pGeneric =
+                (struct Generic*)p;
+            Generic_CodePrint(pSyntaxTree, options, pGeneric, fp);
+        }
+        break;
+
         case PrimaryExpressionLambda_ID:
         {
             struct PrimaryExpressionLambda* pPostfixExpressionCore =
@@ -10103,7 +10211,7 @@ static void TStaticAssertDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree,
 
                                                struct StrBuilder* fp)
 {
-    
+
     TNodeClueList_CodePrint(options, &p->ClueList0, fp);
 
     if (options->Options.Target >= LanguageStandard_C11)
@@ -10140,9 +10248,9 @@ static void TStaticAssertDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree,
     {
         /*não existia vou inserir espaço.*/
         /*macro?*/
-        Output_Append(fp, options, " ");        
+        Output_Append(fp, options, " ");
     }
-  
+
 }
 
 static void TAnyDeclaration_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct AnyDeclaration* pDeclaration, struct StrBuilder* fp)
@@ -11822,7 +11930,7 @@ void BasicScanner_Next(struct BasicScanner* scanner)
         scanner->bLineStart = false;
         return;
     }
-    
+
     if (ch == '0' &&
         (
         (ch1 == 'b' || ch1 == 'B') || //binary C23
@@ -11843,7 +11951,7 @@ void BasicScanner_Next(struct BasicScanner* scanner)
         {
             scanner->token = TK_OCTAL_INTEGER;
         }
-        else 
+        else
         {
             assert(false);
         }
@@ -11925,14 +12033,14 @@ void BasicScanner_Next(struct BasicScanner* scanner)
         }
         return;
     }
-    
+
     /*integer-constant or floating-constant*/
     if (ch >= '0' && ch <= '9')
     {
         scanner->token = TK_DECIMAL_INTEGER;
-                
+
         ch = BasicScanner_MatchChar(scanner);
-        
+
         if (ch == '\'') /*C23 optional digit separator*/
         {
             ch = BasicScanner_MatchChar(scanner);
@@ -12918,7 +13026,11 @@ void Expression_Delete(struct Expression* p)
             case TernaryExpression_ID:
                 TernaryExpression_Delete((struct TernaryExpression*)p);
                 break;
+            case Generic_ID:
+                Generic_Delete((struct Generic*)p);
+                break;
             default:
+                assert(false);
                 break;
         }
     }
@@ -16202,7 +16314,7 @@ bool ErrorOrEof(struct Parser* parser)
 
 void Expression(struct Parser* ctx, struct Expression**);
 void CastExpression(struct Parser* ctx, struct Expression**);
-void GenericSelection(struct Parser* ctx);
+void GenericSelection(struct Parser* ctx, struct Generic* pGeneric);
 void ArgumentExpressionList(struct Parser* ctx, struct ArgumentExpressionList* pArgumentExpressionList);
 void AssignmentExpression(struct Parser* ctx, struct Expression**);
 void Initializer_List(struct Parser* ctx, struct InitializerList* pInitializerList);
@@ -16366,7 +16478,14 @@ void PrimaryExpression(struct Parser* ctx, struct Expression** ppPrimaryExpressi
         }
         break;
         case TK__GENERIC:
-            GenericSelection(ctx);
+            struct Generic* pGenericSelection
+                = NEW((struct Generic)GENERIC_INIT);
+
+
+            GenericSelection(ctx, pGenericSelection);
+
+            *ppPrimaryExpression = (struct Expression*)pGenericSelection;
+
             break;
         default:
             SetError(ctx, "unexpected error");
@@ -16377,37 +16496,89 @@ void PrimaryExpression(struct Parser* ctx, struct Expression** ppPrimaryExpressi
     }
 }
 
-void GenericSelection(struct Parser* ctx)
+void TypeName(struct Parser* ctx, struct TypeName* pTypeName);
+
+void GenericAssociation(struct Parser* ctx, struct GenericAssociation* pGenericAssociation)
 {
-    SetError(ctx, "_Generic not implemented");
-    //_Generic
     /*
-    (6.5.1.1) generic-selection:
-    _Generic ( assignment-expression , generic-assoc-list )
+       generic-association:
+       type-name : assignment-expression
+       default : assignment-expression
     */
+    enum TokenType token = Parser_CurrentTokenType(ctx);
+    if (token == TK_DEFAULT)
+    {
+        pGenericAssociation->bDefault = true;
+        Parser_MatchToken(ctx, TK_DEFAULT, &pGenericAssociation->ClueList1);
+    }
+    else
+    {
+        TypeName(ctx, &pGenericAssociation->TypeName);
+    }
+
+    Parser_MatchToken(ctx, TK_COLON, &pGenericAssociation->ClueList2);
+
+    AssignmentExpression(ctx, &pGenericAssociation->pAssignmentExpression);
 }
 
-void GenericAssocList(struct Parser* ctx)
+void GenericAssocList(struct Parser* ctx, struct Generic* pGeneric)
 {
-    SetError(ctx, "_Generic not implemented");
-    //type-name default
     /*
-    (6.5.1.1) generic-assoc-list:
-    generic-association
-    generic-assoc-list , generic-association
+     generic-assoc-list:
+        generic-association
+        generic-assoc-list , generic-association
     */
+    struct GenericAssociation* pGenericAssociation = NEW((struct GenericAssociation)GENERICASSOCIATION_INIT);
+
+    for (;;)
+    {
+        List_Add(pGeneric, pGenericAssociation);
+
+        GenericAssociation(ctx, pGenericAssociation);
+        enum TokenType token = Parser_CurrentTokenType(ctx);
+        if (token == TK_COMMA)
+        {
+            pGenericAssociation = NEW((struct GenericAssociation)GENERICASSOCIATION_INIT);
+            pGenericAssociation->bComma = true;
+            Parser_MatchToken(ctx, TK_COMMA, &pGenericAssociation->ClueList0);
+        }
+        else
+            break;
+
+
+        if (Parser_HasError(ctx))
+            break;
+
+
+    }
 }
 
-void GenericAssociation(struct Parser* ctx)
+void GenericSelection(struct Parser* ctx, struct Generic* pGeneric)
 {
-    SetError(ctx, "_Generic not implemented");
-    //type-name default
+
+
+
     /*
-    (6.5.1.1) generic-association:
-    type-name : assignment-expression
-    default : assignment-expression
+      generic-selection:
+      _Generic ( assignment-expression , generic-assoc-list )
     */
+    Parser_MatchToken(ctx, TK__GENERIC, &pGeneric->ClueList0);
+    Parser_MatchToken(ctx, TK_LEFT_PARENTHESIS, &pGeneric->ClueList1);
+
+    struct Expression* pExpression;
+    AssignmentExpression(ctx, &pExpression);
+
+    pGeneric->pAssignmentExpression = pExpression;
+
+    Parser_MatchToken(ctx, TK_COMMA, &pGeneric->ClueList2);
+
+    GenericAssocList(ctx, pGeneric);
+
+    Parser_MatchToken(ctx, TK_RIGHT_PARENTHESIS, &pGeneric->ClueList3);
 }
+
+
+
 
 
 void TypeName(struct Parser* ctx, struct TypeName* pTypeName)
@@ -18671,7 +18842,7 @@ void Attribute(struct Parser* ctx, struct Attribute* pAttribute)
     if (token == TK_IDENTIFIER)
     {
         pAttribute->Identifier = strdup(Lexeme(ctx));
-        token = Parser_Match(ctx, &pAttribute->ClueList0);        
+        token = Parser_Match(ctx, &pAttribute->ClueList0);
     }
     else
     {
@@ -18710,7 +18881,7 @@ void Attribute(struct Parser* ctx, struct Attribute* pAttribute)
             token = Parser_Match(ctx, &pAttribute->ClueList0); // ) ] }
         }
 
-        
+
 
         token = Parser_Match(ctx, &pAttribute->ClueList0); // )
     }
@@ -18748,7 +18919,7 @@ void AttributeList(struct Parser* ctx, struct AttributeList* pAttributeList)
             }
         }
         else
-            break;     
+            break;
 
         if (Parser_HasError(ctx))
             break;
@@ -18758,9 +18929,9 @@ void AttributeList(struct Parser* ctx, struct AttributeList* pAttributeList)
 
 void AttributeSpecifier(struct Parser* ctx, struct AttributeSpecifier* pAttributeSpecifier)
 {
-    /*     
+    /*
      attribute-specifier:
-        [ [ attribute-list ] ]    
+        [ [ attribute-list ] ]
     */
     Parser_MatchToken(ctx, TK_LEFT_SQUARE_BRACKET, &pAttributeSpecifier->ClueList0);
     Parser_MatchToken(ctx, TK_LEFT_SQUARE_BRACKET, &pAttributeSpecifier->ClueList1);
@@ -18789,7 +18960,7 @@ void AttributeSpecifierSequence(struct Parser* ctx, struct AttributeSpecifierSeq
                 AttributeSpecifier(ctx, pAttributeSpecifier);
                 List_Add(pAttributeSpecifierSequence, pAttributeSpecifier);
             }
-            else 
+            else
                 break;
         }
         else
@@ -18827,7 +18998,7 @@ void Static_Assert_Declaration(struct Parser* ctx, struct StaticAssertDeclaratio
                            &pStaticAssertDeclaration->pConstantExpression);
 
         token = Parser_CurrentTokenType(ctx);
-        
+
         if (ctx->languageVersion >= LanguageStandard_C23)
         {
             if (token == TK_COMMA) //C23 optional
@@ -19143,7 +19314,7 @@ void Struct_Or_Union_Specifier(struct Parser* ctx,
 
     //C23  attribute-specifier-sequence-opt
     AttributeSpecifierSequenceOpt(ctx, &pStructUnionSpecifier->Attributes);
-    
+
 
 
     enum TokenType token = Parser_CurrentTokenType(ctx);
@@ -20191,7 +20362,7 @@ void Initializer_List(struct Parser* ctx, struct InitializerList* pInitializerLi
             pTInitializerListItem = NEW((struct InitializerListItem)INITIALIZERLISTITEM_INIT);
             pTInitializerListItem->bContinuation = true;
             Parser_Match(ctx, &pTInitializerListItem->ClueList);
-            
+
         }
         else
         {
@@ -20571,7 +20742,7 @@ void GetDirForEnviroment(struct Scanner* scanner)
             }
             p++;
         }
-    }
+}
 #endif
 }
 bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
@@ -20579,8 +20750,8 @@ bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
                              struct SyntaxTree* pSyntaxTree)
 {
     bool bResult = false;
-    struct Parser parser = {0};
-    
+    struct Parser parser = { 0 };
+
 
     char fullFileNamePath[CPRIME_MAX_PATH] = { 0 };
     GetFullPathS(filename, fullFileNamePath);
@@ -20639,7 +20810,7 @@ bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,
 }
 
 
-bool BuildSyntaxTreeFromString(struct CompilerOptions* options, 
+bool BuildSyntaxTreeFromString(struct CompilerOptions* options,
                                const char* sourceCode,
                                struct SyntaxTree* pSyntaxTree)
 {
@@ -20859,7 +21030,7 @@ char* CompileText(int inputLanguage, int outputLanguage, const char* options, co
         //C99 eh 1
         options2.Target = outputLanguage - 1;
     }
-    
+
     options2.InputLanguage = inputLanguage;
 
     struct SyntaxTree pSyntaxTree = SYNTAXTREE_INIT;
