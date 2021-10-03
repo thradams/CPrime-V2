@@ -1,3 +1,4 @@
+#define _CRTDBG_MAP_ALLOC
 #if !defined(_CRT_SECURE_NO_WARNINGS) && defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -8481,7 +8482,7 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
             if (p->pExpressionLeft)
             {
                 TExpression_CodePrint(pSyntaxTree, options, p->pExpressionLeft, fp);
-    }
+            }
             TNodeClueList_CodePrint(options, &p->ClueList0, fp);
             Output_Append(fp, options, ".");
             TNodeClueList_CodePrint(options, &p->ClueList1, fp);
@@ -8674,7 +8675,7 @@ void TPostfixExpression_CodePrint(struct SyntaxTree* pSyntaxTree,
         default:
             //assert(false);
             break;
-}
+    }
     if (p->pNext)
     {
         TPostfixExpression_CodePrint(pSyntaxTree, options, p->pNext, fp);
@@ -9038,6 +9039,86 @@ static void TUnionSet_CodePrint(struct PrintCodeOptions* options, struct UnionSe
     }
 }
 
+static void Attribute_CodePrint(struct SyntaxTree* pSyntaxTree,
+                                    struct PrintCodeOptions* options,
+                                    struct Attribute* pAttribute,
+                                    struct StrBuilder* fp)
+{
+    if (pAttribute->AttributePrefix)
+    {
+        Output_Append(fp, options, pAttribute->AttributePrefix);  
+        TNodeClueList_CodePrint(options, &pAttribute->ClueList0, fp);
+        Output_Append(fp, options, ":");
+    }
+    
+    if (pAttribute->Identifier)
+    {
+        Output_Append(fp, options, pAttribute->Identifier);
+        TNodeClueList_CodePrint(options, &pAttribute->ClueList0, fp);        
+    }
+
+    struct BalancedToken* pBalancedToken = pAttribute->pHead;
+    if (pBalancedToken)
+    {
+        Output_Append(fp, options, "(");
+        while (pBalancedToken)
+        {
+            TNodeClueList_CodePrint(options, &pBalancedToken->ClueList0, fp);
+            Output_Append(fp, options, pBalancedToken->lexeme);
+            pBalancedToken = pBalancedToken->pNext;
+        }
+        Output_Append(fp, options, ")");
+    }    
+}
+
+static void AttributeList_CodePrint(struct SyntaxTree* pSyntaxTree,
+                                         struct PrintCodeOptions* options,
+                                         struct AttributeList* pAttributeList,
+                                         struct StrBuilder* fp)
+{
+    for (struct Attribute* pItem = pAttributeList->pHead;
+         pItem != NULL;
+         pItem = pItem->pNext)
+    {
+        Attribute_CodePrint(pSyntaxTree, options, pItem, fp);
+    }
+}
+
+static void AttributeSpecifier_CodePrint(struct SyntaxTree* pSyntaxTree,
+                                         struct PrintCodeOptions* options,
+                                         struct AttributeSpecifier* pAttributeSpecifier,
+                                         struct StrBuilder* fp)
+{
+    //pAttributeSpecifier->attribute_list
+    TNodeClueList_CodePrint(options, &pAttributeSpecifier->ClueList0, fp);
+    Output_Append(fp, options, "[");
+
+    TNodeClueList_CodePrint(options, &pAttributeSpecifier->ClueList1, fp);
+    Output_Append(fp, options, "[");
+
+    AttributeList_CodePrint(pSyntaxTree, options, &pAttributeSpecifier->attribute_list, fp);
+
+    TNodeClueList_CodePrint(options, &pAttributeSpecifier->ClueList2, fp);
+    Output_Append(fp, options, "]");
+
+    TNodeClueList_CodePrint(options, &pAttributeSpecifier->ClueList3, fp);
+    Output_Append(fp, options, "]");
+
+}
+
+static void AttributeSpecifierSequence_CodePrint(struct SyntaxTree* pSyntaxTree,
+                                                 struct PrintCodeOptions* options,
+                                                 struct AttributeSpecifierSequence* pAttributeSpecifierSequence,
+                                                 struct StrBuilder* fp)
+{
+    for (struct AttributeSpecifier* pItem = pAttributeSpecifierSequence->pHead;
+         pItem != NULL;
+         pItem = pItem->pNext)
+    {
+        AttributeSpecifier_CodePrint(pSyntaxTree, options, pItem, fp);
+    }
+}
+
 static void TStructUnionSpecifier_CodePrint(struct SyntaxTree* pSyntaxTree, struct PrintCodeOptions* options, struct StructUnionSpecifier* p, struct StrBuilder* fp)
 {
     if (options->Options.bCannonical)
@@ -9047,7 +9128,7 @@ static void TStructUnionSpecifier_CodePrint(struct SyntaxTree* pSyntaxTree, stru
     {
         TNodeClueList_CodePrint(options, &p->ClueList0, fp);
     }
-    //true;
+
     if (p->StructDeclarationList.Size > 0)
     {
         if (p->Token == TK_STRUCT)
@@ -9058,15 +9139,17 @@ static void TStructUnionSpecifier_CodePrint(struct SyntaxTree* pSyntaxTree, stru
         {
             Output_Append(fp, options, "union");
         }
+
         if (options->Options.bCannonical)
         {
             Output_Append(fp, options, " ");
         }
+
         if (p->UnionSet.pHead != NULL)
         {
             TUnionSet_CodePrint(options, &p->UnionSet, fp);
         }
-        //TNodeClueList_CodePrint(options, &p->ClueList1, fp);
+
     }
     else
     {
@@ -9087,6 +9170,12 @@ static void TStructUnionSpecifier_CodePrint(struct SyntaxTree* pSyntaxTree, stru
             TUnionSet_CodePrint(options, &p->UnionSet, fp);
         }
     }
+
+    AttributeSpecifierSequence_CodePrint(pSyntaxTree,
+                                         options,
+                                         &p->Attributes,
+                                         fp);
+
     if (options->Options.bCannonical)
     {
     }
@@ -13203,6 +13292,7 @@ void StructUnionSpecifier_Delete(struct StructUnionSpecifier* p)
 {
     if (p != NULL)
     {
+        AttributeSpecifierSequence_Destroy(&p->Attributes);
         StructDeclarationList_Destroy(&p->StructDeclarationList);
         free((void*)p->Tag);
         TUnionSet_Destroy(&p->UnionSet);
@@ -18802,7 +18892,6 @@ void Struct_Or_Union(struct Parser* ctx,
     }
 }
 
-//C23
 
 void Attribute(struct Parser* ctx, struct Attribute* pAttribute)
 {
@@ -18851,12 +18940,12 @@ void Attribute(struct Parser* ctx, struct Attribute* pAttribute)
 
     if (token == TK_COLONCOLON)
     {
-        token = Parser_Match(ctx, &pAttribute->ClueList0);
+        token = Parser_Match(ctx, &pAttribute->ClueList1);
         if (token == TK_IDENTIFIER)
         {
             pAttribute->AttributePrefix = pAttribute->Identifier;
             pAttribute->Identifier = strdup(Lexeme(ctx));
-            token = Parser_Match(ctx, &pAttribute->ClueList0);
+            token = Parser_Match(ctx, &pAttribute->ClueList2);
         }
         else
         {
@@ -18866,24 +18955,55 @@ void Attribute(struct Parser* ctx, struct Attribute* pAttribute)
 
     if (token == TK_LEFT_PARENTHESIS)
     {
-        assert(false);//TODO
-        /*attribute-argument-clause_opt*/
-        token = Parser_Match(ctx, &pAttribute->ClueList0); // (
+        token = Parser_Match(ctx, &pAttribute->ClueList3); // (
 
-        if (token == TK_LEFT_PARENTHESIS ||
-            token == TK_LEFT_CURLY_BRACKET ||
-            token == TK_LEFT_SQUARE_BRACKET)
-        {
-            token = Parser_Match(ctx, &pAttribute->ClueList0); // (
-            for (;;)
+        /*attribute-argument-clause_opt*/
+        //acho que vou fazer generico aqui..anda ate achar ) balanceado ou seja contador 1.
+        int count = 1;
+        //vou fazer uma lista token lexeme e cluelist nect e ir adicionando.
+
+        for (;;)
+        {            
+            if (token == TK_LEFT_PARENTHESIS)
             {
+                struct BalancedToken* pBalancedToken = NEW((struct BalancedToken) {0});
+                
+                pBalancedToken->lexeme = strdup(Lexeme(ctx));
+                pBalancedToken->token = token;
+
+                token = Parser_Match(ctx, &pBalancedToken->ClueList0); // (
+                List_Add(pAttribute, pBalancedToken);
+                count++;                
             }
-            token = Parser_Match(ctx, &pAttribute->ClueList0); // ) ] }
+            else if (token == TK_RIGHT_PARENTHESIS)
+            {                
+                count--;
+                if (count == 0)
+                    break; //acabou
+
+                struct BalancedToken* pBalancedToken = NEW((struct BalancedToken) {0});
+                
+                pBalancedToken->lexeme = strdup(Lexeme(ctx));
+                pBalancedToken->token = token;
+
+                token = Parser_Match(ctx, &pBalancedToken->ClueList0); // (
+                List_Add(pAttribute, pBalancedToken);
+            }
+            else
+            {
+                struct BalancedToken* pBalancedToken = NEW((struct BalancedToken) {0});
+                
+                pBalancedToken->lexeme = strdup(Lexeme(ctx));
+                pBalancedToken->token = token;
+
+                token = Parser_Match(ctx, &pBalancedToken->ClueList0); // (
+                List_Add(pAttribute, pBalancedToken);                
+            }
+            if (Parser_HasError(ctx))
+                break;
         }
 
-
-
-        token = Parser_Match(ctx, &pAttribute->ClueList0); // )
+        token = Parser_Match(ctx, &pAttribute->ClueList3); // )
     }
 }
 
@@ -18927,6 +19047,67 @@ void AttributeList(struct Parser* ctx, struct AttributeList* pAttributeList)
 
 }
 
+void BalancedToken_Delete(struct BalancedToken* pBalancedToken)
+{
+    if (pBalancedToken)
+    {
+        TokenList_Destroy(&pBalancedToken->ClueList0);
+        free(pBalancedToken->lexeme);
+        free(pBalancedToken);
+    }
+}
+
+void Attribute_Delete(struct Attribute* pAttribute)
+{
+    if (pAttribute)
+    {
+        free(pAttribute->AttributePrefix);
+        free(pAttribute->Identifier);
+        TokenList_Destroy(&pAttribute->ClueList0);
+        TokenList_Destroy(&pAttribute->ClueList1);
+        TokenList_Destroy(&pAttribute->ClueList2);
+        TokenList_Destroy(&pAttribute->ClueList3);
+        TokenList_Destroy(&pAttribute->ClueList4);
+
+        struct BalancedToken* pCurrent = pAttribute->pHead;
+        while (pCurrent)
+        {
+            struct BalancedToken* pItem = pCurrent;
+            pCurrent = pCurrent->pNext;
+            BalancedToken_Delete(pItem);
+        }
+    }
+}
+
+void AttributeList_Destroy(struct AttributeList* pAttributeList)
+{
+    struct Attribute* pCurrent = pAttributeList->pHead;
+    while (pCurrent)
+    {
+        struct Attribute* pItem = pCurrent;
+        pCurrent = pCurrent->pNext;
+        Attribute_Delete(pItem);
+    }
+}
+
+void AttributeSpecifier_Destroy(struct AttributeSpecifier* pAttributeSpecifier)
+{
+    AttributeList_Destroy(&pAttributeSpecifier->attribute_list);
+    TokenList_Destroy(&pAttributeSpecifier->ClueList0);
+    TokenList_Destroy(&pAttributeSpecifier->ClueList1);
+    TokenList_Destroy(&pAttributeSpecifier->ClueList2);
+    TokenList_Destroy(&pAttributeSpecifier->ClueList3);
+}
+
+void AttributeSpecifier_Delete(struct AttributeSpecifier* pAttributeSpecifier)
+{
+    if (pAttributeSpecifier)
+    {
+        AttributeSpecifier_Destroy(pAttributeSpecifier);
+        free(pAttributeSpecifier);
+    }
+}
+
 void AttributeSpecifier(struct Parser* ctx, struct AttributeSpecifier* pAttributeSpecifier)
 {
     /*
@@ -18940,6 +19121,17 @@ void AttributeSpecifier(struct Parser* ctx, struct AttributeSpecifier* pAttribut
 
     Parser_MatchToken(ctx, TK_RIGHT_SQUARE_BRACKET, &pAttributeSpecifier->ClueList2);
     Parser_MatchToken(ctx, TK_RIGHT_SQUARE_BRACKET, &pAttributeSpecifier->ClueList3);
+}
+
+void AttributeSpecifierSequence_Destroy(struct AttributeSpecifierSequence* pAttributeSpecifierSequence)
+{
+    struct AttributeSpecifier* pCurrent = pAttributeSpecifierSequence->pHead;
+    while (pCurrent)
+    {
+        struct AttributeSpecifier* pItem = pCurrent;
+        pCurrent = pCurrent->pNext;
+        AttributeSpecifier_Delete(pItem);
+    }
 }
 
 void AttributeSpecifierSequence(struct Parser* ctx, struct AttributeSpecifierSequence* pAttributeSpecifierSequence)
@@ -20742,7 +20934,7 @@ void GetDirForEnviroment(struct Scanner* scanner)
             }
             p++;
         }
-}
+    }
 #endif
 }
 bool BuildSyntaxTreeFromFile(struct CompilerOptions* options,

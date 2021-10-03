@@ -1,4 +1,4 @@
-
+#define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -477,6 +477,14 @@ struct FilePos
 
 #define FILEPOS_INIT {0,0}
 
+struct BalancedToken
+{
+    enum TokenType token;
+    char* lexeme;
+    struct TokenList ClueList0;
+    struct BalancedToken* pNext;
+};
+
 struct Attribute
 {
     /*
@@ -492,12 +500,14 @@ struct Attribute
 
     attribute-prefixed-token:
        attribute-prefix :: identifier
+       0                1  2
 
      attribute-prefix:
        identifier
 
      attribute-argument-clause:
         ( balanced-token-sequenceopt )
+        3                            4
 
      balanced-token-sequence:
         balanced-token
@@ -510,10 +520,16 @@ struct Attribute
        any token other than a parenthesis, a bracket, or a brace
 
     */
+    struct BalancedToken* pHead, *pTail;
+
     char* AttributePrefix;
     char* Identifier;
     struct Attribute* pNext;
     struct TokenList ClueList0;
+    struct TokenList ClueList1;
+    struct TokenList ClueList2;
+    struct TokenList ClueList3;
+    struct TokenList ClueList4;
 };
 #define ATTRIBUTE_INIT {0}
 
@@ -532,6 +548,7 @@ struct AttributeSpecifier
     /*
      attribute-specifier:
         [ [ attribute-list ] ]
+        0 1                2 3
     */
 
     struct AttributeList attribute_list;
@@ -556,6 +573,8 @@ struct AttributeSpecifierSequence
 
     struct AttributeSpecifier* pHead, * pTail;
 };
+
+void AttributeSpecifierSequence_Destroy(struct AttributeSpecifierSequence* p);
 
 struct StaticAssertDeclaration
 {
@@ -1488,7 +1507,6 @@ struct StructDeclaration
 };
 #define STRUCTDECLARATION_INIT {StructDeclaration_ID}
 
-
 void StructDeclaration_Delete(struct StructDeclaration* p);
 
 
@@ -1562,7 +1580,11 @@ struct StructUnionSpecifier
       struct-or-union union-set
       struct-or-union union-set identifier
     */
-
+    /*C23
+     struct-or-union-specifier:
+      struct-or-union attribute-specifier-sequence_opt identifier_opt { member-declaration-list }
+      struct-or-union attribute-specifier-sequence_opt identifier
+    */
     enum Type Type;
     struct StructDeclarationList StructDeclarationList;
     char* Tag;

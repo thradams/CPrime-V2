@@ -178,13 +178,13 @@ int main(int argc, char* argv[])
 
     if (!Compile(&options))
     {
-        exit(1);
+        //exit(1);
     }
 
 
 
 #ifdef WIN32
-    //_CrtMemDumpAllObjectsSince(NULL);
+    _CrtDumpMemoryLeaks();//lint !e523 !e522
 #endif
 
     return 0;
