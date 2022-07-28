@@ -1,4 +1,4 @@
-# cprime
+# cprime v2
 
 C' (C Prime) is a front end compiler with preprocessor written in C with no external dependencies.
 
